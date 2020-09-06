@@ -1,8 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms_tag
+    url: jdbc:postgresql://localhost:5432/ms_event
     username: postgres
     password: postgres
-
+client:
+  localization:
+    url: http://localhost:8084/
 
 

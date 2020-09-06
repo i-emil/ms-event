@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventLanguageTable
+      author: emilr
+      changes:
+        - createTable:
+            tableName: event_language
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: event_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language_id
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+
+
+
+
+
+

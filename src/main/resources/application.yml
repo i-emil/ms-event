@@ -1,10 +1,8 @@
 spring:
-  pagination:
-    max-size: 10
   datasource:
-    url: jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/ms_tag
-    username: postgres
-    password: P@ssw0rD
+    url: jdbc:postgresql://192.168.1.90:5432/ms_event
+    username: ms_event
+    password: $rw@uF3RW2ud^Zv!BWx8qMetH
   liquibase:
     enabled: true
     change-log: classpath:liquibase/changelog-master.yml
@@ -13,4 +11,7 @@ spring:
       ddl-auto: none
     open-in-view: false
 server:
-  port: 8085
+  port: 8080
+client:
+  localization:
+    url: http://ms-localization:30057/

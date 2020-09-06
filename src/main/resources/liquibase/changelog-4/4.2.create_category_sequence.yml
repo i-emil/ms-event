@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateCategorySequence
+      author: emilr
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: category_seq

@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventTable
+      author: emilr
+      changes:
+        - createTable:
+            tableName: event
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(70)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: start_date
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: timestamptz
+              - column:
+                  name: location_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: budget
+                  type: int
+              - column:
+                  name: min_age
+                  type: int
+              - column:
+                  name: max_age
+                  type: int
+              - column:
+                  name: female_person_count
+                  type: int
+              - column:
+                  name: male_person_count
+                  type: int
+              - column:
+                  name: all_person_count
+                  type: int
+              - column:
+                  name: rating
+                  type: decimal
+              - column:
+                  name: category_id
+                  type: BIGINT
+              - column:
+                  name: status
+                  type: varchar(20)
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp
+
+
+
+
