@@ -1,7 +1,9 @@
 spring:
+  pagination:
+    max-size: 10
   datasource:
-    url: jdbc:postgresql://postgres:5432/ms_interest
-    username: ms_interest
+    url: jdbc:postgresql://192.168.1.90:5432/ms_tag
+    username: 777
     password: 666
   liquibase:
     enabled: true

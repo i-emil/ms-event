@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateTagSequence
+      author: emilr
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: tag_seq

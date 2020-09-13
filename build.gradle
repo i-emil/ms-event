@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.troojer.ms-interest'
+group = 'com.troojer.ms-tag'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '14'
 
@@ -45,6 +45,7 @@ dependencies {
 
     compile 'io.springfox:springfox-swagger2:2.9.2'
     compile 'io.springfox:springfox-swagger-ui:2.9.2'
+    compile 'io.springfox:springfox-bean-validators:2.9.2'
 }
 
 test {
