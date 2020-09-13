@@ -14,13 +14,13 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: value
-                  type: varchar(255)
+                  type: varchar(100)
                   constraints:
                     unique: true
                     nullable: false
               - column:
                   name: user_id
-                  type: BIGINT
+                  type: varchar(255)
               - column:
                   name: created_at
                   type: timestamp

@@ -20,11 +20,11 @@ public class TagServiceImpl implements TagService {
 
     private final ch.qos.logback.classic.Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
     private final TagRepository tagRepository;
-    private final AccessCheckerUtil accessCheckerUtil;
+    private final AccessCheckerUtil accessChecker;
 
-    public TagServiceImpl(TagRepository tagRepository, AccessCheckerUtil accessCheckerUtil) {
+    public TagServiceImpl(TagRepository tagRepository, AccessCheckerUtil accessChecker) {
         this.tagRepository = tagRepository;
-        this.accessCheckerUtil = accessCheckerUtil;
+        this.accessChecker = accessChecker;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TagServiceImpl implements TagService {
         logger.info("getOrAddTagsByValue() called");
         dtos.forEach((v) -> {
             if (tagRepository.getByValueEquals(v.getValue()).isEmpty()) {
-                tagRepository.save(TagEntity.builder().userId(accessCheckerUtil.getUserId()).value(v.getValue()).build());
+                tagRepository.save(TagEntity.builder().userId(accessChecker.getUserId()).value(v.getValue()).build());
                 logger.info("getOrAddTagsByValue(); '{}' added", v.getValue());
             }
         });

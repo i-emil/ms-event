@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class TagController {
     }
 
     @PostMapping
-    public List<TagDto> gerOrAddTagsByValue(@RequestBody @NotEmpty Set<@Valid TagDto> dto) {
-        return tagService.getOrAddTagsByValue(dto);
+    public List<TagDto> gerOrAddTagsByValue(@RequestBody @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Valid TagDto> tags) {
+        return tagService.getOrAddTagsByValue(tags);
     }
 }
