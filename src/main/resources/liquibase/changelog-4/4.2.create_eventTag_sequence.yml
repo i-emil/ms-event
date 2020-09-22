@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateTagLanguageSequence
+      author: emilr
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: event_tag_seq

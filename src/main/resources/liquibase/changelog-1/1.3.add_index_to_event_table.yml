@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateIndexToEvent
+      author: emilr
+      changes:
+        - createIndex:
+            clustered: true
+            columns:
+              - column:
+                  descending: true
+                  name: start_date
+            indexName: idx_event_start_date
+            tableName: event
+            unique: false
+        - createIndex:
+            columns:
+              - column:
+                  name: author_id
+            indexName: idx_event_author_id
+            tableName: event
+            unique: false
+        - createIndex:
+            columns:
+              - column:
+                  name: location_id
+            indexName: idx_event_location_id
+            tableName: event
+            unique: false
