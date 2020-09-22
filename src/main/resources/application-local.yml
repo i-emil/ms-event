@@ -5,6 +5,8 @@ spring:
     password: postgres
 client:
   localization:
-    url: http://localhost:8084/
+    url: http://localhost:8084/localization/
+  tag:
+    url: http://localhost:8085/tags/
 
 

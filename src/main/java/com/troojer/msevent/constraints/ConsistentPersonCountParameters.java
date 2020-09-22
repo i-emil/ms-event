@@ -18,7 +18,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface ConsistentPersonCountParameters {
 
     String message() default
-            "End date must be after begin date and both must be in the future";
+            "Person count is wrong";
+
+    int min() default 1;
+
+    int max() default 10;
 
     Class<?>[] groups() default {};
 

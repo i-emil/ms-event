@@ -13,7 +13,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: user_id
+                  name: author_id
                   type: varchar(255)
                   constraints:
                     nullable: false
@@ -25,6 +25,8 @@ databaseChangeLog:
               - column:
                   name: description
                   type: text
+                  constraints:
+                    nullable: false
               - column:
                   name: start_date
                   type: timestamptz
@@ -44,24 +46,41 @@ databaseChangeLog:
               - column:
                   name: min_age
                   type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: max_age
                   type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: female_person_count
                   type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: male_person_count
                   type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: all_person_count
                   type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: rating
                   type: decimal
               - column:
                   name: category_id
                   type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_category_id
+                    nullable: false
+                    references: category(id)
+              - column:
+                  name: watched
+                  type: int
               - column:
                   name: status
                   type: varchar(20)
@@ -71,7 +90,3 @@ databaseChangeLog:
               - column:
                   name: updated_at
                   type: timestamp
-
-
-
-

@@ -1,6 +1,8 @@
 package com.troojer.msevent.interceptor;
 
 import com.troojer.msevent.model.CurrentUser;
+import com.troojer.msevent.model.exception.AuthenticationException;
+import com.troojer.msevent.util.ToolUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -18,6 +20,7 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (request.getHeader("User-Id") == null) throw new AuthenticationException(ToolUtil.getMessage("auth.error"));
         currentUser.setId(request.getHeader("User-Id"));
         return true;
     }

@@ -9,6 +9,8 @@ import com.troojer.msevent.service.CategoryService;
 import com.troojer.msevent.util.ToolUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -27,5 +29,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryEntity getCategoryEntity(Long categoryId) {
         return categoryRepository.findById(categoryId).orElseThrow(()
                 -> new NotFoundException(ToolUtil.getMessage("category.notFound")));
+    }
+
+    @Override
+    public Set<CategoryDto> getCategories() {
+        return CategoryMapper.entitiesToCategorySet(categoryRepository.findAll());
     }
 }

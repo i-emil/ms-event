@@ -10,7 +10,6 @@ import com.troojer.msevent.model.Status;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.CategoryService;
-import com.troojer.msevent.service.EventLanguageService;
 import com.troojer.msevent.service.EventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
@@ -26,78 +25,90 @@ import static com.troojer.msevent.util.ToolUtil.getMessage;
 
 @Service
 public class EventServiceImpl implements EventService {
+    private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
     private final EventRepository eventRepository;
-    private final EventLanguageService eventLanguageService;
+    private final EventMapper eventMapper;
     private final CategoryService categoryService;
-    private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
-    private AccessCheckerUtil accessChecker;
 
+    private final AccessCheckerUtil accessChecker;
 
-    public EventServiceImpl(EventRepository eventRepository, EventLanguageServiceImpl languageService, CategoryService categoryService, AccessCheckerUtil accessChecker) {
+    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, CategoryService categoryService, AccessCheckerUtil accessChecker) {
         this.eventRepository = eventRepository;
-        this.eventLanguageService = languageService;
+        this.eventMapper = eventMapper;
         this.categoryService = categoryService;
         this.accessChecker = accessChecker;
     }
 
     @Override
+    @Transactional
     public EventDto getUserEvent(Long eventId) {
         EventEntity eventEntity = getEventEntity(eventId);
-        if (!accessChecker.isUserId(eventEntity.getUserId())) {
+        if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
             logger.warn("getUserEvent: It's not user's event; eventId: {};", eventId);
             throw new ForbiddenException(getMessage("event.forbidden"));
         }
-        return EventMapper.entityToDto(eventEntity, eventLanguageService.getLanguageListByEventId(eventId));
+        return eventMapper.entityToDto(eventEntity);
     }
 
     @Override
+    @Transactional
     public Page<EventDto> getUserEvents(Pageable pageable) {
         return eventRepository
-                .getAllByUserId(accessChecker.getUserId(), pageable)
-                .map(ent -> EventMapper.entityToDto(ent, eventLanguageService.getLanguageListByEventId(ent.getId())));
+                .getAllByAuthorId(accessChecker.getUserId(), pageable)
+                .map(eventMapper::entityToDto);
     }
 
     @Override
+    @Transactional
     public EventDto addEvent(EventDto eventDto) {
-        EventEntity eventEntity = EventMapper.dtoToEntityForCreate(eventDto);
+        EventEntity eventEntity = eventMapper.createEntity(eventDto);
+
         eventEntity.setCategory(categoryService.getCategoryEntity(eventEntity.getCategory().getId()));
-        eventEntity.setUserId(accessChecker.getUserId());
-        eventEntity = eventRepository.save(eventEntity);
-        eventLanguageService.addLanguageListByEventId(eventEntity.getId(), eventDto.getLanguages());
+        eventEntity.getLanguages().forEach(lang -> lang.setEvent(eventEntity));
+        eventEntity.getTags().forEach(tag -> tag.setEvent(eventEntity));
+        eventEntity.setAuthorId(accessChecker.getUserId());
+
+        eventRepository.save(eventEntity);
         logger.info("addEvent; event: {};", eventEntity);
-        return EventMapper.entityToDto(eventEntity, eventLanguageService.getLanguageListByEventId(eventEntity.getId()));
+        return eventMapper.entityToDto(eventEntity);
     }
 
     @Override
+    @Transactional
     public EventDto updateEvent(Long eventId, EventDto eventDto) {
         EventEntity oldEntity = getEventEntity(eventId);
-        if (!accessChecker.isUserId(oldEntity.getUserId())) {
+        if (!accessChecker.isUserId(oldEntity.getAuthorId())) {
             logger.warn("updateEvent: It's not user's event; eventId: {};", eventId);
             throw new ForbiddenException(getMessage("event.forbidden"));
         }
-        EventEntity eventEntity = eventRepository.save(EventMapper.updateEntity(eventDto, oldEntity));
-        eventEntity.setCategory(categoryService.getCategoryEntity(eventEntity.getCategory().getId()));
-        eventLanguageService.addLanguageListByEventId(eventEntity.getId(), eventDto.getLanguages());
-        logger.info("updateEvent; old: {}; new: {}", oldEntity, eventEntity);
-        return EventMapper.entityToDto(eventEntity, eventLanguageService.getLanguageListByEventId(eventId));
+        EventEntity newEvent = eventMapper.updateEntity(eventDto, oldEntity);
+        newEvent.getLanguages().forEach(lang -> lang.setEvent(newEvent));
+        newEvent.getTags().forEach(tag -> tag.setEvent(newEvent));
+        newEvent.setCategory(categoryService.getCategoryEntity(newEvent.getCategory().getId()));
+        eventRepository.save(newEvent);
+
+        logger.info("updateEvent; old: {}; new: {}", oldEntity, newEvent);
+        return eventMapper.entityToDto(newEvent);
     }
 
     @Override
     public void deleteEvent(Long eventId) {
         EventEntity eventEntity = getEventEntity(eventId);
-        if (accessChecker.isUserId(eventEntity.getUserId())) {
+        if (accessChecker.isUserId(eventEntity.getAuthorId())) {
             logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), eventId);
             throw new ForbiddenException(getMessage("event.forbidden"));
         }
         eventEntity.setStatus(Status.DELETED);
         eventRepository.save(eventEntity);
+        logger.info("deleteEvent(); eventId:{}", eventId);
     }
 
     @Override
     @Transactional
     public void setEndedStatusToAllExpired() {
         eventRepository.setStatusByEndDate(Status.ENDED, ZonedDateTime.now());
+        logger.info("setEndedStatusToAllExpired(): done");
     }
 
     private EventEntity getEventEntity(Long eventId) {

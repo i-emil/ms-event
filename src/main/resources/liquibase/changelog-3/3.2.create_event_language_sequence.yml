@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: CreateEventSLanguageSequence
-      author: emilr
-      changes:
-        - createSequence:
-            incrementBy: 50
-            sequenceName: event_language_seq

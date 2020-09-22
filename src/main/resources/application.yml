@@ -14,4 +14,6 @@ server:
   port: 8080
 client:
   localization:
-    url: http://ms-localization:30057/
+    url: http://ms-localization:8080/localization/
+  tag:
+    url: http://ms-tag:8085/tags/

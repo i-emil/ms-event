@@ -9,12 +9,20 @@ import javax.validation.ConstraintValidatorContext;
 public class ConsistentAgeParameterValidator
         implements ConstraintValidator<ConsistentAgeParameters, EventAgeDto> {
 
+    private int min;
+    private int max;
+
+    @Override
+    public void initialize(ConsistentAgeParameters constraintAnnotation) {
+        this.min = constraintAnnotation.min();
+        this.max = constraintAnnotation.max();
+    }
+
     @Override
     public boolean isValid(EventAgeDto eventAgeDto, ConstraintValidatorContext context) {
         Integer minAge = eventAgeDto.getMin();
         Integer maxAge = eventAgeDto.getMax();
-
-        return minAge != null && maxAge != null
-                && minAge >= 18 && maxAge <= 70 && minAge < maxAge;
+        return minAge != null && maxAge != null && minAge <= maxAge
+                && minAge >= min && maxAge <= max ;
     }
 }

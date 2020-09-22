@@ -9,20 +9,20 @@
             <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>user:%X{userId}; request:%X{requestId}; - %d{dd.MM.YYYY HH:mm:ss.SSS} [%thread] %-5level
+            <pattern>session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; - %d{dd.MM.YYYY HH:mm:ss.SSS} [%thread] %-5level
                 %logger{36} - %msg%n
             </pattern>
         </encoder>
     </appender>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>user:%X{userId}; request:%X{requestId}; - %d{dd.MM.YYYY HH:mm:ss.SSS} [%thread] %-5level
+            <pattern>session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; - %d{dd.MM.YYYY HH:mm:ss.SSS} [%thread] %-5level
                 %logger{36} - %msg%n
             </pattern>
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="ROLLINGFILE"/>
         <appender-ref ref="CONSOLE"/>
     </root>

@@ -19,4 +19,5 @@ public @interface NullOrNotBlank {
     String message() default "{javax.validation.constraints.Pattern.message}";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default {};
+    String param();
 }

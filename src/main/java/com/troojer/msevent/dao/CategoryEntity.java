@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 @Where(clause = "deleted=0")
 public class CategoryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-    @SequenceGenerator(name = "seq_generator", sequenceName = "category_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;

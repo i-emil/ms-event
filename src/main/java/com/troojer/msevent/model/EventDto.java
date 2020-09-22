@@ -26,12 +26,13 @@ public class EventDto {
     private Long id;
 
     @JsonProperty(access = READ_ONLY)
-    private String userId;
+    private String authorId;
 
     @NotBlank(message = "{event.title.notBlank}", groups = CreateValidation.class)
-    @NullOrNotBlank(message = "{event.title.notBlank}", groups = UpdateValidation.class)
+    @NullOrNotBlank(message = "{event.title.notBlank}", param = "eventTitle", groups = UpdateValidation.class)
     private String title;
 
+    @NotBlank(message = "{event.description.notBlank}", groups = CreateValidation.class)
     @Pattern(regexp = ".[\\S\\s]{0,149}", message = "{event.description.pattern}", groups = {CreateValidation.class, UpdateValidation.class})
     private String description;
 
@@ -42,22 +43,29 @@ public class EventDto {
     @Positive(message = "{event.location.positive}", groups = {CreateValidation.class, UpdateValidation.class})
     private Long locationId;
 
-    @Positive(message = "{event.budget.positive}", groups = {CreateValidation.class, UpdateValidation.class})
-    private Integer budget;
-
     @NotNull(message = "{event.age.notNull}", groups = CreateValidation.class)
     private @Valid EventAgeDto age;
 
-    @JsonProperty(access = READ_ONLY)
-    private Status status;
-
-    @NullOrNotEmpty(message = "{event.languages.notEmpty}", groups = UpdateValidation.class)
+    @NullOrNotEmpty(message = "{event.languages.notEmpty}", param = "eventLanguages", groups = UpdateValidation.class)
     @NotEmpty(message = "{event.languages.notEmpty}", groups = CreateValidation.class)
     private Set<LanguageDto> languages;
 
     @NotNull(message = "{event.personCount.notNull}", groups = CreateValidation.class)
     private @Valid EventPersonCountDto personCount;
 
-//Todo  @NotNull()
+    @NotNull(message = "{event.category.notNull}", groups = CreateValidation.class)
     private CategoryDto category;
+
+    @PositiveOrZero(message = "{event.budget.positive}", groups = {CreateValidation.class, UpdateValidation.class})
+    private Integer budget;
+
+    @Size(max = 10, message = "{tag.list.size}", groups = {CreateValidation.class, UpdateValidation.class})
+    private @Valid Set<TagDto> tags;
+
+    @JsonProperty(access = READ_ONLY)
+    private Status status;
+
+    @JsonProperty(access = READ_ONLY)
+    private int watched;
+
 }

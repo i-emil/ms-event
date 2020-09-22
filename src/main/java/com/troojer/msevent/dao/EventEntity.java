@@ -1,16 +1,15 @@
 package com.troojer.msevent.dao;
 
 import com.troojer.msevent.model.Status;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -18,14 +17,16 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"tags", "languages"})
+@Where(clause = "status != 'DELETED'")
 public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
     @SequenceGenerator(name = "seq_generator", sequenceName = "event_seq")
     private Long id;
 
-    @Column(name = "user_id")
-    private String userId;
+    @Column(name = "author_id")
+    private String authorId;
 
     private String title;
 
@@ -39,14 +40,6 @@ public class EventEntity {
 
     @Column(name = "location_id")
     private Long locationId;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     private Integer budget;
 
@@ -73,4 +66,19 @@ public class EventEntity {
     @Column(name = "all_person_count")
     private Integer allPersonCount;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    private Set<EventTagEntity> tags;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    private Set<EventLanguageEntity> languages;
+
+    private int watched;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

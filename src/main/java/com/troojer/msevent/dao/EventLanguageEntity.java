@@ -1,9 +1,6 @@
 package com.troojer.msevent.dao;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -15,19 +12,25 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "event")
 public class EventLanguageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
     @SequenceGenerator(name = "seq_generator", sequenceName = "event_language_seq")
     private Long id;
 
-    @Column(name = "event_id")
-    private Long eventId;
+    @JoinColumn(name = "event_id")
+    @EqualsAndHashCode.Include
+    @ManyToOne
+    private EventEntity event;
 
     @Column(name = "language_id")
+    @EqualsAndHashCode.Include
     private String languageId;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
 }

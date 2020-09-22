@@ -24,7 +24,8 @@ public @interface ConsistentAgeParameters {
 
     Class<? extends Payload>[] payload() default {};
 
-    String param();
+    int min();
+    int max();
 
     @Target({TYPE, ANNOTATION_TYPE})
     @Retention(RUNTIME)
@@ -32,4 +33,5 @@ public @interface ConsistentAgeParameters {
     @interface List {
         ConsistentAgeParameters[] value();
     }
+    String param();
 }

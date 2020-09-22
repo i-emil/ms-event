@@ -19,6 +19,4 @@ public class AccessCheckerUtil {
     public String getUserId(){
         return currentUser.getId();
     }
-
-
 }

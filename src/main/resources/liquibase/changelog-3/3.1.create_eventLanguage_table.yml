@@ -16,7 +16,9 @@ databaseChangeLog:
                   name: event_id
                   type: BIGINT
                   constraints:
+                    foreignKeyName: fk_event_id
                     nullable: false
+                    references: event(id)
               - column:
                   name: language_id
                   type: varchar(10)

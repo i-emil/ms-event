@@ -3,6 +3,7 @@ package com.troojer.msevent.controller;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
+import com.troojer.msevent.service.CategoryService;
 import com.troojer.msevent.service.EventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     private final EventService eventService;
+    private final CategoryService categoryService;
 
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, CategoryService categoryService) {
         this.eventService = eventService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("{id}")
