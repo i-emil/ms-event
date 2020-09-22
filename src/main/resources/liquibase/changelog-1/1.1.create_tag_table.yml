@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -19,7 +19,7 @@ databaseChangeLog:
                     unique: true
                     nullable: false
               - column:
-                  name: user_id
+                  name: author_id
                   type: varchar(255)
               - column:
                   name: created_at
@@ -27,7 +27,3 @@ databaseChangeLog:
               - column:
                   name: updated_at
                   type: timestamp
-
-
-
-

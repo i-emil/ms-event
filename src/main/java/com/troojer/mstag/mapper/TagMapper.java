@@ -15,19 +15,17 @@ public class TagMapper {
                 .value(entity.getValue()).build();
     }
 
-    public static TagEntity dtoToEntity(TagDto dto) {
+    public static TagEntity dtoToEntity(TagDto dto, String authorId) {
         return TagEntity.builder()
-                .value(dto.getValue()).build();
+                .value(dto.getValue())
+                .authorId(authorId)
+                .build();
     }
 
     public static Set<String> dtosToStringSet(Collection<TagDto> dtos){
         return dtos.stream().map(TagDto::getValue).collect(Collectors.toSet());
     }
-    public static List<TagDto> entitiesToDtos(Collection<TagEntity> entities) {
-        return entities.stream().map(TagMapper::entityToDto).collect(Collectors.toList());
-    }
-
-    public static Set<TagEntity> dtosToEntities(Collection<TagDto> dtos) {
-        return dtos.stream().map(TagMapper::dtoToEntity).collect(Collectors.toSet());
+    public static Set<TagDto> entitiesToDtos(Collection<TagEntity> entities) {
+        return entities.stream().map(TagMapper::entityToDto).collect(Collectors.toSet());
     }
 }

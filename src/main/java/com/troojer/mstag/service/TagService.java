@@ -5,10 +5,13 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface TagService {
 
-    List<TagDto> getTagsByValue(String value, Pageable pageable);
+    Set<TagDto> getTagsByValue(String value, Pageable pageable);
 
-    List<TagDto> getOrAddTagsByValue(Collection<TagDto> values);
+    Set<TagDto> getOrAddTagsByValue(Collection<TagDto> values);
+
+    Set<TagDto> getTagsByIds(Set<Long> ids);
 }

@@ -24,8 +24,8 @@ public class TagEntity {
 
     private String value;
 
-    @Column(name = "user_id")
-    private String userId;
+    @Column(name = "author_id")
+    private String authorId;
 
     @CreationTimestamp
     @Column(name = "created_at")

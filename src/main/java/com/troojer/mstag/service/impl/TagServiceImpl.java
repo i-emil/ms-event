@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -28,22 +28,27 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDto> getTagsByValue(String value, Pageable pageable) {
+    public Set<TagDto> getTagsByValue(String value, Pageable pageable) {
         logger.info("getTagsByValue() called");
         return TagMapper.entitiesToDtos(tagRepository.getByValueStartsWith(value, pageable).getContent());
     }
 
     @Override
     @Transactional
-    public List<TagDto> getOrAddTagsByValue(Collection<TagDto> dtos) {
+    public Set<TagDto> getOrAddTagsByValue(Collection<TagDto> dtos) {
         logger.info("getOrAddTagsByValue() called");
         dtos.forEach((v) -> {
             if (tagRepository.getByValueEquals(v.getValue()).isEmpty()) {
-                tagRepository.save(TagEntity.builder().userId(accessChecker.getUserId()).value(v.getValue()).build());
-                logger.info("getOrAddTagsByValue(); '{}' added", v.getValue());
+                TagEntity newTag = tagRepository.save(TagMapper.dtoToEntity(v, accessChecker.getUserId()));
+                logger.info("getOrAddTagsByValue(); '{}' added", newTag);
             }
         });
         return TagMapper.entitiesToDtos(tagRepository
                 .getAllByValueIn(TagMapper.dtosToStringSet(dtos)));
+    }
+
+    @Override
+    public Set<TagDto> getTagsByIds(Set<Long> ids) {
+        return TagMapper.entitiesToDtos(tagRepository.findAllById(ids));
     }
 }
