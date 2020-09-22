@@ -2,20 +2,22 @@ package com.troojer.mstag.controller;
 
 import ch.qos.logback.classic.Logger;
 import com.troojer.mstag.model.ExceptionDto;
+import com.troojer.mstag.model.exception.AuthenticationException;
+import com.troojer.mstag.model.exception.ClientException;
 import com.troojer.mstag.model.exception.ForbiddenException;
 import com.troojer.mstag.model.exception.NotFoundException;
+import com.troojer.mstag.util.ToolUtil;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +29,7 @@ public class ExceptionController {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        logger.warn("message: ", ex);
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = (error instanceof FieldError) ? ((FieldError)error).getField() : Objects.requireNonNull(error.getArguments())[1].toString();
@@ -41,8 +44,7 @@ public class ExceptionController {
     public Map<String, String> handle(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach((error) -> {
-            String fieldName = error.getPropertyPath().toString();
-            fieldName = fieldName.substring(fieldName.indexOf(".")+1);
+            String fieldName = error.getPropertyPath().toString().split("\\.")[1];
             String errorMessage = error.getMessage();
             errors.put(fieldName, errorMessage);
         });
@@ -57,11 +59,31 @@ public class ExceptionController {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ExceptionDto> handleEventException(Exception exc) {
+        logger.warn("message: ", exc);
         return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ExceptionDto> handleEventException(PropertyReferenceException exc) {
+        logger.warn("message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ExceptionDto> handleForbiddenException(Exception exc) {
+        logger.warn("message: ", exc);
         return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionDto> handleAuthenticationException(Exception exc) {
+        logger.warn("message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ClientException.class)
+    public ExceptionDto handleClientException(ClientException exc) {
+        logger.warn("message: ", exc);
+        return new ExceptionDto(ToolUtil.getMessage("service.other.error"));
     }
 }

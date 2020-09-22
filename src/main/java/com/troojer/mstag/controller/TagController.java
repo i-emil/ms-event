@@ -22,7 +22,7 @@ public class TagController {
     }
 
     @PostMapping
-    public Set<TagDto> gerOrAddTagsByValue(@RequestBody @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Valid TagDto> tags) {
+    public Set<TagDto> getOrAddTagsByValue(@RequestBody @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Valid TagDto> tags) {
         return tagService.getOrAddTagsByValue(tags);
     }
 
@@ -32,7 +32,7 @@ public class TagController {
     }
 
     @GetMapping("id/{ids}")
-    public Set<TagDto> getAllByIds(@PathVariable @Size(min = 1, max = 10, message = "{tag.list.size}") Set<Long> ids) {
+    public Set<TagDto> getAllByIds(@PathVariable @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Pattern(regexp = "[0-9]*") String> ids) {
         return tagService.getTagsByIds(ids);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -48,7 +49,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Set<TagDto> getTagsByIds(Set<Long> ids) {
-        return TagMapper.entitiesToDtos(tagRepository.findAllById(ids));
+    public Set<TagDto> getTagsByIds(Set<String> ids) {
+        return TagMapper.entitiesToDtos(tagRepository.findAllById(ids.stream().map(Long::parseLong).collect(Collectors.toSet())));
     }
 }

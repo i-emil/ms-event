@@ -1,6 +1,7 @@
 package com.troojer.mstag.configuration;
 
 import com.troojer.mstag.interceptor.MDCInterceptor;
+import com.troojer.mstag.interceptor.UserHandlerInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -11,10 +12,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final LocaleChangeInterceptor localeChangeInterceptor;
     private final MDCInterceptor mdcInterceptor;
+    private final UserHandlerInterceptor userHandlerInterceptor;
 
-    public WebMvcConfiguration(LocaleChangeInterceptor localeChangeInterceptor, MDCInterceptor mdcInterceptor) {
+    public WebMvcConfiguration(LocaleChangeInterceptor localeChangeInterceptor, MDCInterceptor mdcInterceptor, UserHandlerInterceptor userHandlerInterceptor) {
         this.localeChangeInterceptor = localeChangeInterceptor;
         this.mdcInterceptor = mdcInterceptor;
+        this.userHandlerInterceptor = userHandlerInterceptor;
     }
 
     @Override
@@ -29,6 +32,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(userHandlerInterceptor).order(2);
         registry.addInterceptor(localeChangeInterceptor).order(1);
         registry.addInterceptor(mdcInterceptor).order(10);
     }

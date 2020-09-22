@@ -13,5 +13,5 @@ public interface TagService {
 
     Set<TagDto> getOrAddTagsByValue(Collection<TagDto> values);
 
-    Set<TagDto> getTagsByIds(Set<Long> ids);
+    Set<TagDto> getTagsByIds(Set<String> ids);
 }
