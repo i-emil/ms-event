@@ -6,7 +6,6 @@ import com.troojer.msevent.model.exception.AuthenticationException;
 import com.troojer.msevent.model.exception.ClientException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
-import com.troojer.msevent.util.AccessCheckerUtil;
 import com.troojer.msevent.util.ToolUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -25,11 +24,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class ExceptionController {
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
-    private final AccessCheckerUtil accessChecker;
-
-    public ExceptionController(AccessCheckerUtil accessChecker) {
-        this.accessChecker = accessChecker;
-    }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -75,6 +69,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(ClientException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionDto handleClientException(ClientException exc) {
         logger.warn("message: ", exc);
         return new ExceptionDto(ToolUtil.getMessage("service.other.error"));
