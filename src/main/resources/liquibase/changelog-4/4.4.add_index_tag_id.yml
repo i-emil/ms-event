@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id:  CreateIndexTagId
+      author:  emilr
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name:  tag_id
+            indexName:  idx_tag_id
+            schemaName:  public
+            tableName:  event_tag
+            unique:  false

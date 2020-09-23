@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id:  CreateIndexLanguageId
+      author:  emilr
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name:  language_id
+            indexName:  idx_language_id
+            schemaName:  public
+            tableName:  event_language
+            unique:  false
