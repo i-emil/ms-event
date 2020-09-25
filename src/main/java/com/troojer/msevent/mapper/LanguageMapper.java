@@ -33,13 +33,13 @@ public class LanguageMapper {
     }
 
     public Set<LanguageDto> entitySetToDtoSet(Set<EventLanguageEntity> entitySet) {
-        return (entitySet == null) ? null : entitySet.stream()
+        return (entitySet == null) ? Set.of() : entitySet.stream()
                 .filter(entity -> languagesMap.containsKey(entity.getLanguageId()))
                 .map(this::entityToDto).collect(Collectors.toSet());
     }
 
     public Set<EventLanguageEntity> dtoSetToEntitySet(Set<LanguageDto> dtoSet) {
-        return (dtoSet == null) ? null : dtoSet.stream()
+        return (dtoSet == null) ? Set.of() : dtoSet.stream()
                 .filter(dto -> languagesMap.containsKey(dto.getId().toLowerCase()))
                 .map(this::dtoToEntity).collect(Collectors.toSet());
     }
