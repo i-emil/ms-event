@@ -20,8 +20,9 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (request.getHeader("User-Id") == null) throw new AuthenticationException(ToolUtil.getMessage("auth.error"));
-        currentUser.setId(request.getHeader("User-Id"));
+        String userId = request.getHeader("User-Id");
+        if (userId == null || userId.isBlank()) throw new AuthenticationException(ToolUtil.getMessage("auth.error"));
+        currentUser.setId(userId);
         return true;
     }
 }
