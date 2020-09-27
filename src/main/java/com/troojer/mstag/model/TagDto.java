@@ -17,6 +17,6 @@ public class TagDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::{min}::{max}::a-z, 0-9, _, -")
+    @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::3::20::a-z, 0-9, _, -")
     private String value;
 }
