@@ -29,8 +29,7 @@ public class TagController {
     @GetMapping("search/{value}")
     public Set<TagDto> getTagsByValue(
             @PathVariable
-            @Size(min = 3, max=20, message = "tag.value.size::{min}::{max}")
-            @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::a-z, 0-9, _, -")
+            @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::{min}::{max}::a-z, 0-9, _, -")
                     String value,
             Pageable pageable) {
         return tagService.getTagsByValue(value, pageable);
