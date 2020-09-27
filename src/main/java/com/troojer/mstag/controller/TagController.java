@@ -22,17 +22,22 @@ public class TagController {
     }
 
     @PostMapping
-    public Set<TagDto> getOrAddTagsByValue(@RequestBody @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Valid TagDto> tags) {
+    public Set<TagDto> getOrAddTagsByValue(@RequestBody @Size(min = 1, max = 10, message = "tag.list.size::{min}::{max}") Set<@Valid TagDto> tags) {
         return tagService.getOrAddTagsByValue(tags);
     }
 
     @GetMapping("search/{value}")
-    public Set<TagDto> getTagsByValue(@PathVariable @Pattern(regexp = "[\\d\\w-]{3,20}", message = "{tag.value.pattern}") String value, Pageable pageable) {
+    public Set<TagDto> getTagsByValue(
+            @PathVariable
+            @Size(min = 3, max=20, message = "tag.value.size::{min}::{max}")
+            @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::a-z, 0-9, _, -")
+                    String value,
+            Pageable pageable) {
         return tagService.getTagsByValue(value, pageable);
     }
 
     @GetMapping("id/{ids}")
-    public Set<TagDto> getAllByIds(@PathVariable @Size(min = 1, max = 10, message = "{tag.list.size}") Set<@Pattern(regexp = "[0-9]*") String> ids) {
+    public Set<TagDto> getAllByIds(@PathVariable @Size(min = 1, max = 10, message = "tag.list.size::{min}::{max}") Set<@Pattern(regexp = "[1-9][0-9]*", message = "tag.id.pattern") String> ids) {
         return tagService.getTagsByIds(ids);
     }
 }

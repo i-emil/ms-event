@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -19,6 +17,6 @@ public class TagDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    @Pattern(regexp = "[\\d\\w-]{3,20}", message = "{tag.value.pattern}")
+    @Pattern(regexp = "[\\d\\w-]{3,20}", message = "tag.value.pattern::a-z, 0-9, _, -")
     private String value;
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccessCheckerUtil {
 
-    private CurrentUser currentUser;
+    private final CurrentUser currentUser;
 
     public AccessCheckerUtil(CurrentUser currentUser) {
         this.currentUser = currentUser;

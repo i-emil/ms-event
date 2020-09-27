@@ -2,7 +2,6 @@ package com.troojer.mstag.interceptor;
 
 import com.troojer.mstag.model.CurrentUser;
 import com.troojer.mstag.model.exception.AuthenticationException;
-import com.troojer.mstag.util.ToolUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -21,7 +20,7 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String userId = request.getHeader("User-Id");
-        if (userId == null || userId.isBlank()) throw new AuthenticationException(ToolUtil.getMessage("auth.error"));
+        if (userId == null || userId.isBlank()) throw new AuthenticationException("auth.error");
         currentUser.setId(userId);
         return true;
     }

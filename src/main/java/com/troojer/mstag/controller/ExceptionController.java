@@ -6,7 +6,6 @@ import com.troojer.mstag.model.exception.AuthenticationException;
 import com.troojer.mstag.model.exception.ClientException;
 import com.troojer.mstag.model.exception.ForbiddenException;
 import com.troojer.mstag.model.exception.NotFoundException;
-import com.troojer.mstag.util.ToolUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -84,6 +83,6 @@ public class ExceptionController {
     @ExceptionHandler(ClientException.class)
     public ExceptionDto handleClientException(ClientException exc) {
         logger.warn("message: ", exc);
-        return new ExceptionDto(ToolUtil.getMessage("service.other.error"));
+        return new ExceptionDto("default.auth.unauthorized");
     }
 }
