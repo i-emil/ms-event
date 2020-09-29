@@ -6,7 +6,6 @@ import com.troojer.msevent.model.exception.AuthenticationException;
 import com.troojer.msevent.model.exception.ClientException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
-import com.troojer.msevent.util.ToolUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -72,6 +71,6 @@ public class ExceptionController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionDto handleClientException(ClientException exc) {
         logger.warn("message: ", exc);
-        return new ExceptionDto(ToolUtil.getMessage("service.other.error"));
+        return new ExceptionDto("default.service.temporaryError");
     }
 }

@@ -6,7 +6,6 @@ import com.troojer.msevent.mapper.CategoryMapper;
 import com.troojer.msevent.model.CategoryDto;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.CategoryService;
-import com.troojer.msevent.util.ToolUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -28,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryEntity getCategoryEntity(Long categoryId) {
         return categoryRepository.findById(categoryId).orElseThrow(()
-                -> new NotFoundException(ToolUtil.getMessage("category.notFound")));
+                -> new NotFoundException("event.category.notFound"));
     }
 
     @Override

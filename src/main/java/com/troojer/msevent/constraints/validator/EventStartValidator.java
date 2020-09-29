@@ -13,6 +13,13 @@ import java.time.format.DateTimeFormatter;
 public class EventStartValidator
         implements ConstraintValidator<ConsistentEventStart, EventDateDto> {
 
+    private Period validPeriod;
+
+    @Override
+    public void initialize(ConsistentEventStart constraintAnnotation) {
+        this.validPeriod = Period.ofDays(constraintAnnotation.period());
+    }
+
     @Override
     public boolean isValid(EventDateDto eventDateDto, ConstraintValidatorContext context) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
@@ -23,7 +30,6 @@ public class EventStartValidator
             return false;
         }
 
-        int period = Period.between(LocalDate.now(), startDate.toLocalDate()).getDays();
-        return period <= 7;
+        return startDate.toLocalDate().compareTo(LocalDate.now().plus(validPeriod)) <= 0;
     }
 }

@@ -20,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 
-import static com.troojer.msevent.util.ToolUtil.getMessage;
-
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -46,7 +44,7 @@ public class EventServiceImpl implements EventService {
         EventEntity eventEntity = getEventEntity(eventId);
         if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
             logger.warn("getUserEvent: It's not user's event; eventId: {};", eventId);
-            throw new ForbiddenException(getMessage("event.forbidden"));
+            throw new ForbiddenException("event.event.forbidden");
         }
         return eventMapper.entityToDto(eventEntity);
     }
@@ -80,7 +78,7 @@ public class EventServiceImpl implements EventService {
         EventEntity oldEntity = getEventEntity(eventId);
         if (!accessChecker.isUserId(oldEntity.getAuthorId())) {
             logger.warn("updateEvent: It's not user's event; eventId: {};", eventId);
-            throw new ForbiddenException(getMessage("event.forbidden"));
+            throw new ForbiddenException("event.event.forbidden");
         }
         EventEntity newEvent = eventMapper.updateEntity(eventDto, oldEntity);
         newEvent.getLanguages().forEach(lang -> lang.setEvent(newEvent));
@@ -97,7 +95,7 @@ public class EventServiceImpl implements EventService {
         EventEntity eventEntity = getEventEntity(eventId);
         if (accessChecker.isUserId(eventEntity.getAuthorId())) {
             logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), eventId);
-            throw new ForbiddenException(getMessage("event.forbidden"));
+            throw new ForbiddenException("event.event.forbidden");
         }
         eventEntity.setStatus(Status.DELETED);
         eventRepository.save(eventEntity);
@@ -113,6 +111,6 @@ public class EventServiceImpl implements EventService {
 
     private EventEntity getEventEntity(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(getMessage("event.notFound")));
+                .orElseThrow(() -> new NotFoundException("event.event.notFound"));
     }
 }

@@ -3,27 +3,21 @@ package com.troojer.msevent.configuration;
 import com.troojer.msevent.interceptor.MDCInterceptor;
 import com.troojer.msevent.interceptor.UserHandlerInterceptor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final UserHandlerInterceptor userHandlerInterceptor;
-    private final LocaleChangeInterceptor localeChangeInterceptor;
     private final MDCInterceptor mdcInterceptor;
 
-    public WebMvcConfiguration(UserHandlerInterceptor userHandlerInterceptor, LocaleChangeInterceptor localeChangeInterceptor, MDCInterceptor mdcInterceptor) {
+    public WebMvcConfiguration(UserHandlerInterceptor userHandlerInterceptor, MDCInterceptor mdcInterceptor) {
         this.userHandlerInterceptor = userHandlerInterceptor;
-        this.localeChangeInterceptor = localeChangeInterceptor;
         this.mdcInterceptor = mdcInterceptor;
-    }
-
-    // Static Resource Config
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
     }
 
     @Override
@@ -34,7 +28,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userHandlerInterceptor).order(2);
-        registry.addInterceptor(localeChangeInterceptor).order(1);
         registry.addInterceptor(mdcInterceptor).order(10);
     }
 
