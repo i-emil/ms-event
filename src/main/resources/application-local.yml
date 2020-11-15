@@ -3,10 +3,17 @@ spring:
     url: jdbc:postgresql://localhost:5432/ms_event
     username: postgres
     password: postgres
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 client:
+  profile:
+    url: http://localhost:8083/profile/
   localization:
     url: http://localhost:8084/localization/
   tag:
     url: http://localhost:8085/tags/
-
-
+  participant:
+    url: http://localhost:8086/private/participants/

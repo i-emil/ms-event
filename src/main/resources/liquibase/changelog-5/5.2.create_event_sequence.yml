@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateEventSequence
+      id: CreateUserFoundEventSequence
       author: emilr
       changes:
         - createSequence:
             incrementBy: 50
-            sequenceName: event_seq
+            sequenceName: user_found_event_seq

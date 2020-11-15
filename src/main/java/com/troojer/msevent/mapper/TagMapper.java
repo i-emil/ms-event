@@ -2,6 +2,7 @@ package com.troojer.msevent.mapper;
 
 
 import com.troojer.msevent.client.TagClient;
+import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventTagEntity;
 import com.troojer.msevent.model.TagDto;
 import org.springframework.stereotype.Component;
@@ -23,12 +24,12 @@ public class TagMapper {
                 .map(EventTagEntity::getTagId).collect(Collectors.toSet()));
     }
 
-    public Set<EventTagEntity> dtoSetToEntitySet(Set<TagDto> dtoSet) {
+    public Set<EventTagEntity> dtoSetToEntitySet(Set<TagDto> dtoSet, EventEntity event) {
         return (dtoSet == null || dtoSet.isEmpty()) ? Set.of() : tagClient.getOrAddTags(dtoSet).stream()
-                .map(this::dtoToEntity).collect(Collectors.toSet());
+                .map((TagDto dto) -> dtoToEntity(dto, event)).collect(Collectors.toSet());
     }
 
-    private EventTagEntity dtoToEntity(TagDto dto) {
-        return EventTagEntity.builder().tagId(dto.getId()).build();
+    private EventTagEntity dtoToEntity(TagDto dto, EventEntity event) {
+        return EventTagEntity.builder().tagId(dto.getId()).event(event).build();
     }
 }

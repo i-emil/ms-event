@@ -1,6 +1,8 @@
 package com.troojer.msevent.dao;
 
-import com.troojer.msevent.model.Status;
+import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.EventType;
+import com.troojer.msevent.model.enm.ParticipantType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -9,7 +11,9 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "event")
@@ -17,13 +21,12 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"tags", "languages"})
+@EqualsAndHashCode(exclude = {"tags", "languages","participantsType"})
 @Where(clause = "status != 'DELETED'")
 public class EventEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-    @SequenceGenerator(name = "seq_generator", sequenceName = "event_seq")
-    private Long id;
+    @Builder.Default
+    private String id = UUID.randomUUID().toString();
 
     @Column(name = "author_id")
     private String authorId;
@@ -49,27 +52,21 @@ public class EventEntity {
     @Column(name = "max_age")
     private Integer maxAge;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
+    @Enumerated(EnumType.STRING)
+    private EventType type;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE;
+    private EventStatus status = EventStatus.ACTIVE;
 
-    @Column(name = "male_person_count")
-    private Integer malePersonCount;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
+    @MapKey(name = "type")
+    private Map<ParticipantType, EventParticipantTypeEntity> participantsType;
 
-    @Column(name = "female_person_count")
-    private Integer femalePersonCount;
-
-    @Column(name = "all_person_count")
-    private Integer allPersonCount;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     private Set<EventTagEntity> tags;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     private Set<EventLanguageEntity> languages;
 
     private int watched;
@@ -81,4 +78,5 @@ public class EventEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 }

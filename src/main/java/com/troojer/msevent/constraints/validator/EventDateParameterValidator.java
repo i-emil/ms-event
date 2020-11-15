@@ -22,8 +22,6 @@ public class EventDateParameterValidator
         } catch (Exception e) {
             return false;
         }
-        boolean b = startDate.isAfter(ZonedDateTime.now()) && startDate.isBefore(endDate);
-        System.out.println("dateIncorrect:"+b);
-        return b;
+        return startDate.isAfter(ZonedDateTime.now()) && startDate.isBefore(endDate);
     }
 }

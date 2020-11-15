@@ -1,6 +1,6 @@
 package com.troojer.msevent.constraints;
 
-import com.troojer.msevent.constraints.validator.ConsistentPersonCountValidator;
+import com.troojer.msevent.constraints.validator.ConsistentNumberRangeValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,22 +11,22 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Constraint(validatedBy = ConsistentPersonCountValidator.class)
+@Constraint(validatedBy = ConsistentNumberRangeValidator.class)
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
 @Documented
-public @interface ConsistentPersonCountParameters {
+public @interface ConsistentNumberRange {
 
     String message() default
-            "Person count is wrong";
-
-    int min() default 1;
-
-    int max() default 10;
+            "Number have to be between {min} and {max}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    int min();
+
+    int max();
 
     String param();
 
@@ -34,6 +34,6 @@ public @interface ConsistentPersonCountParameters {
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        ConsistentPersonCountParameters[] value();
+        ConsistentNumberRange[] value();
     }
 }

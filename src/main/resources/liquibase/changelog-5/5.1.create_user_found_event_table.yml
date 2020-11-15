@@ -1,36 +1,41 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateCategoryTable
+      id: CreateUserFoundEventTable
       author: emilr
       changes:
         - createTable:
-            tableName: category
+            tableName: user_found_event
             columns:
               - column:
                   name: id
                   type: BIGINT
-                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: title
+                  name: key
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: user_id
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: description
+                  name: event_id
                   type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_event_id
+                    nullable: false
+                    references: event(id)
               - column:
-                  name: deleted
-                  type: int
+                  name: status
+                  type: varchar(100)
               - column:
                   name: created_at
                   type: timestamp
               - column:
                   name: updated_at
                   type: timestamp
-
-
-
-

@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.troojer.ms-event'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '14'
 
 configurations {
     compileOnly {
@@ -45,6 +45,8 @@ dependencies {
 
     compile 'io.springfox:springfox-swagger2:2.9.2'
     compile 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    compile 'com.google.guava:guava:29.0-jre'
 }
 
 test {

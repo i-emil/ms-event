@@ -1,8 +1,10 @@
 package com.troojer.msevent.mapper;
 
+import com.troojer.msevent.client.ParticipantClient;
 import com.troojer.msevent.dao.EventEntity;
-import com.troojer.msevent.model.EventAgeDto;
+import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.enm.EventType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,10 +12,14 @@ public class EventMapper {
 
     private final LanguageMapper languageMapper;
     private final TagMapper tagMapper;
+    private final ParticipantClient participantClient;
+    private final EventParticipantTypeMapper participantTypeMapper;
 
-    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper) {
+    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantClient participantClient, EventParticipantTypeMapper participantTypeMapper) {
         this.languageMapper = languageMapper;
         this.tagMapper = tagMapper;
+        this.participantClient = participantClient;
+        this.participantTypeMapper = participantTypeMapper;
     }
 
     public EventDto entityToDto(EventEntity entity) {
@@ -25,18 +31,25 @@ public class EventMapper {
                 .date(EventDateMapper.entityDatesToDto(entity.getStartDate(), entity.getEndDate()))
                 .title(entity.getTitle())
                 .budget(entity.getBudget())
-                .personCount(EventPersonCountMapper.entityToDto(entity))
-                .age(EventAgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
-                .watched(entity.getWatched())
+                .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
+                .participants(participantClient.getParticipants(entity.getId()))
+                .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
+                .type(entity.getType().toString())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
-                .category(CategoryMapper.entityToDto(entity.getCategory()))
                 .build();
     }
 
-    public EventEntity createEntity(EventDto dto) {
-        return EventEntity.builder()
+    public EventDto entityToDtoWithKey(EventEntity eventEntity, String key) {
+        EventDto dto = entityToDto(eventEntity);
+        dto.setKey(key);
+        return dto;
+    }
+
+    public EventEntity createEntity(EventDto dto, String authorId) {
+        EventEntity eventEntity = EventEntity.builder()
+                .authorId(authorId)
                 .locationId(dto.getLocationId())
                 .description(dto.getDescription().strip().toLowerCase())
                 .startDate(EventDateMapper.dtoToStartDate(dto.getDate()))
@@ -45,13 +58,12 @@ public class EventMapper {
                 .budget(dto.getBudget())
                 .minAge(dto.getAge().getMin())
                 .maxAge(dto.getAge().getMax())
-                .malePersonCount(EventPersonCountMapper.dtoToMaleCount(dto.getPersonCount()))
-                .femalePersonCount(EventPersonCountMapper.dtoToFemaleCount(dto.getPersonCount()))
-                .allPersonCount(EventPersonCountMapper.dtoToAllCount(dto.getPersonCount()))
-                .category(CategoryMapper.dtoToEntity(dto.getCategory()))
-                .languages(languageMapper.dtoSetToEntitySet(dto.getLanguages()))
-                .tags(tagMapper.dtoSetToEntitySet(dto.getTags()))
+                .type(EventType.valueOf(dto.getType()))
                 .build();
+        eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));
+        eventEntity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), eventEntity));
+        eventEntity.setParticipantsType(participantTypeMapper.dtosToEntities(dto.getParticipantsType(), eventEntity));
+        return eventEntity;
     }
 
     public EventEntity updateEntity(EventDto dto, EventEntity entity) {
@@ -63,18 +75,7 @@ public class EventMapper {
         }
         if (dto.getTitle() != null) entity.setTitle(dto.getTitle().strip().toLowerCase());
         if (dto.getBudget() != null) entity.setBudget(dto.getBudget());
-        if (dto.getAge() != null) {
-            entity.setMinAge(dto.getAge().getMin());
-            entity.setMaxAge(dto.getAge().getMax());
-        }
-        if (dto.getPersonCount() != null) {
-            entity.setMalePersonCount(EventPersonCountMapper.dtoToMaleCount(dto.getPersonCount()));
-            entity.setFemalePersonCount(EventPersonCountMapper.dtoToFemaleCount(dto.getPersonCount()));
-            entity.setAllPersonCount(EventPersonCountMapper.dtoToAllCount(dto.getPersonCount()));
-        }
-        if (dto.getCategory() != null) entity.setCategory(CategoryMapper.dtoToEntity(dto.getCategory()));
-        if (dto.getLanguages() != null) entity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages()));
-        if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags()));
+        if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), entity));
         return entity;
     }
 

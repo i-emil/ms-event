@@ -1,6 +1,6 @@
 package com.troojer.msevent.constraints;
 
-import com.troojer.msevent.constraints.validator.ConsistentAgeParameterValidator;
+import com.troojer.msevent.constraints.validator.EventTypeValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,27 +11,24 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Constraint(validatedBy = ConsistentAgeParameterValidator.class)
+@Constraint(validatedBy = EventTypeValidator.class)
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
 @Documented
-public @interface ConsistentAgeParameters {
+public @interface EventTypeValidation {
 
-    String message() default
-            "Age is incorrect";
+    String message();
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    int min();
-    int max();
+    String param();
 
     @Target({TYPE, ANNOTATION_TYPE})
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        ConsistentAgeParameters[] value();
+        EventTypeValidation[] value();
     }
-    String param();
 }

@@ -20,7 +20,7 @@ public class EventDurationValidator
 
     @Override
     public void initialize(ConsistentEventDuration constraintAnnotation) {
-        this.duration = constraintAnnotation.duration();
+        this.duration = 1;
     }
 
     @Override

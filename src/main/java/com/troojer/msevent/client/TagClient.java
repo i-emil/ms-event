@@ -47,14 +47,13 @@ public class TagClient {
 
     public Set<TagDto> getOrAddTags(Set<TagDto> dtoSet) {
         try {
-            ParameterizedTypeReference<Set<TagDto>> responseType =
-                    new ParameterizedTypeReference<>() {
-                    };
+            ParameterizedTypeReference<Set<TagDto>> responseType = new ParameterizedTypeReference<>() {
+            };
             ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(dtoSet), responseType);
             logger.info("getOrAddTags(); client response: {}", responseEntity);
             return responseEntity.getBody();
         } catch (Exception e) {
-            logger.warn("getLanguagesMap(); exc: ", e);
+            logger.warn("getOrAddTags(); exc: ", e);
             throw new ClientException(e.getMessage());
         }
     }

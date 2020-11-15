@@ -1,19 +1,18 @@
 package com.troojer.msevent.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
-public class EventPersonCountDto {
+public class ProfileDto {
 
-    private int maleCount;
+    private String userId;
+    private String name;
+    private String surname;
+    private String avatar;
+    private Double rating;
 
-    private int femaleCount;
-
-    private int allCount;
 }

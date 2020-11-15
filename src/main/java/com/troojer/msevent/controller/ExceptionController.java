@@ -2,10 +2,7 @@ package com.troojer.msevent.controller;
 
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.model.ExceptionDto;
-import com.troojer.msevent.model.exception.AuthenticationException;
-import com.troojer.msevent.model.exception.ClientException;
-import com.troojer.msevent.model.exception.ForbiddenException;
-import com.troojer.msevent.model.exception.NotFoundException;
+import com.troojer.msevent.model.exception.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -67,8 +64,19 @@ public class ExceptionController {
         return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(NoContentExcepton.class)
+    public ResponseEntity<ExceptionDto> handleNoContentExcpetion(Exception exc) {
+        logger.warn("message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ExceptionDto> handleConflictException(Exception exc) {
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ClientException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ExceptionDto handleClientException(ClientException exc) {
         logger.warn("message: ", exc);
         return new ExceptionDto("default.service.temporaryError");

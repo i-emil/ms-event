@@ -1,8 +1,12 @@
 package com.troojer.msevent.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.troojer.msevent.constraints.ConsistentPersonCountParameters;
+import com.troojer.msevent.constraints.ConsistentNumberRange;
+import com.troojer.msevent.constraints.EventTypeValidation;
 import com.troojer.msevent.constraints.NullOrNotBlank;
+import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
 import lombok.AllArgsConstructor;
@@ -12,6 +16,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
@@ -20,10 +26,15 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @NoArgsConstructor
 @Data
 @Builder
+@EventTypeValidation(message = "event.participantsType.wrong", groups = CreateValidation.class, param = "type")
 public class EventDto {
 
     @JsonProperty(access = READ_ONLY)
-    private Long id;
+    @JsonInclude(value = JsonInclude.Include.NON_NULL)
+    private String key;
+
+    @JsonProperty(access = READ_ONLY)
+    private String id;
 
     @JsonProperty(access = READ_ONLY)
     private String authorId;
@@ -45,29 +56,25 @@ public class EventDto {
     private Long locationId;
 
     @NotNull(message = "event.age.notNull", groups = CreateValidation.class)
-    private @Valid EventAgeDto age;
+    private @Valid AgeDto age;
 
     @NotEmpty(message = "event.languages.notEmpty", groups = CreateValidation.class)
     @Size(min = 1, max = 10, message = "language.languageList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private Set<@Valid LanguageDto> languages;
 
-    @NotNull(message = "event.personCount.notNull", groups = CreateValidation.class)
-    @ConsistentPersonCountParameters(param = "personCount", message = "event.personCount.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
-    private @Valid EventPersonCountDto personCount;
+    private Map<ParticipantType, EventParticipantTypeDto> participantsType;
 
-    @NotNull(message = "event.category.notNull", groups = CreateValidation.class)
-    private CategoryDto category;
-
-    @PositiveOrZero(message = "event.budget.positiveOrZero", groups = {CreateValidation.class, UpdateValidation.class})
+    @ConsistentNumberRange(param = "budget", min = 0, max = 1000, message = "event.budget.range::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private Integer budget;
 
     @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private @Valid Set<TagDto> tags;
 
     @JsonProperty(access = READ_ONLY)
-    private Status status;
+    private List<ParticipantDto> participants;
+
+    private String type;
 
     @JsonProperty(access = READ_ONLY)
-    private int watched;
-
+    private EventStatus status;
 }

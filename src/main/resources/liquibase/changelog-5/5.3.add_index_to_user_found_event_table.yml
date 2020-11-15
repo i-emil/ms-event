@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateIndexToUserFoundEvent
+      author: emilr
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_user_found_event_user_id
+            tableName: user_found_event
+            unique: false

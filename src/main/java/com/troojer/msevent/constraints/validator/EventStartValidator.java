@@ -29,7 +29,6 @@ public class EventStartValidator
         } catch (Exception e) {
             return false;
         }
-
         return startDate.toLocalDate().compareTo(LocalDate.now().plus(validPeriod)) <= 0;
     }
 }

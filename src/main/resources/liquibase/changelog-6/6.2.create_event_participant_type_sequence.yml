@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventParticipantTypeSequence
+      author: emilr
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: event_participant_type_seq

@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: varchar(255)
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -54,33 +54,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: female_person_count
-                  type: int
-                  constraints:
-                    nullable: false
-              - column:
-                  name: male_person_count
-                  type: int
-                  constraints:
-                    nullable: false
-              - column:
-                  name: all_person_count
-                  type: int
-                  constraints:
-                    nullable: false
-              - column:
                   name: rating
                   type: decimal
               - column:
-                  name: category_id
-                  type: BIGINT
-                  constraints:
-                    foreignKeyName: fk_category_id
-                    nullable: false
-                    references: category(id)
-              - column:
                   name: watched
                   type: int
+              - column:
+                  name: type
+                  type: varchar(100)
               - column:
                   name: status
                   type: varchar(20)
