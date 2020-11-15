@@ -20,7 +20,7 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String userId = request.getHeader("User-Id");
-        if (userId == null || userId.isBlank()) throw new AuthenticationException("auth.error");
+        if (userId == null || userId.isBlank()) throw new AuthenticationException("default.auth.unauthorized");
         currentUser.setId(userId);
         return true;
     }

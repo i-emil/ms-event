@@ -65,7 +65,7 @@ public class ExceptionController {
     @ExceptionHandler(PropertyReferenceException.class)
     public ResponseEntity<ExceptionDto> handleEventException(PropertyReferenceException exc) {
         logger.warn("message: ", exc);
-        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ExceptionDto("exc.getMessage()"), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ForbiddenException.class)
