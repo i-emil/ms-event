@@ -1,5 +1,6 @@
 package com.troojer.msevent.interceptor;
 
+import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.model.CurrentUser;
 import com.troojer.msevent.model.exception.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,11 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
 
     private final CurrentUser currentUser;
 
-    public UserHandlerInterceptor(CurrentUser currentUser) {
+    private final UserPlanClient userPlanClient;
+
+    public UserHandlerInterceptor(CurrentUser currentUser, UserPlanClient userPlanClient) {
         this.currentUser = currentUser;
+        this.userPlanClient = userPlanClient;
     }
 
     @Override
@@ -22,6 +26,7 @@ public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
         String userId = request.getHeader("User-Id");
         if (userId == null || userId.isBlank()) throw new AuthenticationException("default.auth.unauthorized");
         currentUser.setId(userId);
+        currentUser.setUserPlan(userPlanClient.getUserPlan());
         return true;
     }
 }

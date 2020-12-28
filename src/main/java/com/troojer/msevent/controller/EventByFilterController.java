@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("find-events")
+@CrossOrigin
 public class EventByFilterController {
 
     private final FindEventService findEventService;
@@ -34,4 +35,8 @@ public class EventByFilterController {
         findEventService.reject(key);
     }
 
+    @DeleteMapping("inappropriate")
+    public void removeInappropriateEvents(){
+        findEventService.deleteInappropriate();
+    }
 }

@@ -2,6 +2,8 @@ package com.troojer.msevent.constraints.validator;
 
 import com.troojer.msevent.constraints.ConsistentEventStart;
 import com.troojer.msevent.model.EventDateDto;
+import com.troojer.msevent.model.UserPlanConstants;
+import com.troojer.msevent.util.AccessCheckerUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -15,9 +17,15 @@ public class EventStartValidator
 
     private Period validPeriod;
 
+    private final AccessCheckerUtil accessChecker;
+
+    public EventStartValidator(AccessCheckerUtil accessChecker) {
+        this.accessChecker = accessChecker;
+    }
+
     @Override
     public void initialize(ConsistentEventStart constraintAnnotation) {
-        this.validPeriod = Period.ofDays(constraintAnnotation.period());
+        this.validPeriod = Period.ofDays(UserPlanConstants.getDaysBeforeStarting(accessChecker.getPlan()));
     }
 
     @Override

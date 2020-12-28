@@ -73,8 +73,6 @@ public class EventDto {
     @JsonProperty(access = READ_ONLY)
     private List<ParticipantDto> participants;
 
-    private String type;
-
     @JsonProperty(access = READ_ONLY)
     private EventStatus status;
 }

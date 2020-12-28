@@ -4,7 +4,6 @@ import com.troojer.msevent.client.ParticipantClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.enm.EventType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,7 +33,6 @@ public class EventMapper {
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
                 .participants(participantClient.getParticipants(entity.getId()))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
-                .type(entity.getType().toString())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
@@ -58,7 +56,6 @@ public class EventMapper {
                 .budget(dto.getBudget())
                 .minAge(dto.getAge().getMin())
                 .maxAge(dto.getAge().getMax())
-                .type(EventType.valueOf(dto.getType()))
                 .build();
         eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), eventEntity));

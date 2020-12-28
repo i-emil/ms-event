@@ -1,7 +1,6 @@
 package com.troojer.msevent.dao;
 
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.EventType;
 import com.troojer.msevent.model.enm.ParticipantType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +20,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"tags", "languages","participantsType"})
+@EqualsAndHashCode(exclude = {"tags", "languages", "participantsType"})
 @Where(clause = "status != 'DELETED'")
 public class EventEntity {
     @Id
@@ -51,9 +50,6 @@ public class EventEntity {
 
     @Column(name = "max_age")
     private Integer maxAge;
-
-    @Enumerated(EnumType.STRING)
-    private EventType type;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

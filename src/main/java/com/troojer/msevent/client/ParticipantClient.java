@@ -41,6 +41,16 @@ public class ParticipantClient {
         }
     }
 
+    public List<ParticipantDto> getEvents() {
+        try {
+            ResponseEntity<ParticipantDto[]> forEntity = restTemplate.getForEntity(url + "events", ParticipantDto[].class);
+            return List.of(Objects.requireNonNull(forEntity.getBody()));
+        } catch (Exception exc) {
+            logger.warn("getFilter(); exc: ", exc);
+            throw new ClientException("default.service.temporaryError");
+        }
+    }
+
     public void addParticipant(ParticipantDto participantDto) {
         try {
             restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(participantDto), Void.TYPE);

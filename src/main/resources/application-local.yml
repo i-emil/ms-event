@@ -17,3 +17,5 @@ client:
     url: http://localhost:8085/tags/
   participant:
     url: http://localhost:8086/private/participants/
+  user-plan:
+    url: http://localhost:8087/user-plans/

@@ -16,7 +16,11 @@ public class AccessCheckerUtil {
         return userId.equals(currentUser.getId());
     }
 
-    public String getUserId(){
+    public String getUserId() {
         return currentUser.getId();
+    }
+
+    public String getPlan() {
+        return currentUser.getUserPlan();
     }
 }

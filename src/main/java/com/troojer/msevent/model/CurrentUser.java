@@ -15,6 +15,5 @@ import org.springframework.web.context.annotation.RequestScope;
 @RequestScope
 public class CurrentUser {
     private String id;
-    private String username;
-    private String[] roles;
+    private String userPlan;
 }

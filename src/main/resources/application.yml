@@ -21,3 +21,5 @@ client:
     url: http://ms-tag:8080/tags/
   participant:
     url: http://ms-participant:8080/private/participants/
+  participant:
+    url: http://ms-user-plan:8080/user-plans/
