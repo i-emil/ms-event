@@ -3,7 +3,6 @@ package com.troojer.msevent.dao.repository;
 
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.EventType;
 import com.troojer.msevent.model.enm.ParticipantType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ public interface EventRepository extends JpaRepository<EventEntity, String> {
     @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
             "WHERE e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
             "AND e.status='ACTIVE' " +
-            "AND e.type IN :types " +
             "AND e.authorId <> :userId " +
             "AND e.id NOT IN :eventIdList " +
             "AND e.minAge BETWEEN :minAge AND :maxAge " +
@@ -39,6 +37,6 @@ public interface EventRepository extends JpaRepository<EventEntity, String> {
             "AND e = el.event " +
             "AND el.languageId IN :languagesId " +
             "ORDER BY e.id ")
-    List<EventEntity> getFirstByFilter(ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventType> types, Integer minAge, Integer maxAge, ParticipantType participantType, Integer budget, String userId, List<String> eventIdList, List<String> languagesId, Pageable pageable);
+    List<EventEntity> getFirstByFilter(ZonedDateTime afterDate, ZonedDateTime beforeDate, Integer minAge, Integer maxAge, ParticipantType participantType, Integer budget, String userId, List<String> eventIdList, List<String> languagesId, Pageable pageable);
 
 }

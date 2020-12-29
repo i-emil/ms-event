@@ -11,10 +11,8 @@ import com.troojer.msevent.mapper.ParticipantMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ParticipantDto;
-import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
-import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.service.EventService;
 import com.troojer.msevent.service.FindEventService;
@@ -75,23 +73,12 @@ public class FindEventServiceImpl implements FindEventService {
         FilterDto profileFilter = profileClient.getProfileFilter();
         if (!isDateValid(userLastEvent)) throw new ForbiddenException("event.accept.timeOut::15");
         ParticipantType participantType;
-        switch (userLastEvent.getType()) {
-            case COUPLE -> {
-                if (profileFilter.getCoupleId() == null) throw new ForbiddenException("event.accept.notCouple");
-                participantType = eventService.raisePersonCountAndGetType(userLastEvent, Gender.COUPLE).orElseThrow(
-                        () -> new ConflictException("event.accept.conflict")
-                );
-            }
-            default -> {
-                participantType = eventService.raisePersonCountAndGetType(userLastEvent, Gender.valueOf(profileFilter.getGender())).orElseThrow(
-                        () -> new ConflictException("event.accept.conflict")
-                );
-            }
-        }
+
         userFoundEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
         userFoundEventRepository.save(userFoundEventEntity);
         logger.info("accept(); event accepted: {}", userLastEvent);
-        ParticipantDto participant = ParticipantMapper.foundEventToParticipant(userFoundEventEntity, participantType);
+        //todo
+        ParticipantDto participant = ParticipantMapper.foundEventToParticipant(userFoundEventEntity, ParticipantType.ALL);
         participantClient.addParticipant(participant);
         logger.info("accept(); added to participant: {}", participant);
     }

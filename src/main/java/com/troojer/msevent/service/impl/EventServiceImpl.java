@@ -11,7 +11,6 @@ import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.EventType;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -115,11 +113,7 @@ public class EventServiceImpl implements EventService {
     public EventEntity getEventByFilter(FilterDto filterDto, int days, List<String> exceptEventId) {
         String userId = accessChecker.getUserId();
         AgeDto ageDto = filterDto.getAge();
-        List<EventType> eventTypes = new ArrayList<>();
-        eventTypes.add(EventType.STANDARD);
-        if (filterDto.getCoupleId() != null) eventTypes.add(EventType.COUPLE);
         List<EventEntity> eventEntityList = eventRepository.getFirstByFilter(ZonedDateTime.now().plusHours(1), ZonedDateTime.now().plusDays(days),
-                eventTypes,
                 ageDto.getMin(), ageDto.getMax(), ParticipantType.valueOf(filterDto.getGender()), filterDto.getBudget(),
                 userId,
                 exceptEventId,

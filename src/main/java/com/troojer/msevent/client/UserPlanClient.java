@@ -11,7 +11,7 @@ public class UserPlanClient {
 
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
     private final RestTemplate restTemplate;
-    @Value("${client.user-plans.url}")
+    @Value("${client.user-plan.url}")
     private String url;
 
     public UserPlanClient(RestTemplate restTemplate) {
