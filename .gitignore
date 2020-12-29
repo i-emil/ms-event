@@ -25,11 +25,11 @@ build/
 *.iml
 *.ipr
 out/
-<<<<<<< HEAD
+
 !**/src/main/**/out/
 !**/src/test/**/out/
-=======
->>>>>>> 4340b82... Initial commit
+
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -37,10 +37,9 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-<<<<<<< HEAD
-=======
+
 /log
->>>>>>> 4340b82... Initial commit
+
 
 ### VS Code ###
 .vscode/
