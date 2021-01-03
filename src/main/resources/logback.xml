@@ -1,9 +1,9 @@
 <configuration>
     <appender name="ROLLINGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>log/tag-ms.log</file>
+        <file>log/ms-tag.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>log/tag-ms-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>log/ms-tag-%d{yyyy-MM-dd}.gz</fileNamePattern>
             <!-- keep 30 days' worth of history capped at 3GB total size -->
 <!--            <maxHistory>30</maxHistory>-->
             <totalSizeCap>3GB</totalSizeCap>
@@ -19,7 +19,8 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <springProperty scope="context" name="level" source="logging.my-level"/>
+    <root level="${level}">
         <appender-ref ref="ROLLINGFILE"/>
         <appender-ref ref="CONSOLE"/>
     </root>

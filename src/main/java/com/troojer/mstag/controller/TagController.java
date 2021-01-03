@@ -14,6 +14,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("tags")
 @Validated
+@CrossOrigin
 public class TagController {
     private final TagService tagService;
 
