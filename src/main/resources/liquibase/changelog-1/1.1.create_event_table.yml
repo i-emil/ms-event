@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventTable
+      author: emilr
+      changes:
+        - createTable:
+            tableName: event
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(70)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cover
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: timestamptz
+              - column:
+                  name: location_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: budget
+                  type: int
+              - column:
+                  name: currency
+                  type: varchar(10)
+              - column:
+                  name: min_age
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_age
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: decimal
+              - column:
+                  name: watched
+                  type: int
+              - column:
+                  name: type
+                  type: varchar(100)
+              - column:
+                  name: status
+                  type: varchar(20)
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp

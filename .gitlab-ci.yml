@@ -1,0 +1,25 @@
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - build
+  - package
+  - deploy
+
+build:
+  image: gradle:6.7.1-jre15
+  stage: build
+  script:
+    - gradle build
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 day
+
+package:
+  stage: package
+  script:
+    - docker build -t $CI_REGISTRY/troojer/ms-event .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY/troojer/ms-event

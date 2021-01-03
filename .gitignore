@@ -2,8 +2,13 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
+<<<<<<< HEAD
 !**/src/main/**/build/
 !**/src/test/**/build/
+=======
+!**/src/main/**
+!**/src/test/**
+>>>>>>> 4340b82... Initial commit
 
 ### STS ###
 .apt_generated
@@ -20,8 +25,11 @@ build/
 *.iml
 *.ipr
 out/
+
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -29,6 +37,9 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+/log
+
 
 ### VS Code ###
 .vscode/

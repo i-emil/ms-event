@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventParticipantTypeTable
+      author: emilr
+      changes:
+        - createTable:
+            tableName: event_participant_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: accepted
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: varchar(255)
+                  constraints:
+                    foreignKeyName: fk_event_id
+                    nullable: false
+                    references: event(id)
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp
