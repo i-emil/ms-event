@@ -2,6 +2,7 @@ package com.troojer.msevent.service.impl;
 
 
 import ch.qos.logback.classic.Logger;
+import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.troojer.msevent.model.enm.ParticipantType.ALL;
@@ -40,11 +42,13 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final AccessCheckerUtil accessChecker;
+    private final ImageClient imageClient;
 
-    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, AccessCheckerUtil accessChecker) {
+    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, AccessCheckerUtil accessChecker, ImageClient imageClient) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.accessChecker = accessChecker;
+        this.imageClient = imageClient;
     }
 
     @Override
@@ -83,6 +87,8 @@ public class EventServiceImpl implements EventService {
             logger.warn("updateEvent: It's not user's event; eventId: {};", eventId);
             throw new ForbiddenException("event.event.forbidden");
         }
+        if (!Objects.equals(eventDto.getCover(), oldEntity.getCover()))
+            imageClient.deleteImage(oldEntity.getCover());
         EventEntity newEvent = eventMapper.updateEntity(eventDto, oldEntity);
         eventRepository.save(newEvent);
 
@@ -97,6 +103,7 @@ public class EventServiceImpl implements EventService {
             logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), eventId);
             throw new ForbiddenException("event.event.forbidden");
         }
+        imageClient.deleteImage(eventEntity.getCover());
         eventEntity.setStatus(EventStatus.DELETED);
         eventRepository.save(eventEntity);
         logger.info("deleteEvent(); eventId:{}", eventId);
@@ -139,4 +146,5 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         return participantType != null ? Optional.of(participantType) : Optional.empty();
     }
+
 }

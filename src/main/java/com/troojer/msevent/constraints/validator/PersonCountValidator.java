@@ -1,10 +1,9 @@
 package com.troojer.msevent.constraints.validator;
 
-import com.troojer.msevent.constraints.EventTypeValidation;
-import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.constraints.PersonCountValidation;
 import com.troojer.msevent.model.EventParticipantTypeDto;
-import com.troojer.msevent.model.UserPlanConstants;
 import com.troojer.msevent.model.enm.ParticipantType;
+import com.troojer.msevent.service.impl.UserPlanConstantsService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 
 import javax.validation.ConstraintValidator;
@@ -13,26 +12,25 @@ import java.util.Map;
 
 import static com.troojer.msevent.model.enm.ParticipantType.*;
 
-public class EventTypeValidator
-        implements ConstraintValidator<EventTypeValidation, EventDto> {
+public class PersonCountValidator
+        implements ConstraintValidator<PersonCountValidation, Map<ParticipantType, EventParticipantTypeDto>> {
 
     private final AccessCheckerUtil accessChecker;
 
     private int maxPersonCount;
 
-    public EventTypeValidator(AccessCheckerUtil accessChecker) {
+    public PersonCountValidator(AccessCheckerUtil accessChecker) {
         this.accessChecker = accessChecker;
     }
 
     @Override
-    public void initialize(EventTypeValidation constraintAnnotation) {
-        maxPersonCount = UserPlanConstants.getMaxPersonCount(accessChecker.getPlan());
+    public void initialize(PersonCountValidation constraintAnnotation) {
+        maxPersonCount = UserPlanConstantsService.getMaxPersonCount(accessChecker.getPlan());
     }
 
     @Override
-    public boolean isValid(EventDto event, ConstraintValidatorContext context) {
+    public boolean isValid(Map<ParticipantType, EventParticipantTypeDto> participantsType, ConstraintValidatorContext context) {
 
-        Map<ParticipantType, EventParticipantTypeDto> participantsType = event.getParticipantsType();
         if (participantsType == null || participantsType.isEmpty()) return false;
         int maleCount = (participantsType.get(MALE) == null) ? 0 : participantsType.get(MALE).getTotal();
         int femaleCount = (participantsType.get(FEMALE) == null) ? 0 : participantsType.get(FEMALE).getTotal();
@@ -41,7 +39,10 @@ public class EventTypeValidator
 
         int totalPersonCount = maleCount + femaleCount + allCount + coupleCount * 2;
 
-        return totalPersonCount > 2 && totalPersonCount <= maxPersonCount;
+        boolean combineCoupleAndPerson = UserPlanConstantsService.isCombineCoupleAndPerson(accessChecker.getPlan());
+        boolean permitted = combineCoupleAndPerson || (coupleCount == 0 || (maleCount == 0 && femaleCount == 0 && allCount == 0));
+
+        return permitted && totalPersonCount > 2 && totalPersonCount <= maxPersonCount;
     }
 
 }

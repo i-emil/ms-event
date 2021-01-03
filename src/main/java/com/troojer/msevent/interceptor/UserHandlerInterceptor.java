@@ -4,13 +4,13 @@ import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.model.CurrentUser;
 import com.troojer.msevent.model.exception.AuthenticationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class UserHandlerInterceptor extends HandlerInterceptorAdapter {
+public class UserHandlerInterceptor implements HandlerInterceptor {
 
     private final CurrentUser currentUser;
 

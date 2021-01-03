@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @EventDateParameters(message = "event.date.startEndDate", param = "eventDate", groups = {CreateValidation.class, UpdateValidation.class})
-@ConsistentEventStart(period=7, message = "event.date.periodBeforeStart::{period}", param = "eventDate", groups = {CreateValidation.class, UpdateValidation.class})
-@ConsistentEventDuration(duration = 24, message = "event.date.duration::{duration}", param = "eventDate", groups = {CreateValidation.class, UpdateValidation.class})
+@ConsistentEventStart(message = "event.date.periodBeforeStart", param = "eventDate", groups = {CreateValidation.class, UpdateValidation.class})
+@ConsistentEventDuration(message = "event.date.duration", param = "eventDate", groups = {CreateValidation.class, UpdateValidation.class})
 public class EventDateDto {
     private String start;
     private String end;

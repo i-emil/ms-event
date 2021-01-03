@@ -1,7 +1,7 @@
 package com.troojer.msevent.mapper;
 
 
-import com.troojer.msevent.client.LanguageClient;
+import com.troojer.msevent.client.LocalizationClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventLanguageEntity;
 import com.troojer.msevent.model.LanguageDto;
@@ -18,8 +18,8 @@ public class LanguageMapper {
 
     private final Map<String, String> languagesMap;
 
-    public LanguageMapper(LanguageClient languageClient) {
-        this.languagesMap = languageClient.getLanguagesMap();
+    public LanguageMapper(LocalizationClient localizationClient) {
+        this.languagesMap = localizationClient.getLanguagesMap();
     }
 
     public static List<String> dtosToIds(Collection<LanguageDto> languageDtos) {

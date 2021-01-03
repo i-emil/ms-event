@@ -2,13 +2,13 @@ package com.troojer.msevent.interceptor;
 
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class MDCInterceptor extends HandlerInterceptorAdapter {
+public class MDCInterceptor implements HandlerInterceptor {
 
 
     @Override

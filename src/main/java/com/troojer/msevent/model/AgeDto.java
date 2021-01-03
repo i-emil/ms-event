@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-@ConsistentAgeParameters(min = 18, max = 100, message = "event.age.range::min::max", param = "eventAge", groups = {CreateValidation.class, UpdateValidation.class})
+@ConsistentAgeParameters(min = 18, max = 100, message = "event.age.incorrect::min::max", param = "eventAge", groups = {CreateValidation.class, UpdateValidation.class})
 public class AgeDto {
     private Integer min;
     private Integer max;
+    private Integer current;
 }

@@ -4,7 +4,6 @@ spring:
     username: postgres
     password: postgres
   jpa:
-    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -19,3 +18,7 @@ client:
     url: http://localhost:8086/private/participants/
   user-plan:
     url: http://localhost:8087/user-plans/
+  location:
+    url: http://localhost:8089/location/
+  image:
+    url: http://localhost:8090/private/images/

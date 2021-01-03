@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class EventParticipantTypeDto {
-//todo validation by type
+
     private int total;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

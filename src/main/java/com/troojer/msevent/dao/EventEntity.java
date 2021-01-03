@@ -34,6 +34,8 @@ public class EventEntity {
 
     private String description;
 
+    private String cover;
+
     @Column(name = "start_date")
     private ZonedDateTime startDate;
 
@@ -41,9 +43,11 @@ public class EventEntity {
     private ZonedDateTime endDate;
 
     @Column(name = "location_id")
-    private Long locationId;
+    private String locationId;
 
     private Integer budget;
+
+    private String currency;
 
     @Column(name = "min_age")
     private Integer minAge;

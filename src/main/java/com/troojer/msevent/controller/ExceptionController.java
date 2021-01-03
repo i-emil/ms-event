@@ -81,4 +81,10 @@ public class ExceptionController {
         logger.warn("message: ", exc);
         return new ExceptionDto("default.service.temporaryError");
     }
+
+    @ExceptionHandler(FileFormatException.class)
+    public ResponseEntity<ExceptionDto> handleFileFormatException(Exception exc) {
+        logger.warn("message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 }

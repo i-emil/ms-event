@@ -28,6 +28,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: cover
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: start_date
                   type: timestamptz
                   constraints:
@@ -37,12 +42,15 @@ databaseChangeLog:
                   type: timestamptz
               - column:
                   name: location_id
-                  type: BIGINT
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: budget
                   type: int
+              - column:
+                  name: currency
+                  type: varchar(10)
               - column:
                   name: min_age
                   type: int

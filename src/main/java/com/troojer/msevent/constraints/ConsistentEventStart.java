@@ -17,8 +17,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface ConsistentEventStart {
 
-    int period();
-
     String message() default
             "End date must be after begin date and both must be in the future";
 
@@ -26,11 +24,12 @@ public @interface ConsistentEventStart {
 
     Class<? extends Payload>[] payload() default {};
 
+    String param();
+
     @Target({TYPE, ANNOTATION_TYPE})
     @Retention(RUNTIME)
     @Documented
     @interface List {
         ConsistentEventStart[] value();
     }
-    String param();
 }
