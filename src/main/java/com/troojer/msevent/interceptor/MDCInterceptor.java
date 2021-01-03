@@ -1,4 +1,4 @@
-package com.troojer.mstag.interceptor;
+package com.troojer.msevent.interceptor;
 
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;

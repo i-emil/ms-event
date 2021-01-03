@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.troojer.ms-tag'
+group = 'com.troojer.ms-event'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '15'
 
@@ -36,6 +36,7 @@ dependencies {
 
     compile 'ch.qos.logback:logback-core:1.2.3'
     compile 'ch.qos.logback:logback-classic:1.2.3'
+
 }
 
 test {

@@ -1,10 +1,8 @@
 spring:
-  pagination:
-    max-size: 10
   datasource:
-    url: jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/ms_tag
-    username: postgres
-    password: P@ssw0rD
+    url: jdbc:postgresql://192.168.1.90:5432/ms_event
+    username: ms_event
+    password: $rw@uF3RW2ud^Zv!BWx8qMetH
   liquibase:
     enabled: true
     change-log: classpath:liquibase/changelog-master.yml
@@ -13,6 +11,24 @@ spring:
       ddl-auto: none
     open-in-view: false
 server:
-  port: 8085
+  port: 8080
+client:
+  profile:
+    url: http://ms-profile:8080/profile/
+  localization:
+    url: http://ms-localization:8080/localization/
+  tag:
+    url: http://ms-tag:8080/tags/
+  participant:
+    url: http://ms-participant:8080/private/participants/
+  user-plan:
+    url: http://ms-user-plan:8080/user-plans/
+  location:
+    url: http://ms-user-plan:8080/location/
+  minio:
+    url: https://minio.troojer.com
+    bucket: trj-avatar
+    access-key: StRompinAgor
+    secret-key: StRompinAgor
 logging:
   my-level: INFO
