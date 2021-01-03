@@ -16,7 +16,6 @@ import org.hibernate.validator.constraints.Range;
 public class BudgetDto {
 
     @Range(min = 1, max = 1000, message = "event.budgetAmount.range", groups = {CreateValidation.class, UpdateValidation.class})
-
     private Integer amount;
 
     @CurrencyParameters(param = "budget.currency", message = "event.budgetCurrency.incorrect", groups = {CreateValidation.class, UpdateValidation.class})

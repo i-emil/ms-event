@@ -49,7 +49,7 @@ public class LocalizationClient {
             ParameterizedTypeReference<Set<CurrencyDto>> responseType =
                     new ParameterizedTypeReference<>() {
                     };
-            return restTemplate.exchange(url + "currencies/", HttpMethod.GET, new HttpEntity<>(Pageable.unpaged()), responseType).getBody();
+            return restTemplate.exchange(url + "currencies/", HttpMethod.GET, null, responseType).getBody();
         } catch (Exception e) {
             logger.warn("getLanguagesMap(); exc: ", e);
             throw new ClientException(e.getMessage());
