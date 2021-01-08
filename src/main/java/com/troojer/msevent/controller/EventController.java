@@ -4,7 +4,6 @@ import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
 import com.troojer.msevent.service.EventService;
-import com.troojer.msevent.service.FindEventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -16,16 +15,14 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     private final EventService eventService;
-    private final FindEventService findEventService;
 
-    public EventController(EventService eventService, FindEventService findEventService) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.findEventService = findEventService;
     }
 
-    @GetMapping("{id}")
-    public EventDto getEvent(@PathVariable String id) {
-        return eventService.getUserEvent(id);
+    @GetMapping("{key}")
+    public EventDto getEvent(@PathVariable String key) {
+        return eventService.getUserEvent(key);
     }
 
     @GetMapping
@@ -38,14 +35,14 @@ public class EventController {
         return eventService.addEvent(eventDto);
     }
 
-    @PutMapping("{id}")
-    public EventDto updateEvent(@PathVariable String id, @RequestBody @Validated(UpdateValidation.class) EventDto eventDto) {
-        return eventService.updateEvent(id, eventDto);
+    @PutMapping("{key}")
+    public EventDto updateEvent(@PathVariable String key, @RequestBody @Validated(UpdateValidation.class) EventDto eventDto) {
+        return eventService.updateEvent(key, eventDto);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteEvent(@PathVariable String id) {
-        eventService.deleteEvent(id);
+    @DeleteMapping("{key}")
+    public void deleteEvent(@PathVariable String key) {
+        eventService.deleteEvent(key);
     }
 
 }

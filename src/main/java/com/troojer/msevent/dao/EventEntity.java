@@ -23,9 +23,14 @@ import java.util.UUID;
 @EqualsAndHashCode(exclude = {"tags", "languages", "participantsType"})
 @Where(clause = "status != 'DELETED'")
 public class EventEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_seq_generator")
+    @SequenceGenerator(name = "event_seq_generator", sequenceName = "event_seq")
+    private Long id;
+
     @Builder.Default
-    private String id = UUID.randomUUID().toString();
+    private String key = UUID.randomUUID().toString();
 
     @Column(name = "author_id")
     private String authorId;

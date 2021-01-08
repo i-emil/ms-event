@@ -1,12 +1,12 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateIndexToUserFoundEvent
+      id: CreateIndexToRandomEvent
       author: emilr
       changes:
         - createIndex:
             columns:
               - column:
                   name: user_id
-            indexName: idx_user_found_event_user_id
-            tableName: user_found_event
+            indexName: idx_random_event_user_id
+            tableName: random_event
             unique: false

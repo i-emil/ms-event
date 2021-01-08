@@ -14,8 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
-public interface EventRepository extends JpaRepository<EventEntity, String> {
+public interface EventRepository extends JpaRepository<EventEntity, Long> {
+
+    Optional<EventEntity> getFirstByKey(String key);
 
     Page<EventEntity> getAllByAuthorId(String userId, Pageable pageable);
 
@@ -25,18 +28,18 @@ public interface EventRepository extends JpaRepository<EventEntity, String> {
     void setStatusByEndDate(@Param("status") EventStatus status, @Param("date") ZonedDateTime date);
 
     @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
-            "WHERE e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
+            "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
+            "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
             "AND e.status='ACTIVE' " +
-            "AND e.authorId <> :userId " +
-            "AND e.id NOT IN :eventIdList " +
             "AND e.minAge BETWEEN :minAge AND :maxAge " +
             "AND e.maxAge BETWEEN  :minAge AND :maxAge " +
+            "AND :currentAge BETWEEN  e.minAge AND e.maxAge " +
             "AND e = ept.event " +
-            "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
-            "AND e.budget<=:budget " +
+//            "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
             "AND e = el.event " +
             "AND el.languageId IN :languagesId " +
-            "ORDER BY e.id ")
-    List<EventEntity> getFirstByFilter(ZonedDateTime afterDate, ZonedDateTime beforeDate, Integer minAge, Integer maxAge, ParticipantType participantType, Integer budget, String userId, List<String> eventIdList, List<String> languagesId, Pageable pageable);
+            "AND e.id NOT IN :eventsExceptList " +
+            "AND e.authorId <> :userId ")
+    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, Integer minAge, Integer maxAge, Integer currentAge, List<String> languagesId, List<Long> eventsExceptList, String userId, Pageable pageable);
 
 }

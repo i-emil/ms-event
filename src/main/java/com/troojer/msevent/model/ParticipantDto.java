@@ -1,12 +1,10 @@
 package com.troojer.msevent.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,16 +12,8 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class ParticipantDto {
 
-    private ProfileDto profile;
-
-    @NotBlank(message = "participant.key.notBlank")
-    private String key;
-
-    @NotBlank(message = "participant.eventId.notBlank")
-    private String eventId;
-
-    @NotBlank(message = "participant.gender.notBlank")
-    @Pattern(regexp = "MALE|FEMALE|ALL", message = "participant.gender.pattern::{regexp}")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String type;
-
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private ProfileDto profile;
 }

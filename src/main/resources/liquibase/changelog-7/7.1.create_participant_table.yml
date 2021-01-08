@@ -1,38 +1,37 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateUserFoundEventTable
+      id: CreateParticipantTable
       author: emilr
       changes:
         - createTable:
-            tableName: user_found_event
+            tableName: participant
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: bigint
                   constraints:
                     primaryKey: true
                     nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(255)
               - column:
                   name: key
                   type: varchar(255)
                   constraints:
                     unique: true
-                    nullable: false
               - column:
-                  name: user_id
-                  type: varchar(255)
+                  name: event_participant_type_id
+                  type: bigint
                   constraints:
+                    foreignKeyName: fk_event_participant_type_id
                     nullable: false
-              - column:
-                  name: event_id
-                  type: varchar(255)
-                  constraints:
-                    foreignKeyName: fk_event_id
-                    nullable: false
-                    references: event(id)
+                    references: event_participant_type(id)
               - column:
                   name: status
                   type: varchar(100)
+                  constraints:
+                    nullable: false
               - column:
                   name: created_at
                   type: timestamp

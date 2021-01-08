@@ -1,7 +1,7 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.service.FindEventService;
+import com.troojer.msevent.service.RandomEventService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,34 +9,35 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class EventByFilterController {
 
-    private final FindEventService findEventService;
+    private final RandomEventService randomEventService;
 
-    public EventByFilterController(FindEventService findEventService) {
-        this.findEventService = findEventService;
+    public EventByFilterController(RandomEventService randomEventService) {
+        this.randomEventService = randomEventService;
     }
 
     @GetMapping("day")
     public EventDto getEventForDay() {
-        return findEventService.getEvent(1);
+        return randomEventService.getEvent(1);
     }
 
     @GetMapping("week")
-    public EventDto getEventForWeek() {
-        return findEventService.getEvent(7);
+    public EventDto getEventFor7Days() {
+        return randomEventService.getEvent(7);
     }
 
     @PostMapping("accept/{key}")
     public void acceptEvent(@PathVariable String key) {
-        findEventService.accept(key);
+        randomEventService.accept(key);
     }
 
     @PostMapping("reject/{key}")
     public void rejectEvent(@PathVariable String key) {
-        findEventService.reject(key);
+        randomEventService.reject(key);
     }
 
+    //todo private
     @DeleteMapping("inappropriate")
     public void removeInappropriateEvents(){
-        findEventService.deleteInappropriate();
+        randomEventService.deleteInappropriate();
     }
 }

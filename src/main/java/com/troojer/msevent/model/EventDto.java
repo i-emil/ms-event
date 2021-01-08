@@ -1,5 +1,6 @@
 package com.troojer.msevent.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.troojer.msevent.constraints.ImageExist;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,8 +69,11 @@ public class EventDto {
 
 //---READ ONLY FIELDS---
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<ParticipantDto> participants;
+
     @JsonProperty(access = READ_ONLY)
-    private String id;
+    private String key;
 
     @JsonProperty(access = READ_ONLY)
     private String authorId;
@@ -77,10 +82,11 @@ public class EventDto {
     private EventStatus status;
 
     @JsonProperty(access = READ_ONLY)
-    private List<ParticipantDto> participants;
-
-    @JsonProperty(access = READ_ONLY)
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    private String key;
+    private String participationKey;
+
+    @JsonIgnore
+    @Builder.Default
+    private Map<String, String> changes = new LinkedHashMap<>();
 
 }

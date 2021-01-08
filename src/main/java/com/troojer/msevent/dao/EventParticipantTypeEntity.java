@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "event_participant_type")
@@ -35,6 +37,10 @@ public class EventParticipantTypeEntity {
     @JoinColumn(name = "event_id")
     @EqualsAndHashCode.Include
     private EventEntity event;
+
+    @Builder.Default
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "eventParticipantType")
+    private List<ParticipantEntity> participants = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at")

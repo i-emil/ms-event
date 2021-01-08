@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,4 +18,5 @@ public class EventParticipantTypeDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int accepted;
+
 }

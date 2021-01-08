@@ -15,13 +15,11 @@ import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
-import com.troojer.msevent.model.exception.NoContentExcepton;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.EventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.troojer.msevent.model.enm.ParticipantType.ALL;
@@ -53,10 +50,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventDto getUserEvent(String eventId) {
-        EventEntity eventEntity = getEventEntity(eventId);
+    public EventDto getUserEvent(String key) {
+        EventEntity eventEntity = getEventEntity(key);
         if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
-            logger.warn("getUserEvent: It's not user's event; eventId: {};", eventId);
+            logger.warn("getUserEvent: It's not user's event; eventId: {};", key);
             throw new ForbiddenException("event.event.forbidden");
         }
         return eventMapper.entityToDto(eventEntity);
@@ -81,14 +78,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventDto updateEvent(String eventId, EventDto eventDto) {
-        EventEntity oldEntity = getEventEntity(eventId);
+    public EventDto updateEvent(String key, EventDto eventDto) {
+        EventEntity oldEntity = getEventEntity(key);
         if (!accessChecker.isUserId(oldEntity.getAuthorId())) {
-            logger.warn("updateEvent: It's not user's event; eventId: {};", eventId);
+            logger.warn("updateEvent: It's not user's event; eventId: {};", key);
             throw new ForbiddenException("event.event.forbidden");
         }
-        if (!Objects.equals(eventDto.getCover(), oldEntity.getCover()))
-            imageClient.deleteImage(oldEntity.getCover());
         EventEntity newEvent = eventMapper.updateEntity(eventDto, oldEntity);
         eventRepository.save(newEvent);
 
@@ -97,16 +92,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void deleteEvent(String eventId) {
-        EventEntity eventEntity = getEventEntity(eventId);
+    public void deleteEvent(String key) {
+        EventEntity eventEntity = getEventEntity(key);
         if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
-            logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), eventId);
+            logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), key);
             throw new ForbiddenException("event.event.forbidden");
         }
         imageClient.deleteImage(eventEntity.getCover());
         eventEntity.setStatus(EventStatus.DELETED);
         eventRepository.save(eventEntity);
-        logger.info("deleteEvent(); eventId:{}", eventId);
+        logger.info("deleteEvent(); eventId:{}", key);
     }
 
     @Override
@@ -117,22 +112,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventEntity getEventByFilter(FilterDto filterDto, int days, List<String> exceptEventId) {
+    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filterDto, int days, List<Long> eventsExceptList, Pageable pageable) {
+        if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
+        if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
         String userId = accessChecker.getUserId();
         AgeDto ageDto = filterDto.getAge();
-        List<EventEntity> eventEntityList = eventRepository.getFirstByFilter(ZonedDateTime.now().plusHours(1), ZonedDateTime.now().plusDays(days),
-                ageDto.getMin(), ageDto.getMax(), ParticipantType.valueOf(filterDto.getGender()), filterDto.getBudget(),
-                userId,
-                exceptEventId,
-                LanguageMapper.dtosToIds(filterDto.getLanguages()),
-                PageRequest.of(0, 1));
+        List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, ZonedDateTime.now().plusHours(1), ZonedDateTime.now().plusDays(days),
+                ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(),
+                LanguageMapper.dtosToIds(filterDto.getLanguages()), eventsExceptList, userId, pageable);
         logger.info("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
-        if (eventEntityList.isEmpty()) throw new NoContentExcepton("event.byFilter.notFound");
-        return eventEntityList.get(0);
+        System.out.println("qwerty: " + eventEntityList);
+        return eventEntityList;
     }
 
-    private EventEntity getEventEntity(String eventId) {
-        return eventRepository.findById(eventId)
+    private EventEntity getEventEntity(String key) {
+        return eventRepository.getFirstByKey(key)
                 .orElseThrow(() -> new NotFoundException("event.event.notFound"));
     }
 

@@ -1,26 +1,32 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateTagTable
+      id: CreateUserFoundEventTable
       author: emilr
       changes:
         - createTable:
-            tableName: tag
+            tableName: random_event
             columns:
               - column:
                   name: id
-                  type: bigint
+                  type: varchar(255)
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: value
-                  type: varchar(100)
+                  name: user_id
+                  type: varchar(255)
                   constraints:
-                    unique: true
                     nullable: false
               - column:
-                  name: author_id
-                  type: varchar(255)
+                  name: event_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_event_id
+                    nullable: false
+                    references: event(id)
+              - column:
+                  name: status
+                  type: varchar(100)
               - column:
                   name: created_at
                   type: timestamp

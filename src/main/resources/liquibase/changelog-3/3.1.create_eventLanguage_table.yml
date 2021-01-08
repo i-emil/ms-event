@@ -14,7 +14,7 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: event_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     foreignKeyName: fk_event_id
                     nullable: false

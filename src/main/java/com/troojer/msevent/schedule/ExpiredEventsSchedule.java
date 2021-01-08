@@ -2,7 +2,7 @@ package com.troojer.msevent.schedule;
 
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.service.EventService;
-import com.troojer.msevent.service.FindEventService;
+import com.troojer.msevent.service.RandomEventService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,11 +16,11 @@ public class ExpiredEventsSchedule {
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
     private final EventService eventService;
-    private final FindEventService findEventService;
+    private final RandomEventService randomEventService;
 
-    public ExpiredEventsSchedule(EventService eventService, FindEventService findEventService) {
+    public ExpiredEventsSchedule(EventService eventService, RandomEventService randomEventService) {
         this.eventService = eventService;
-        this.findEventService = findEventService;
+        this.randomEventService = randomEventService;
     }
 
     @Scheduled(fixedDelay = 5 * 60_000L)
@@ -33,7 +33,7 @@ public class ExpiredEventsSchedule {
     @Scheduled(fixedDelay = 30 * 24 * 60 * 60_000L)
     @SchedulerLock(name = "deleteOldUserFoundEvents")
     public void deleteOldUserFoundEvents() {
-        findEventService.deleteOld(LocalDateTime.now().minusMonths(6));
+        randomEventService.deleteOld(LocalDateTime.now().minusMonths(6));
         logger.info("deleteOldUserFoundEvents() called");
     }
 }

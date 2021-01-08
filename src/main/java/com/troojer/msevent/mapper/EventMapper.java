@@ -2,8 +2,8 @@ package com.troojer.msevent.mapper;
 
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.client.LocationClient;
-import com.troojer.msevent.client.ParticipantClient;
 import com.troojer.msevent.dao.EventEntity;
+import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import org.springframework.stereotype.Component;
@@ -13,16 +13,16 @@ public class EventMapper {
 
     private final LanguageMapper languageMapper;
     private final TagMapper tagMapper;
-    private final ParticipantClient participantClient;
+    private final ParticipantMapper participantMapper;
     private final LocationClient locationClient;
     private final EventParticipantTypeMapper participantTypeMapper;
     private final BudgetMaper budgetMaper;
     private final ImageClient imageClient;
 
-    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantClient participantClient, LocationClient locationClient, EventParticipantTypeMapper participantTypeMapper, BudgetMaper budgetMaper, ImageClient imageClient) {
+    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantMapper participantMapper, LocationClient locationClient, EventParticipantTypeMapper participantTypeMapper, BudgetMaper budgetMaper, ImageClient imageClient) {
         this.languageMapper = languageMapper;
         this.tagMapper = tagMapper;
-        this.participantClient = participantClient;
+        this.participantMapper = participantMapper;
         this.locationClient = locationClient;
         this.participantTypeMapper = participantTypeMapper;
         this.budgetMaper = budgetMaper;
@@ -31,7 +31,7 @@ public class EventMapper {
 
     public EventDto entityToDto(EventEntity entity) {
         return EventDto.builder()
-                .id(entity.getId())
+                .key(entity.getKey())
                 .authorId(entity.getAuthorId())
                 .location(locationClient.getLocation(entity.getLocationId()))
                 .description(entity.getDescription())
@@ -40,7 +40,7 @@ public class EventMapper {
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
-                .participants(participantClient.getParticipants(entity.getId()))
+                .participants(participantMapper.getParticipantsFromEvent(entity))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
@@ -48,9 +48,9 @@ public class EventMapper {
                 .build();
     }
 
-    public EventDto entityToDtoWithKey(EventEntity eventEntity, String key) {
-        EventDto dto = entityToDto(eventEntity);
-        dto.setKey(key);
+    public EventDto randomEventEntityToEventDto(RandomEventEntity randomEventEntity) {
+        EventDto dto = entityToDto(randomEventEntity.getEvent());
+        dto.setParticipationKey(randomEventEntity.getId());
         return dto;
     }
 
@@ -75,18 +75,22 @@ public class EventMapper {
     }
 
     public EventEntity updateEntity(EventDto dto, EventEntity entity) {
+        if (dto.getTitle() != null) entity.setTitle(dto.getTitle().strip().toLowerCase());
+        if (dto.getDescription() != null) entity.setDescription(dto.getDescription().strip().toLowerCase());
         if (dto.getLocation() != null && dto.getLocation().getId() != null)
             entity.setLocationId(dto.getLocation().getId());
-        if (dto.getDescription() != null) entity.setDescription(dto.getDescription().strip().toLowerCase());
-        if (dto.getCover() != null) entity.setCover(dto.getCover());
         if (dto.getDate() != null) {
             entity.setStartDate(EventDateMapper.dtoToStartDate(dto.getDate()));
             entity.setEndDate(EventDateMapper.dtoToEndDate(dto.getDate()));
         }
-        if (dto.getTitle() != null) entity.setTitle(dto.getTitle().strip().toLowerCase());
         if (dto.getBudget() != null) {
             entity.setBudget(dto.getBudget().getAmount());
             entity.setCurrency(dto.getBudget().getCurrency().getCode());
+        }
+
+        if (dto.getCover() != null) {
+            imageClient.deleteImage(entity.getCover());
+            entity.setCover(dto.getCover());
         }
         if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), entity));
         return entity;

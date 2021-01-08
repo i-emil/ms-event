@@ -8,9 +8,15 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: key
+                  type: varchar(255)
+                  constraints:
+                    unique: true
                     nullable: false
               - column:
                   name: author_id

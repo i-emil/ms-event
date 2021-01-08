@@ -1,5 +1,7 @@
 package com.troojer.msevent.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.troojer.msevent.constraints.ConsistentAgeParameters;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
@@ -16,5 +18,6 @@ import lombok.NoArgsConstructor;
 public class AgeDto {
     private Integer min;
     private Integer max;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer current;
 }

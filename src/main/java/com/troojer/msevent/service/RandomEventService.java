@@ -4,7 +4,7 @@ import com.troojer.msevent.model.EventDto;
 
 import java.time.LocalDateTime;
 
-public interface FindEventService {
+public interface RandomEventService {
     EventDto getEvent(int days);
 
     void accept(String key);

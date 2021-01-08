@@ -1,5 +1,6 @@
 package com.troojer.msevent.mapper;
 
+import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.model.EventParticipantTypeDto;
@@ -11,6 +12,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class EventParticipantTypeMapper {
+
+    private final ProfileClient profileClient;
+
+    public EventParticipantTypeMapper(ProfileClient profileClient) {
+        this.profileClient = profileClient;
+    }
 
     public EventParticipantTypeDto entityToDto(EventParticipantTypeEntity entity) {
         return EventParticipantTypeDto.builder()

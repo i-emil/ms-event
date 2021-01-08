@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: CreateEventSLanguageSequence
+      id: CreateEventLanguageSequence
       author: emilr
       changes:
         - createSequence:

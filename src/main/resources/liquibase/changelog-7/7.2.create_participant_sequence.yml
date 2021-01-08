@@ -5,4 +5,4 @@ databaseChangeLog:
       changes:
         - createSequence:
             incrementBy: 50
-            sequenceName: tag_seq
+            sequenceName: participant_seq

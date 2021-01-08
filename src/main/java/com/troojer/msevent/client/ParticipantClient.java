@@ -67,4 +67,21 @@ public class ParticipantClient {
             throw new ClientException(e.getMessage());
         }
     }
+
+    public void removeParticipant(Long eventId) {
+        try {
+            restTemplate.exchange(url+eventId, HttpMethod.DELETE, null, Void.TYPE);
+            logger.info("addParticipant(); done");
+        } catch (RestClientResponseException exc) {
+            logger.warn("getFilter(); exc: ", exc);
+            throw switch (exc.getRawStatusCode()) {
+                case 403 -> new ForbiddenException(exc.getMessage());
+                case 409 -> new ConflictException(exc.getMessage());
+                default -> new ClientException("default.service.temporaryError");
+            };
+        } catch (Exception e) {
+            logger.warn("addParticipant(); exc: ", e);
+            throw new ClientException(e.getMessage());
+        }
+    }
 }

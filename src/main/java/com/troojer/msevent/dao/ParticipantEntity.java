@@ -1,6 +1,6 @@
 package com.troojer.msevent.dao;
 
-import com.troojer.msevent.model.enm.UserFoundEventStatus;
+import com.troojer.msevent.model.enm.ParticipantStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,35 +10,32 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "user_found_event")
-@Builder
-@Data
+@Table(name = "participant")
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserFoundEventEntity {
+@Builder
+@Data
+public class ParticipantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-    @SequenceGenerator(name = "seq_generator", sequenceName = "user_found_event_seq")
+    @SequenceGenerator(name = "seq_generator", sequenceName = "participant_seq")
     private Long id;
-
-    @Builder.Default
-    private String key = UUID.randomUUID().toString();
 
     @Column(name = "user_id")
     private String userId;
 
     @ManyToOne
-    @JoinColumn(name = "event_id")
-    private EventEntity event;
+    @JoinColumn(name = "event_participant_type_id")
+    private EventParticipantTypeEntity eventParticipantType;
 
-    @Builder.Default
+    private String key;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private UserFoundEventStatus status = UserFoundEventStatus.PENDING;
+    @Builder.Default
+    private ParticipantStatus status = ParticipantStatus.OK;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -47,10 +44,4 @@ public class UserFoundEventEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public static UserFoundEventEntity create(String userId, EventEntity eventEntity) {
-        return UserFoundEventEntity.builder().userId(userId).event(eventEntity)
-                .build();
-    }
-
 }

@@ -17,8 +17,6 @@ public class FilterDto {
 
     private Long locationId;
 
-    private Integer budget;
-
     private Set<LanguageDto> languages;
 
     private String gender;

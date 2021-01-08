@@ -13,19 +13,19 @@ import java.util.Optional;
 
 public interface EventService {
 
-    EventDto getUserEvent(String id);
+    EventDto getUserEvent(String key);
 
     Page<EventDto> getUserEvents(Pageable pageable);
 
     EventDto addEvent(EventDto eventDto);
 
-    EventDto updateEvent(String id, EventDto eventDto);
+    EventDto updateEvent(String key, EventDto eventDto);
 
-    void deleteEvent(String id);
+    void deleteEvent(String key);
 
-    void setEndedStatusToAllExpired();
-
-    EventEntity getEventByFilter(FilterDto filterDto, int days, List<String> exceptEventId);
+    List<EventEntity> getEventsByFilter(List<Long> eventsId, FilterDto filterDto, int days, List<Long> exceptEventId, Pageable pageable);
 
     Optional<ParticipantType> raisePersonCountAndGetType(EventEntity eventEntity, Gender gender);
+
+    void setEndedStatusToAllExpired();
 }
