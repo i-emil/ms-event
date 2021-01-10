@@ -1,22 +1,20 @@
 package com.troojer.msevent.service.impl;
 
 import ch.qos.logback.classic.Logger;
-import com.troojer.msevent.client.ParticipantClient;
 import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.repository.RandomEventRepository;
 import com.troojer.msevent.mapper.EventMapper;
-import com.troojer.msevent.mapper.ParticipantMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
-import com.troojer.msevent.model.ParticipantDto;
-import com.troojer.msevent.model.enm.Gender;
+import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NoContentExcepton;
 import com.troojer.msevent.service.EventService;
+import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.service.RandomEventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
@@ -31,6 +29,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
+import static com.troojer.msevent.model.enm.ParticipantType.COUPLE;
+
 @Service
 public class RandomEventServiceImpl implements RandomEventService {
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
@@ -41,16 +42,16 @@ public class RandomEventServiceImpl implements RandomEventService {
     private final EventService eventService;
 
     private final ProfileClient profileClient;
-    private final ParticipantClient participantClient;
+    private final ParticipantService participantService;
 
     private final AccessCheckerUtil accessChecker;
 
-    public RandomEventServiceImpl(EventMapper eventMapper, EventService eventService, ProfileClient profileClient, RandomEventRepository randomEventRepository, ParticipantClient participantClient, AccessCheckerUtil accessChecker) {
+    public RandomEventServiceImpl(EventMapper eventMapper, EventService eventService, ProfileClient profileClient, RandomEventRepository randomEventRepository, ParticipantService participantService, AccessCheckerUtil accessChecker) {
         this.eventMapper = eventMapper;
         this.eventService = eventService;
         this.profileClient = profileClient;
         this.randomEventRepository = randomEventRepository;
-        this.participantClient = participantClient;
+        this.participantService = participantService;
         this.accessChecker = accessChecker;
     }
 
@@ -81,23 +82,32 @@ public class RandomEventServiceImpl implements RandomEventService {
         return eventMapper.randomEventEntityToEventDto(randomEventEntity);
     }
 
+
     @Override
     @Transactional
-    public void accept(String key) {
+    public void accept(String key, boolean isCouple) {
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
-        FilterDto filter = profileClient.getProfileFilter();
-        List<EventEntity> checkEvent = eventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, 30, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
-        if (checkEvent.isEmpty()) throw new ForbiddenException("event.accept.notAvailable");
-
-        Optional<ParticipantType> participantType = eventService.raisePersonCountAndGetType(pendingEvent, Gender.valueOf(filter.getGender()));
-        ParticipantDto participant = ParticipantMapper.foundEventToParticipant(randomEventEntity, participantType.orElseThrow(() -> new ForbiddenException("event.accept.notAvailable")));
-
-        randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
+        if (pendingEvent != null) {
+            FilterDto filter = profileClient.getProfileFilter();
+            List<EventEntity> checkEvent = eventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, 30, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+            if (!checkEvent.isEmpty()) {
+                Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(isCouple, pendingEvent, filter);
+                if (participantTypeOpt.isPresent()) {
+                    boolean isAdded = participantService.addParticipant(pendingEvent.getKey(), accessChecker.getUserId(), participantTypeOpt.get());
+                    if (isAdded) {
+                        randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
+                        randomEventRepository.save(randomEventEntity);
+                        logger.info("accept(); event accepted: {}", randomEventEntity);
+                        return;
+                    }
+                }
+            }
+        }
+        randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
         randomEventRepository.save(randomEventEntity);
-        logger.info("accept(); event accepted: {}", pendingEvent);
-        participantClient.addParticipant(participant);
-        logger.info("accept(); added to participant: {}", participant);
+        logger.warn("accept(); this event not available now: {}", pendingEvent);
+        throw new ForbiddenException("event.accept.notAvailable");
     }
 
     @Override
@@ -115,17 +125,17 @@ public class RandomEventServiceImpl implements RandomEventService {
         logger.info("deleteOld(); deleted before {}", beforeDateTime);
     }
 
+    //todo days count
     @Override
     public void deleteInappropriate() {
-//        List<ParticipantDto> participantDtos = participantClient.getEvents();
-//        List<Long> eventForCheckId = participantDtos.stream().map(ParticipantDto::getEventId).collect(Collectors.toList());
-//        if (eventForCheckId.isEmpty()) return;
-//        FilterDto filter = profileClient.getProfileFilter();
-//        List<Long> availableEventsId = eventService.getEventsByFilter(eventForCheckId, filter, 30, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
-//        participantDtos.stream().filter(p -> !availableEventsId.contains(p.getEventId())).forEach(p -> {
-//            participantClient.removeParticipant(p.getEventId());
-//            //todo change event participants count
-//        });
+        List<EventEntity> oldUserEvents = eventService.getEventsByParticipant(accessChecker.getUserId(), List.of(ACTIVE));
+        if (oldUserEvents.isEmpty()) return;
+        List<Long> userEventsId = oldUserEvents.stream().map(EventEntity::getId).collect(Collectors.toList());
+        FilterDto filter = profileClient.getProfileFilter();
+        List<EventEntity> currentUserEvents = eventService.getEventsByFilter(userEventsId, filter, 30, new ArrayList<>(), Pageable.unpaged());
+        List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e)).filter(e -> e.getStatus() == ACTIVE).map(EventEntity::getKey).collect(Collectors.toList());
+        inappropriate.forEach(eventKey -> participantService.deleteParticipant(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
+
     }
 
     private Optional<RandomEventEntity> getCurrentPendingRandomEvent() {
@@ -147,6 +157,12 @@ public class RandomEventServiceImpl implements RandomEventService {
     private EventEntity getRandomEventFromList(List<EventEntity> eventList) {
         int index = new Random().nextInt(eventList.size());
         return eventList.get(index);
+    }
+
+    private Optional<ParticipantType> getParticipantTypeByProfile(boolean isCoupleRequest, EventEntity event, FilterDto filter) {
+        if (!isCoupleRequest) return Optional.of(ParticipantType.valueOf(filter.getGender()));
+        if (event.getParticipantsType().get(COUPLE) != null && filter.getCoupleId() != null) return Optional.of(COUPLE);
+        return Optional.empty();
     }
 
 }

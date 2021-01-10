@@ -6,7 +6,12 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.enm.ParticipantStatus;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
+
+import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
 
 @Component
 public class EventMapper {
@@ -40,7 +45,7 @@ public class EventMapper {
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
-                .participants(participantMapper.getParticipantsFromEvent(entity))
+                .participants((entity.getParticipants().stream().filter(p->p.getStatus()== OK).map(participantMapper::entityToDto).collect(Collectors.toList())))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))

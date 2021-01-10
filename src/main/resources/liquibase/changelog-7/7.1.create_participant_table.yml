@@ -16,17 +16,20 @@ databaseChangeLog:
                   name: user_id
                   type: varchar(255)
               - column:
+                  name: type
+                  type: varchar(100)
+              - column:
                   name: key
                   type: varchar(255)
                   constraints:
                     unique: true
               - column:
-                  name: event_participant_type_id
+                  name: event_id
                   type: bigint
                   constraints:
-                    foreignKeyName: fk_event_participant_type_id
+                    foreignKeyName: fk_event_id
                     nullable: false
-                    references: event_participant_type(id)
+                    references: event(id)
               - column:
                   name: status
                   type: varchar(100)

@@ -7,8 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "event_participant_type")
@@ -38,10 +36,6 @@ public class EventParticipantTypeEntity {
     @EqualsAndHashCode.Include
     private EventEntity event;
 
-    @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "eventParticipantType")
-    private List<ParticipantEntity> participants = new ArrayList<>();
-
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -50,16 +44,16 @@ public class EventParticipantTypeEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public boolean increaseAccepted() {
-        if (accepted >= total) return false;
-        accepted++;
-        return true;
+    public boolean isFree() {
+        return accepted < total;
     }
 
-    public boolean decreaseAccepted() {
-        if (accepted <= 0) return false;
-        accepted--;
-        return true;
+    public void increaseAccepted() {
+        if (accepted < total) accepted += 1;
+    }
+
+    public void decreaseAccepted() {
+        if (accepted > 0) accepted -= 1;
     }
 
 }

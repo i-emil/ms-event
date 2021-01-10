@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public interface RandomEventService {
     EventDto getEvent(int days);
 
-    void accept(String key);
+    void accept(String key, boolean isCouple);
 
     void reject(String key);
 

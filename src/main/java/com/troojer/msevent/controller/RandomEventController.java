@@ -5,13 +5,13 @@ import com.troojer.msevent.service.RandomEventService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("find-events")
+@RequestMapping("random-events")
 @CrossOrigin
-public class EventByFilterController {
+public class RandomEventController {
 
     private final RandomEventService randomEventService;
 
-    public EventByFilterController(RandomEventService randomEventService) {
+    public RandomEventController(RandomEventService randomEventService) {
         this.randomEventService = randomEventService;
     }
 
@@ -25,9 +25,9 @@ public class EventByFilterController {
         return randomEventService.getEvent(7);
     }
 
-    @PostMapping("accept/{key}")
-    public void acceptEvent(@PathVariable String key) {
-        randomEventService.accept(key);
+    @PostMapping("accept/{key}/{isCouple}")
+    public void acceptEvent(@PathVariable String key, @PathVariable boolean isCouple) {
+        randomEventService.accept(key, isCouple);
     }
 
     @PostMapping("reject/{key}")
@@ -35,9 +35,4 @@ public class EventByFilterController {
         randomEventService.reject(key);
     }
 
-    //todo private
-    @DeleteMapping("inappropriate")
-    public void removeInappropriateEvents(){
-        randomEventService.deleteInappropriate();
-    }
 }

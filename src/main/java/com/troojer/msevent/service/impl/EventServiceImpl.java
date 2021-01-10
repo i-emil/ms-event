@@ -4,7 +4,6 @@ package com.troojer.msevent.service.impl;
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
-import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.LanguageMapper;
@@ -12,7 +11,6 @@ import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
@@ -26,10 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.troojer.msevent.model.enm.ParticipantType.ALL;
 
 
 @Service
@@ -46,6 +40,12 @@ public class EventServiceImpl implements EventService {
         this.eventMapper = eventMapper;
         this.accessChecker = accessChecker;
         this.imageClient = imageClient;
+    }
+
+    @Override
+    public EventEntity getEventEntity(String key) {
+        return eventRepository.getFirstByKey(key)
+                .orElseThrow(() -> new NotFoundException("event.event.notFound"));
     }
 
     @Override
@@ -112,33 +112,28 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filterDto, int days, List<Long> eventsExceptList, Pageable pageable) {
+    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, int days, List<Long> eventsExceptList, Pageable pageable) {
         if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
         if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
         String userId = accessChecker.getUserId();
-        AgeDto ageDto = filterDto.getAge();
+        AgeDto ageDto = filter.getAge();
+        ParticipantType participantType = ParticipantType.valueOf(filter.getGender());
         List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, ZonedDateTime.now().plusHours(1), ZonedDateTime.now().plusDays(days),
-                ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(),
-                LanguageMapper.dtosToIds(filterDto.getLanguages()), eventsExceptList, userId, pageable);
+                ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
+                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, userId, pageable);
         logger.info("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         System.out.println("qwerty: " + eventEntityList);
         return eventEntityList;
     }
 
-    private EventEntity getEventEntity(String key) {
-        return eventRepository.getFirstByKey(key)
-                .orElseThrow(() -> new NotFoundException("event.event.notFound"));
+    @Override
+    public EventEntity saveOrUpdateEntity(EventEntity eventEntity) {
+        return eventRepository.save(eventEntity);
     }
 
     @Override
-    public Optional<ParticipantType> raisePersonCountAndGetType(EventEntity event, Gender userGender) {
-        Map<ParticipantType, EventParticipantTypeEntity> eventParticipantsType = event.getParticipantsType();
-        ParticipantType participantType = null;
-        if (eventParticipantsType.get(ParticipantType.valueOf(userGender.toString())).increaseAccepted())
-            participantType = ParticipantType.valueOf(userGender.toString());
-        else if (eventParticipantsType.get(ALL).increaseAccepted()) participantType = ALL;
-        eventRepository.save(event);
-        return participantType != null ? Optional.of(participantType) : Optional.empty();
+    public List<EventEntity> getEventsByParticipant(String userId, List<EventStatus> statuses) {
+        return eventRepository.getEventsByParticipant(userId, statuses);
     }
 
 }

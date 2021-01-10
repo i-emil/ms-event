@@ -1,10 +1,8 @@
 package com.troojer.msevent.dao;
 
 import com.troojer.msevent.model.enm.ParticipantStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.troojer.msevent.model.enm.ParticipantType;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,19 +15,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ParticipantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
     @SequenceGenerator(name = "seq_generator", sequenceName = "participant_seq")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "user_id")
+    @EqualsAndHashCode.Include
     private String userId;
 
     @ManyToOne
-    @JoinColumn(name = "event_participant_type_id")
-    private EventParticipantTypeEntity eventParticipantType;
+    @JoinColumn(name = "event_id")
+    private EventEntity event;
+
+    @Enumerated(EnumType.STRING)
+    private ParticipantType type;
 
     private String key;
 

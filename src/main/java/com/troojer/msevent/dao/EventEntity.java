@@ -1,6 +1,7 @@
 package com.troojer.msevent.dao;
 
 import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,9 +11,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "event")
@@ -59,6 +58,10 @@ public class EventEntity {
 
     @Column(name = "max_age")
     private Integer maxAge;
+
+    @Builder.Default
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
+    private final List<ParticipantEntity> participants = new ArrayList<>();
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

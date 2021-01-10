@@ -27,6 +27,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query(value = "UPDATE EventEntity ee SET ee.status=:status WHERE ee.endDate<=:date")
     void setStatusByEndDate(@Param("status") EventStatus status, @Param("date") ZonedDateTime date);
 
+    //todo couple
     @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
             "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
             "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
@@ -35,11 +36,17 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND e.maxAge BETWEEN  :minAge AND :maxAge " +
             "AND :currentAge BETWEEN  e.minAge AND e.maxAge " +
             "AND e = ept.event " +
-//            "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
+            "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
             "AND e = el.event " +
             "AND el.languageId IN :languagesId " +
             "AND e.id NOT IN :eventsExceptList " +
             "AND e.authorId <> :userId ")
-    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, Integer minAge, Integer maxAge, Integer currentAge, List<String> languagesId, List<Long> eventsExceptList, String userId, Pageable pageable);
+    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, String userId, Pageable pageable);
+
+    @Query(value = "SELECT e FROM EventEntity e " +
+            "JOIN ParticipantEntity p ON p.event = e " +
+            "WHERE e.status in :statuses " +
+            "AND p.userId = :userId")
+    List<EventEntity> getEventsByParticipant(String userId, List<EventStatus> statuses);
 
 }
