@@ -39,7 +39,6 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND p.status in :participantStatuses")
     List<SimpleEvent> getEventsByParticipant(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
-    //todo couple
     @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
             "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
             "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +

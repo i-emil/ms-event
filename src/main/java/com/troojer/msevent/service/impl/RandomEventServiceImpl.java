@@ -57,18 +57,9 @@ public class RandomEventServiceImpl implements RandomEventService {
     @Override
     public EventDto getEvent(int days) {
         FilterDto filter = profileClient.getProfileFilter();
-        Optional<RandomEventEntity> pendingRandomEvent = getCurrentPendingRandomEvent();
-        if (pendingRandomEvent.isPresent()) {
-            RandomEventEntity randomEventEntity = pendingRandomEvent.get();
-            Long eventIdForCheck = randomEventEntity.getEvent().getId();
-            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
-            if (!checkEvent.isEmpty())
-                return eventMapper.randomEventEntityToEventDto(pendingRandomEvent.get());
-            else {
-                randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
-                randomEventRepository.save(randomEventEntity);
-            }
-        }
+        Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, days);
+        if (optRandomEventEntity.isPresent())
+            return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
 
         List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
         if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
@@ -142,5 +133,21 @@ public class RandomEventServiceImpl implements RandomEventService {
         randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
         randomEventRepository.save(randomEventEntity);
         logger.info("accept(); event accepted: {}", randomEventEntity);
+    }
+
+    private Optional<RandomEventEntity> checkAndGetPendingEvent(FilterDto filter, int days) {
+        Optional<RandomEventEntity> pendingRandomEvent = getCurrentPendingRandomEvent();
+        if (pendingRandomEvent.isPresent()) {
+            RandomEventEntity randomEventEntity = pendingRandomEvent.get();
+            Long eventIdForCheck = randomEventEntity.getEvent().getId();
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+            if (!checkEvent.isEmpty())
+                return pendingRandomEvent;
+            else {
+                randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
+                randomEventRepository.save(randomEventEntity);
+            }
+        }
+        return Optional.empty();
     }
 }
