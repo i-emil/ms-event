@@ -55,8 +55,7 @@ public class InnerEventServiceImpl implements InnerEventService {
         List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, after, before, eventStatuses,
                 ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
                 LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, userId, pageable);
-        logger.info("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
-        System.out.println("qwerty: " + eventEntityList);
+        logger.debug("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         return eventEntityList;
     }
 

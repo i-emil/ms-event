@@ -9,6 +9,7 @@ import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
+import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NoContentExcepton;
 import com.troojer.msevent.service.InnerEventService;
@@ -30,6 +31,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
+import static com.troojer.msevent.model.enm.UserFoundEventStatus.NO_AVAILABLE;
 
 @Service
 public class RandomEventServiceImpl implements RandomEventService {
@@ -74,7 +76,6 @@ public class RandomEventServiceImpl implements RandomEventService {
 
 
     @Override
-    @Transactional
     public void accept(String key) {
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
@@ -86,10 +87,10 @@ public class RandomEventServiceImpl implements RandomEventService {
                 return;
             }
         }
-        randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
+        randomEventEntity.setStatus(NO_AVAILABLE);
         randomEventRepository.save(randomEventEntity);
         logger.warn("accept(); this event not available now: {}", pendingEvent);
-        throw new ForbiddenException("event.accept.notAvailable");
+        throw new ConflictException("event.accept.notAvailable");
     }
 
     @Override
@@ -144,7 +145,7 @@ public class RandomEventServiceImpl implements RandomEventService {
             if (!checkEvent.isEmpty())
                 return pendingRandomEvent;
             else {
-                randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
+                randomEventEntity.setStatus(NO_AVAILABLE);
                 randomEventRepository.save(randomEventEntity);
             }
         }
