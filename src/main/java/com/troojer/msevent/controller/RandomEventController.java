@@ -15,19 +15,19 @@ public class RandomEventController {
         this.randomEventService = randomEventService;
     }
 
-    @GetMapping("day")
+    @GetMapping("standard/day")
     public EventDto getEventForDay() {
         return randomEventService.getEvent(1);
     }
 
-    @GetMapping("week")
+    @GetMapping("standard/week")
     public EventDto getEventFor7Days() {
-        return randomEventService.getEvent(7);
+        return randomEventService.getEvent( 7);
     }
 
-    @PostMapping("accept/{key}/{isCouple}")
-    public void acceptEvent(@PathVariable String key, @PathVariable boolean isCouple) {
-        randomEventService.accept(key, isCouple);
+    @PostMapping("accept/{key}")
+    public void acceptEvent(@PathVariable String key) {
+        randomEventService.accept(key);
     }
 
     @PostMapping("reject/{key}")

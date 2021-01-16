@@ -10,7 +10,9 @@ public interface ParticipantService {
 
     List<ParticipantDto> getParticipants(String eventKey, List<ParticipantStatus> statuses);
 
-    boolean addParticipant(String eventKey, String userId, ParticipantType userType);
+    void joinEvent(String eventKey, String userId);
 
-    boolean deleteParticipant(String eventKey, String userId, ParticipantStatus reason);
+    boolean leftEvent(String eventKey, String userId, ParticipantStatus reason);
+
+    void leftInappropriateEvents();
 }

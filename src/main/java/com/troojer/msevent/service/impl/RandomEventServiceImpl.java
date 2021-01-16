@@ -8,12 +8,11 @@ import com.troojer.msevent.dao.repository.RandomEventRepository;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
-import com.troojer.msevent.model.enm.ParticipantStatus;
-import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NoContentExcepton;
-import com.troojer.msevent.service.EventService;
+import com.troojer.msevent.service.InnerEventService;
+import com.troojer.msevent.service.OuterEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.service.RandomEventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
-import static com.troojer.msevent.model.enm.ParticipantType.COUPLE;
 
 @Service
 public class RandomEventServiceImpl implements RandomEventService {
@@ -39,18 +38,18 @@ public class RandomEventServiceImpl implements RandomEventService {
     private final RandomEventRepository randomEventRepository;
 
     private final EventMapper eventMapper;
-    private final EventService eventService;
+    private final InnerEventService innerEventService;
 
     private final ProfileClient profileClient;
     private final ParticipantService participantService;
 
     private final AccessCheckerUtil accessChecker;
 
-    public RandomEventServiceImpl(EventMapper eventMapper, EventService eventService, ProfileClient profileClient, RandomEventRepository randomEventRepository, ParticipantService participantService, AccessCheckerUtil accessChecker) {
+    public RandomEventServiceImpl(EventMapper eventMapper, ProfileClient profileClient, RandomEventRepository randomEventRepository, InnerEventService innerEventService, OuterEventService outerEventService, ParticipantService participantService, AccessCheckerUtil accessChecker) {
         this.eventMapper = eventMapper;
-        this.eventService = eventService;
         this.profileClient = profileClient;
         this.randomEventRepository = randomEventRepository;
+        this.innerEventService = innerEventService;
         this.participantService = participantService;
         this.accessChecker = accessChecker;
     }
@@ -61,17 +60,17 @@ public class RandomEventServiceImpl implements RandomEventService {
         Optional<RandomEventEntity> pendingRandomEvent = getCurrentPendingRandomEvent();
         if (pendingRandomEvent.isPresent()) {
             RandomEventEntity randomEventEntity = pendingRandomEvent.get();
-            Long eventForCheckId = randomEventEntity.getEvent().getId();
-            List<EventEntity> checkEvent = eventService.getEventsByFilter(List.of(eventForCheckId), filter, days, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+            Long eventIdForCheck = randomEventEntity.getEvent().getId();
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
             if (!checkEvent.isEmpty())
                 return eventMapper.randomEventEntityToEventDto(pendingRandomEvent.get());
             else {
-                randomEventEntity.setStatus(UserFoundEventStatus.IGNORED);
+                randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
                 randomEventRepository.save(randomEventEntity);
             }
         }
 
-        List<EventEntity> eventsByFilter = eventService.getEventsByFilter(new ArrayList<>(), filter, days, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
         if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
 
         EventEntity eventEntity = getRandomEventFromList(eventsByFilter);
@@ -85,23 +84,15 @@ public class RandomEventServiceImpl implements RandomEventService {
 
     @Override
     @Transactional
-    public void accept(String key, boolean isCouple) {
+    public void accept(String key) {
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {
             FilterDto filter = profileClient.getProfileFilter();
-            List<EventEntity> checkEvent = eventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, 30, getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
             if (!checkEvent.isEmpty()) {
-                Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(isCouple, pendingEvent, filter);
-                if (participantTypeOpt.isPresent()) {
-                    boolean isAdded = participantService.addParticipant(pendingEvent.getKey(), accessChecker.getUserId(), participantTypeOpt.get());
-                    if (isAdded) {
-                        randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
-                        randomEventRepository.save(randomEventEntity);
-                        logger.info("accept(); event accepted: {}", randomEventEntity);
-                        return;
-                    }
-                }
+                joinEvent(pendingEvent, randomEventEntity);
+                return;
             }
         }
         randomEventEntity.setStatus(UserFoundEventStatus.NO_AVAILABLE);
@@ -125,19 +116,6 @@ public class RandomEventServiceImpl implements RandomEventService {
         logger.info("deleteOld(); deleted before {}", beforeDateTime);
     }
 
-    //todo days count
-    @Override
-    public void deleteInappropriate() {
-        List<EventEntity> oldUserEvents = eventService.getEventsByParticipant(accessChecker.getUserId(), List.of(ACTIVE));
-        if (oldUserEvents.isEmpty()) return;
-        List<Long> userEventsId = oldUserEvents.stream().map(EventEntity::getId).collect(Collectors.toList());
-        FilterDto filter = profileClient.getProfileFilter();
-        List<EventEntity> currentUserEvents = eventService.getEventsByFilter(userEventsId, filter, 30, new ArrayList<>(), Pageable.unpaged());
-        List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e)).filter(e -> e.getStatus() == ACTIVE).map(EventEntity::getKey).collect(Collectors.toList());
-        inappropriate.forEach(eventKey -> participantService.deleteParticipant(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
-
-    }
-
     private Optional<RandomEventEntity> getCurrentPendingRandomEvent() {
         return randomEventRepository.getFirstByUserIdAndStatusIn(accessChecker.getUserId(), List.of(UserFoundEventStatus.PENDING));
     }
@@ -159,10 +137,10 @@ public class RandomEventServiceImpl implements RandomEventService {
         return eventList.get(index);
     }
 
-    private Optional<ParticipantType> getParticipantTypeByProfile(boolean isCoupleRequest, EventEntity event, FilterDto filter) {
-        if (!isCoupleRequest) return Optional.of(ParticipantType.valueOf(filter.getGender()));
-        if (event.getParticipantsType().get(COUPLE) != null && filter.getCoupleId() != null) return Optional.of(COUPLE);
-        return Optional.empty();
+    private void joinEvent(EventEntity pendingEvent, RandomEventEntity randomEventEntity) {
+        participantService.joinEvent(pendingEvent.getKey(), accessChecker.getUserId());
+        randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
+        randomEventRepository.save(randomEventEntity);
+        logger.info("accept(); event accepted: {}", randomEventEntity);
     }
-
 }

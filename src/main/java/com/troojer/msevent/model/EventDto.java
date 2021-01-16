@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 @AllArgsConstructor
@@ -48,41 +49,49 @@ public class EventDto {
     @NotNull(message = "event.date.notNull", groups = {CreateValidation.class})
     private @Valid EventDateDto date;
 
+    @JsonInclude(NON_NULL)
     @IsLocationExist(param = "locationId", message = "event.locationId.incorrect", groups = {CreateValidation.class, UpdateValidation.class})
     private LocationDto location;
 
+    @JsonInclude(NON_NULL)
     @PersonCountValidation(param = "total", message = "event.personCount.incorrect", groups = {CreateValidation.class, UpdateValidation.class})
     private Map<ParticipantType, EventParticipantTypeDto> participantsType;
 
+    @JsonInclude(NON_NULL)
     @NotNull(message = "event.age.notNull", groups = CreateValidation.class)
     private @Valid AgeDto age;
 
+    @JsonInclude(NON_NULL)
     @NotEmpty(message = "event.languages.notEmpty", groups = CreateValidation.class)
     @Size(min = 1, max = 10, message = "language.languageList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private Set<@Valid LanguageDto> languages;
 
     //---NOT MANDATORY---
+    @JsonInclude(NON_NULL)
     private @Valid BudgetDto budget;
 
+    @JsonInclude(NON_NULL)
     @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private @Valid Set<TagDto> tags;
 
 //---READ ONLY FIELDS---
 
+    @JsonInclude(NON_NULL)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ParticipantDto> participants;
 
     @JsonProperty(access = READ_ONLY)
     private String key;
 
+    @JsonInclude(NON_NULL)
     @JsonProperty(access = READ_ONLY)
     private String authorId;
 
     @JsonProperty(access = READ_ONLY)
     private EventStatus status;
 
+    @JsonInclude(value = NON_NULL)
     @JsonProperty(access = READ_ONLY)
-    @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private String participationKey;
 
     @JsonIgnore

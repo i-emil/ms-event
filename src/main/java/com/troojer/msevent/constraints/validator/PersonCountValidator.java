@@ -3,7 +3,7 @@ package com.troojer.msevent.constraints.validator;
 import com.troojer.msevent.constraints.PersonCountValidation;
 import com.troojer.msevent.model.EventParticipantTypeDto;
 import com.troojer.msevent.model.enm.ParticipantType;
-import com.troojer.msevent.service.impl.UserPlanConstantsService;
+import com.troojer.msevent.client.UserPlanConstantsClient;
 import com.troojer.msevent.util.AccessCheckerUtil;
 
 import javax.validation.ConstraintValidator;
@@ -25,7 +25,7 @@ public class PersonCountValidator
 
     @Override
     public void initialize(PersonCountValidation constraintAnnotation) {
-        maxPersonCount = UserPlanConstantsService.getMaxPersonCount(accessChecker.getPlan());
+        maxPersonCount = UserPlanConstantsClient.getMaxPersonCount(accessChecker.getPlan());
     }
 
     @Override
@@ -35,14 +35,10 @@ public class PersonCountValidator
         int maleCount = (participantsType.get(MALE) == null) ? 0 : participantsType.get(MALE).getTotal();
         int femaleCount = (participantsType.get(FEMALE) == null) ? 0 : participantsType.get(FEMALE).getTotal();
         int allCount = (participantsType.get(ALL) == null) ? 0 : participantsType.get(ALL).getTotal();
-        int coupleCount = (participantsType.get(COUPLE) == null) ? 0 : participantsType.get(COUPLE).getTotal();
 
-        int totalPersonCount = maleCount + femaleCount + allCount + coupleCount * 2;
+        int totalPersonCount = maleCount + femaleCount + allCount;
 
-        boolean combineCoupleAndPerson = UserPlanConstantsService.isCombineCoupleAndPerson(accessChecker.getPlan());
-        boolean permitted = combineCoupleAndPerson || (coupleCount == 0 || (maleCount == 0 && femaleCount == 0 && allCount == 0));
-
-        return permitted && totalPersonCount > 2 && totalPersonCount <= maxPersonCount;
+        return totalPersonCount > 2 && totalPersonCount <= maxPersonCount;
     }
 
 }

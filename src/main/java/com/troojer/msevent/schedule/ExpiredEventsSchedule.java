@@ -1,7 +1,7 @@
 package com.troojer.msevent.schedule;
 
 import ch.qos.logback.classic.Logger;
-import com.troojer.msevent.service.EventService;
+import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.RandomEventService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.LoggerFactory;
@@ -15,10 +15,10 @@ public class ExpiredEventsSchedule {
 
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
-    private final EventService eventService;
+    private final InnerEventService eventService;
     private final RandomEventService randomEventService;
 
-    public ExpiredEventsSchedule(EventService eventService, RandomEventService randomEventService) {
+    public ExpiredEventsSchedule(InnerEventService eventService, RandomEventService randomEventService) {
         this.eventService = eventService;
         this.randomEventService = randomEventService;
     }

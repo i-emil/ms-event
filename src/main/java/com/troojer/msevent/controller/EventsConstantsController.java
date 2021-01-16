@@ -1,6 +1,6 @@
 package com.troojer.msevent.controller;
 
-import com.troojer.msevent.service.impl.UserPlanConstantsService;
+import com.troojer.msevent.client.UserPlanConstantsClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -10,14 +10,14 @@ import java.util.Map;
 @CrossOrigin
 public class EventsConstantsController {
 
-    private final UserPlanConstantsService userPlanConstantsService;
+    private final UserPlanConstantsClient userPlanConstantsClient;
 
-    public EventsConstantsController(UserPlanConstantsService userPlanConstantsService) {
-        this.userPlanConstantsService = userPlanConstantsService;
+    public EventsConstantsController(UserPlanConstantsClient userPlanConstantsClient) {
+        this.userPlanConstantsClient = userPlanConstantsClient;
     }
 
     @GetMapping()
     public Map<String, String> getConstantsByPlan() {
-        return userPlanConstantsService.getConstantsMap();
+        return userPlanConstantsClient.getConstantsMap();
     }
 }

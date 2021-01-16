@@ -3,36 +3,38 @@ package com.troojer.msevent.controller;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
-import com.troojer.msevent.service.EventService;
+import com.troojer.msevent.service.OuterEventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("events")
 @CrossOrigin
 public class EventController {
 
-    private final EventService eventService;
+    private final OuterEventService eventService;
 
-    public EventController(EventService eventService) {
+    public EventController(OuterEventService eventService) {
         this.eventService = eventService;
     }
 
     @GetMapping("{key}")
     public EventDto getEvent(@PathVariable String key) {
-        return eventService.getUserEvent(key);
+        return eventService.getEvent(key);
     }
 
-    @GetMapping
-    public Page<EventDto> getEvents(Pageable pageable) {
-        return eventService.getUserEvents(pageable);
+    @GetMapping()
+    public Page<EventDto> getEvents(@RequestParam ZonedDateTime after, @RequestParam ZonedDateTime before, Pageable pageable) {
+        return eventService.getEvents(after, before, pageable);
     }
 
     @PostMapping
     public EventDto addEvent(@RequestBody @Validated(CreateValidation.class) EventDto eventDto) {
-        return eventService.addEvent(eventDto);
+        return eventService.createEvent(eventDto);
     }
 
     @PutMapping("{key}")

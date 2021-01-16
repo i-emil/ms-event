@@ -1,24 +1,24 @@
 package com.troojer.msevent.controller;
 
-import com.troojer.msevent.service.RandomEventService;
+import com.troojer.msevent.service.ParticipantService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("private/random-events")
+@RequestMapping("private/event-participants")
 @CrossOrigin
-public class RandomEventPrivateController {
+public class PrivateParticipantController {
 
-    private final RandomEventService randomEventService;
+    private final ParticipantService participantService;
 
-    public RandomEventPrivateController(RandomEventService randomEventService) {
-        this.randomEventService = randomEventService;
+    public PrivateParticipantController(ParticipantService participantService) {
+        this.participantService = participantService;
     }
 
     @DeleteMapping("inappropriate")
     public void removeInappropriateEvents() {
-        randomEventService.deleteInappropriate();
+        participantService.leftInappropriateEvents();
     }
 }

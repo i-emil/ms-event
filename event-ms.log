@@ -2841,7 +2841,7 @@ Unconditional classes:
 27.06.2020 12:32:53.297 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@1566404465 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:32:53.300 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@1566404465 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:32:53.301 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:33:23.219580500Z
-27.06.2020 12:32:53.307 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:32:53.307 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:32:53.307 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(2050227499<open>)] for JPA transaction
 27.06.2020 12:32:53.308 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:32:53.308 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -2874,7 +2874,7 @@ Unconditional classes:
 27.06.2020 12:33:53.351 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@841118235 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:33:53.355 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@841118235 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:33:53.355 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:34:23.344682300Z
-27.06.2020 12:33:53.356 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:33:53.356 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:33:53.356 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(904466246<open>)] for JPA transaction
 27.06.2020 12:33:53.356 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:33:53.356 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -2906,7 +2906,7 @@ Unconditional classes:
 27.06.2020 12:34:53.372 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@2144084941 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:34:53.377 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@2144084941 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:34:53.377 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:35:23.367520Z
-27.06.2020 12:34:53.377 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:34:53.377 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:34:53.377 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(698076301<open>)] for JPA transaction
 27.06.2020 12:34:53.378 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:34:53.378 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -2938,7 +2938,7 @@ Unconditional classes:
 27.06.2020 12:35:53.390 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@1623560531 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:35:53.395 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@1623560531 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:35:53.395 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:36:23.386737400Z
-27.06.2020 12:35:53.396 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:35:53.396 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:35:53.396 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(1374887300<open>)] for JPA transaction
 27.06.2020 12:35:53.396 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:35:53.396 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -2970,7 +2970,7 @@ Unconditional classes:
 27.06.2020 12:36:53.411 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@190317600 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@190317600 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:36:53.414 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:37:23.407505800Z
-27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(1526958636<open>)] for JPA transaction
 27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:36:53.414 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -3002,7 +3002,7 @@ Unconditional classes:
 27.06.2020 12:37:53.430 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@1027481089 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@1027481089 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:37:53.433 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:38:23.426941200Z
-27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(327644914<open>)] for JPA transaction
 27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:37:53.433 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin
@@ -3034,7 +3034,7 @@ Unconditional classes:
 27.06.2020 12:38:53.450 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Committing JDBC transaction on Connection [HikariProxyConnection@2016785119 wrapping org.postgresql.jdbc.PgConnection@415795f3]
 27.06.2020 12:38:53.452 [scheduling-1] DEBUG o.s.j.d.DataSourceTransactionManager - Releasing JDBC Connection [HikariProxyConnection@2016785119 wrapping org.postgresql.jdbc.PgConnection@415795f3] after transaction
 27.06.2020 12:38:53.452 [scheduling-1] DEBUG n.j.s.c.DefaultLockingTaskExecutor - Locked 'closeOldEvents', lock will be held at most until 2020-06-27T08:39:23.447165800Z
-27.06.2020 12:38:53.452 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+27.06.2020 12:38:53.452 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Creating new transaction with name [com.troojer.msevent.service3.impl.EventServiceImpl.setEndedStatusToAllExpired]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
 27.06.2020 12:38:53.453 [scheduling-1] DEBUG o.s.orm.jpa.JpaTransactionManager - Opened new EntityManager [SessionImpl(2083997857<open>)] for JPA transaction
 27.06.2020 12:38:53.453 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - On TransactionImpl creation, JpaCompliance#isJpaTransactionComplianceEnabled == false
 27.06.2020 12:38:53.453 [scheduling-1] DEBUG o.h.e.t.internal.TransactionImpl - begin

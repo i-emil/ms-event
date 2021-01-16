@@ -1,7 +1,6 @@
 package com.troojer.msevent.dao;
 
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,23 +18,27 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"tags", "languages", "participantsType"})
-@Where(clause = "status != 'DELETED'")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EventEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_seq_generator")
     @SequenceGenerator(name = "event_seq_generator", sequenceName = "event_seq")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Builder.Default
+    @EqualsAndHashCode.Include
     private String key = UUID.randomUUID().toString();
 
     @Column(name = "author_id")
+    @EqualsAndHashCode.Include
     private String authorId;
 
+    @EqualsAndHashCode.Include
     private String title;
 
+    @EqualsAndHashCode.Include
     private String description;
 
     private String cover;
@@ -60,12 +63,12 @@ public class EventEntity {
     private Integer maxAge;
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
-    private final List<ParticipantEntity> participants = new ArrayList<>();
-
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.ACTIVE;
+
+//    @Builder.Default
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
+//    private final List<ParticipantEntity> participants = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     @MapKey(name = "type")

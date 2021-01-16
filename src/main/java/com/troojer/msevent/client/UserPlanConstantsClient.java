@@ -1,4 +1,4 @@
-package com.troojer.msevent.service.impl;
+package com.troojer.msevent.client;
 
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.springframework.stereotype.Service;
@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class UserPlanConstantsService {
+public class UserPlanConstantsClient {
 
     private final AccessCheckerUtil accessChecker;
 
-    protected UserPlanConstantsService(AccessCheckerUtil accessChecker) {
+    protected UserPlanConstantsClient(AccessCheckerUtil accessChecker) {
         this.accessChecker = accessChecker;
     }
 
@@ -57,20 +57,6 @@ public class UserPlanConstantsService {
         };
     }
 
-    public static boolean isCombineCoupleAndPerson(String plan) {
-        return switch (plan) {
-            case "BASIC" -> false;
-            case "PREMIUM" -> false;
-            case "PREMIUM_PLUS" -> true;
-            case "TOUR_AGENCY" -> true;
-            case "EVENT_AGENCY" -> true;
-            case "TOUR_AGENCY_PLUS" -> true;
-            case "EVENT_AGENCY_PLUS" -> true;
-            case "UNLIMITED" -> true;
-            default -> false;
-        };
-    }
-
     public Map<String, String> getConstantsMap(){
         String plan = accessChecker.getPlan();
         System.out.println("dddd"+plan);
@@ -78,7 +64,6 @@ public class UserPlanConstantsService {
         map.put("maxPersonCount", Integer.toString(getMaxPersonCount(plan)));
         map.put("maxEventDurationHour", Integer.toString(getMaxEventDurationHour(plan)));
         map.put("daysBeforeStarting", Integer.toString(getMaxEventDurationHour(plan)));
-        map.put("combineCoupleAndPerson", Boolean.toString(isCombineCoupleAndPerson(plan)));
         return map;
     }
 }

@@ -4,11 +4,13 @@ import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
+import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.enm.ParticipantStatus;
+import com.troojer.msevent.service.ParticipantService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
@@ -18,20 +20,32 @@ public class EventMapper {
 
     private final LanguageMapper languageMapper;
     private final TagMapper tagMapper;
-    private final ParticipantMapper participantMapper;
+    private final ParticipantService participantService;
     private final LocationClient locationClient;
     private final EventParticipantTypeMapper participantTypeMapper;
     private final BudgetMaper budgetMaper;
     private final ImageClient imageClient;
 
-    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantMapper participantMapper, LocationClient locationClient, EventParticipantTypeMapper participantTypeMapper, BudgetMaper budgetMaper, ImageClient imageClient) {
+    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantService participantService, LocationClient locationClient, EventParticipantTypeMapper participantTypeMapper, BudgetMaper budgetMaper, ImageClient imageClient) {
         this.languageMapper = languageMapper;
         this.tagMapper = tagMapper;
-        this.participantMapper = participantMapper;
+        this.participantService = participantService;
         this.locationClient = locationClient;
         this.participantTypeMapper = participantTypeMapper;
         this.budgetMaper = budgetMaper;
         this.imageClient = imageClient;
+    }
+
+    public EventDto simpleToDto(SimpleEvent simpleEvent) {
+        return EventDto
+                .builder()
+                .key(simpleEvent.getKey())
+                .title(simpleEvent.getTitle())
+                .description(simpleEvent.getDescription())
+                .cover(imageClient.getImageUrl(simpleEvent.getCover()))
+                .date(EventDateMapper.entityDatesToDto(simpleEvent.getStartDate(), simpleEvent.getEndDate()))
+                .status(simpleEvent.getStatus())
+                .build();
     }
 
     public EventDto entityToDto(EventEntity entity) {
@@ -45,7 +59,7 @@ public class EventMapper {
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
-                .participants((entity.getParticipants().stream().filter(p->p.getStatus()== OK).map(participantMapper::entityToDto).collect(Collectors.toList())))
+                .participants(participantService.getParticipants(entity.getKey(), List.of(OK)))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
@@ -99,6 +113,10 @@ public class EventMapper {
         }
         if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), entity));
         return entity;
+    }
+
+    public List<EventDto> simpleEventsToDtos(List<SimpleEvent> simpleEvents){
+        return simpleEvents.stream().map(this::simpleToDto).collect(Collectors.toList());
     }
 
 }

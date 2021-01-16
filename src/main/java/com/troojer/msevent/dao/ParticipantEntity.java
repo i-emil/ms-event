@@ -35,8 +35,6 @@ public class ParticipantEntity {
     @Enumerated(EnumType.STRING)
     private ParticipantType type;
 
-    private String key;
-
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ParticipantStatus status = ParticipantStatus.OK;

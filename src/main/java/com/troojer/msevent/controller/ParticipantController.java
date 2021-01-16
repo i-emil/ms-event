@@ -23,7 +23,7 @@ public class ParticipantController {
 
     @DeleteMapping("{eventKey}")
     public void leftEvent(@PathVariable String eventKey) {
-        participantService.deleteParticipant(eventKey, accessChecker.getUserId(), LEFT);
+        participantService.leftEvent(eventKey, accessChecker.getUserId(), LEFT);
     }
 
 }
