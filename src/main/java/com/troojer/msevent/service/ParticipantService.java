@@ -12,6 +12,8 @@ public interface ParticipantService {
 
     void joinEvent(String eventKey, String userId);
 
+    void leftEvent(String eventKey);
+
     boolean leftEvent(String eventKey, String userId, ParticipantStatus reason);
 
     void leftInappropriateEvents();

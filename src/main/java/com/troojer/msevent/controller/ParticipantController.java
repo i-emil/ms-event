@@ -1,5 +1,7 @@
 package com.troojer.msevent.controller;
 
+import com.troojer.msevent.model.exception.ForbiddenException;
+import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +25,7 @@ public class ParticipantController {
 
     @DeleteMapping("{eventKey}")
     public void leftEvent(@PathVariable String eventKey) {
-        participantService.leftEvent(eventKey, accessChecker.getUserId(), LEFT);
+        participantService.leftEvent(eventKey);
     }
 
 }

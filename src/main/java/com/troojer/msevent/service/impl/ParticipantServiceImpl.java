@@ -13,6 +13,7 @@ import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
+import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
@@ -56,21 +57,32 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     public void joinEvent(String eventKey, String userId) {
-        try {
-            EventEntity event = innerEventService.getEventEntity(eventKey).get();
-            Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(event);
-            if (event.getStatus() == EventStatus.ACTIVE && participantTypeOpt.isPresent()) {
-                Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOpt.get());
-                if (eventParticipantTypeOpt.isPresent()) {
-                    EventParticipantTypeEntity eventParticipantType = eventParticipantTypeOpt.get();
-                    addParticipant(eventParticipantType.getId(), ParticipantEntity.builder().userId(userId).event(event).type(eventParticipantType.getType()).build());
-                    return;
+        Optional<EventEntity> eventOpt = innerEventService.getEventEntity(eventKey);
+        if (eventOpt.isPresent()) {
+            EventEntity event = eventOpt.get();
+            try {
+
+                Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(event);
+                if (event.getStatus() == EventStatus.ACTIVE && participantTypeOpt.isPresent()) {
+                    Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOpt.get());
+                    if (eventParticipantTypeOpt.isPresent()) {
+                        EventParticipantTypeEntity eventParticipantType = eventParticipantTypeOpt.get();
+                        addParticipant(eventParticipantType.getId(), ParticipantEntity.builder().userId(userId).event(event).type(eventParticipantType.getType()).build());
+                        return;
+                    }
                 }
+            } catch (Exception e) {
+                logger.warn("joinEvent(); something wrong; eventKey: {}; userId: {}", eventKey, userId);
             }
-        } catch (Exception e) {
-            logger.warn("joinEvent(); something wrong; eventKey: {}; userId: {}", eventKey, userId);
         }
+
         throw new ForbiddenException("event.accept.notAvailable");
+    }
+
+    @Override
+    public void leftEvent(String eventKey) {
+        if (!leftEvent(eventKey, accessChecker.getUserId(), LEFT))
+            throw new NotFoundException("participant.left.notFound");
     }
 
     @Override
@@ -82,13 +94,14 @@ public class ParticipantServiceImpl implements ParticipantService {
                 if (eventOpt.isPresent()) {
                     EventEntity event = eventOpt.get();
                     Optional<ParticipantEntity> participantOpt = participantRepository.getFirstByEventIdAndUserIdAndStatusIn(event.getId(), userId, List.of(OK));
-                    participantOpt.ifPresent(p -> {
-                        p.setStatus(reason);
-                        event.getParticipantsType().get(p.getType()).decreaseAccepted();
-                        participantRepository.save(p);
+                    if (participantOpt.isPresent()) {
+                        ParticipantEntity participant = participantOpt.get();
+                        participant.setStatus(reason);
+                        event.getParticipantsType().get(participant.getType()).decreaseAccepted();
+                        participantRepository.save(participant);
                         innerEventService.saveOrUpdateEntity(event);
-                    });
-                    return true;
+                        return true;
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("deleteParticipant(); exc: ", e);
