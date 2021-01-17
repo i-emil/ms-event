@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://postgres-postgresql.postgres.svc.cluster.local:5432/ms_event
-    username: ms_event
+    username: ms-event
     password: P&mpQH0fN00i
   liquibase:
     enabled: true
