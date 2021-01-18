@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://5.134.48.221:55557/ms_event
+    username: postgres
+    password: P@ssw0rD
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+client:
+  profile:
+    url: http://localhost:8083/profile/
+  localization:
+    url: http://localhost:8084/localization/
+  tag:
+    url: http://localhost:8085/tags/
+  participant:
+    url: http://localhost:8086/private/participants/
+  user-plan:
+    url: http://localhost:8087/user-plans/
+  location:
+    url: http://localhost:8089/location/
+  image:
+    url: http://localhost:8090/private/images/
