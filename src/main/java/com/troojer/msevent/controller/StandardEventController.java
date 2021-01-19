@@ -6,19 +6,23 @@ import com.troojer.msevent.model.label.UpdateValidation;
 import com.troojer.msevent.service.OuterEventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.MediaSize;
 import java.time.ZonedDateTime;
 
+import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
+
 @RestController
-@RequestMapping("events")
+@RequestMapping("events/standard")
 @CrossOrigin
-public class EventController {
+public class StandardEventController {
 
     private final OuterEventService eventService;
 
-    public EventController(OuterEventService eventService) {
+    public StandardEventController(OuterEventService eventService) {
         this.eventService = eventService;
     }
 
@@ -28,7 +32,8 @@ public class EventController {
     }
 
     @GetMapping()
-    public Page<EventDto> getEvents(@RequestParam ZonedDateTime after, @RequestParam ZonedDateTime before, Pageable pageable) {
+    public Page<EventDto> getEvents(@RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime after, @RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime before, Pageable pageable) {
+        System.out.println("after "+after.getZone());
         return eventService.getEvents(after, before, pageable);
     }
 

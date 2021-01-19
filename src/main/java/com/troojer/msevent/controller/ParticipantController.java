@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.troojer.msevent.model.enm.ParticipantStatus.LEFT;
 
 @RestController
-@RequestMapping("event-participants")
+@RequestMapping("events/participants")
 public class ParticipantController {
 
     private final ParticipantService participantService;

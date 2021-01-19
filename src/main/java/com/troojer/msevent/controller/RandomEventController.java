@@ -5,7 +5,7 @@ import com.troojer.msevent.service.RandomEventService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("random-events")
+@RequestMapping("events/random")
 @CrossOrigin
 public class RandomEventController {
 

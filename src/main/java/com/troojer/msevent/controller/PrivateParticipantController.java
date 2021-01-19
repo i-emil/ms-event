@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("private/event-participants")
+@RequestMapping("private/events/participants")
 @CrossOrigin
 public class PrivateParticipantController {
 

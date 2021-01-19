@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("events-rules")
+@RequestMapping("events/rules")
 @CrossOrigin
 public class EventsConstantsController {
 
