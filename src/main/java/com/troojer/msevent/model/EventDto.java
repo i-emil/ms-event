@@ -47,7 +47,7 @@ public class EventDto {
     private String cover;
 
     @NotNull(message = "event.date.notNull", groups = {CreateValidation.class})
-    private @Valid EventDateDto date;
+    private @Valid StartEndDatesDto date;
 
     @JsonInclude(NON_NULL)
     @IsLocationExist(param = "locationId", message = "event.locationId.incorrect", groups = {CreateValidation.class, UpdateValidation.class})

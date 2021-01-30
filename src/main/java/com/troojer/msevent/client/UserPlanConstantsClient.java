@@ -43,7 +43,11 @@ public class UserPlanConstantsClient {
         };
     }
 
-    public static int getDaysBeforeStarting(String plan) {
+    public static int getMinMinutesBeforeStarting(){
+        return 3;
+    }
+
+    public static int getMaxDaysBeforeStarting(String plan) {
         return switch (plan) {
             case "BASIC" -> 7;
             case "PREMIUM" -> 14;

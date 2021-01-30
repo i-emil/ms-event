@@ -1,26 +1,26 @@
 package com.troojer.msevent.mapper;
 
-import com.troojer.msevent.model.EventDateDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class EventDateMapper {
+public class StartEndDatesMapper {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
 
-    public static EventDateDto entityDatesToDto(ZonedDateTime startDate, ZonedDateTime endDate) {
-        return EventDateDto.builder()
+    public static StartEndDatesDto entityDatesToDto(ZonedDateTime startDate, ZonedDateTime endDate) {
+        return StartEndDatesDto.builder()
                 .start(startDate.format(formatter))
                 .end(endDate.format(formatter))
                 .build();
     }
 
-    public static ZonedDateTime dtoToStartDate(EventDateDto dateDto) {
+    public static ZonedDateTime dtoToStartDate(StartEndDatesDto dateDto) {
         return ZonedDateTime.parse(dateDto.getStart(), formatter);
     }
 
-    public static ZonedDateTime dtoToEndDate(EventDateDto dateDto) {
+    public static ZonedDateTime dtoToEndDate(StartEndDatesDto dateDto) {
         return ZonedDateTime.parse(dateDto.getEnd(), formatter);
     }
 }

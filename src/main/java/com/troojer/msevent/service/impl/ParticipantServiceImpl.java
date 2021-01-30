@@ -5,6 +5,7 @@ import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.dao.ParticipantEntity;
+import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.ParticipantRepository;
 import com.troojer.msevent.mapper.ParticipantMapper;
 import com.troojer.msevent.model.FilterDto;
@@ -113,12 +114,12 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public void leftInappropriateEvents() {
-        List<EventEntity> oldUserEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK));
+        List<SimpleEvent> oldUserEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK));
         if (oldUserEvents.isEmpty()) return;
-        List<Long> userEventsId = oldUserEvents.stream().map(EventEntity::getId).collect(Collectors.toList());
+        List<Long> userEventsId = oldUserEvents.stream().map(SimpleEvent::getId).collect(Collectors.toList());
         FilterDto filter = profileClient.getProfileFilter();
-        List<EventEntity> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), Pageable.unpaged());
-        List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e) && e.getStatus() == ACTIVE).map(EventEntity::getKey).collect(Collectors.toList());
+        List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
+        List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e.getId()) && e.getStatus() == ACTIVE).map(SimpleEvent::getKey).collect(Collectors.toList());
         inappropriate.forEach(eventKey -> leftEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
     }
 

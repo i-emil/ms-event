@@ -19,7 +19,7 @@ public interface InnerEventService {
 
     EventEntity saveOrUpdateEntity(EventEntity eventEntity);
 
-    List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
+    List<SimpleEvent> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
     void setEndedStatusToAllExpired();
 }

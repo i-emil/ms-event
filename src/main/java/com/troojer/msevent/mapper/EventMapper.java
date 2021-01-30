@@ -43,7 +43,7 @@ public class EventMapper {
                 .title(simpleEvent.getTitle())
                 .description(simpleEvent.getDescription())
                 .cover(imageClient.getImageUrl(simpleEvent.getCover()))
-                .date(EventDateMapper.entityDatesToDto(simpleEvent.getStartDate(), simpleEvent.getEndDate()))
+                .date(StartEndDatesMapper.entityDatesToDto(simpleEvent.getStartDate(), simpleEvent.getEndDate()))
                 .status(simpleEvent.getStatus())
                 .build();
     }
@@ -55,7 +55,7 @@ public class EventMapper {
                 .location(locationClient.getLocation(entity.getLocationId()))
                 .description(entity.getDescription())
                 .cover(entity.getCover() != null ? imageClient.getImageUrl(entity.getCover()) : null)
-                .date(EventDateMapper.entityDatesToDto(entity.getStartDate(), entity.getEndDate()))
+                .date(StartEndDatesMapper.entityDatesToDto(entity.getStartDate(), entity.getEndDate()))
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
@@ -79,8 +79,8 @@ public class EventMapper {
                 .locationId(dto.getLocation().getId())
                 .description(dto.getDescription().strip().toLowerCase())
                 .cover(dto.getCover())
-                .startDate(EventDateMapper.dtoToStartDate(dto.getDate()))
-                .endDate(EventDateMapper.dtoToEndDate(dto.getDate()))
+                .startDate(StartEndDatesMapper.dtoToStartDate(dto.getDate()))
+                .endDate(StartEndDatesMapper.dtoToEndDate(dto.getDate()))
                 .title(dto.getTitle().strip().toLowerCase())
                 .budget((dto.getBudget() != null) ? dto.getBudget().getAmount() : null)
                 .currency((dto.getBudget() != null) ? dto.getBudget().getCurrency().getCode() : null)
@@ -99,8 +99,8 @@ public class EventMapper {
         if (dto.getLocation() != null && dto.getLocation().getId() != null)
             entity.setLocationId(dto.getLocation().getId());
         if (dto.getDate() != null) {
-            entity.setStartDate(EventDateMapper.dtoToStartDate(dto.getDate()));
-            entity.setEndDate(EventDateMapper.dtoToEndDate(dto.getDate()));
+            entity.setStartDate(StartEndDatesMapper.dtoToStartDate(dto.getDate()));
+            entity.setEndDate(StartEndDatesMapper.dtoToEndDate(dto.getDate()));
         }
         if (dto.getBudget() != null) {
             entity.setBudget(dto.getBudget().getAmount());

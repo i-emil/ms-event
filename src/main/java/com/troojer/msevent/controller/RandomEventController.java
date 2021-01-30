@@ -1,7 +1,10 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.StartEndDatesDto;
+import com.troojer.msevent.model.label.FilterValidation;
 import com.troojer.msevent.service.RandomEventService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,14 +18,9 @@ public class RandomEventController {
         this.randomEventService = randomEventService;
     }
 
-    @GetMapping("standard/day")
-    public EventDto getEventForDay() {
-        return randomEventService.getEvent(1);
-    }
-
-    @GetMapping("standard/week")
-    public EventDto getEventFor7Days() {
-        return randomEventService.getEvent( 7);
+    @GetMapping("standard")
+    public EventDto getEventForDay(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
+        return randomEventService.getEvent(startEndDatesDto);
     }
 
     @PostMapping("accept/{key}")

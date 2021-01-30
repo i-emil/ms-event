@@ -2,7 +2,7 @@ package com.troojer.msevent.constraints.validator;
 
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.constraints.ConsistentEventDuration;
-import com.troojer.msevent.model.EventDateDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.client.UserPlanConstantsClient;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventDurationValidator
-        implements ConstraintValidator<ConsistentEventDuration, EventDateDto> {
+        implements ConstraintValidator<ConsistentEventDuration, StartEndDatesDto> {
 
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
@@ -32,13 +32,13 @@ public class EventDurationValidator
     }
 
     @Override
-    public boolean isValid(EventDateDto eventDateDto, ConstraintValidatorContext context) {
+    public boolean isValid(StartEndDatesDto startEndDatesDto, ConstraintValidatorContext context) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
         ZonedDateTime startDate;
         ZonedDateTime endDate;
         try {
-            startDate = ZonedDateTime.parse(eventDateDto.getStart(), dateTimeFormatter);
-            endDate = ZonedDateTime.parse(eventDateDto.getEnd(), dateTimeFormatter);
+            startDate = ZonedDateTime.parse(startEndDatesDto.getStart(), dateTimeFormatter);
+            endDate = ZonedDateTime.parse(startEndDatesDto.getEnd(), dateTimeFormatter);
         } catch (Exception e) {
             return false;
         }

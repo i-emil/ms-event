@@ -6,8 +6,11 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.repository.RandomEventRepository;
 import com.troojer.msevent.mapper.EventMapper;
+import com.troojer.msevent.mapper.StartEndDatesMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
+import com.troojer.msevent.model.StartEndDatesDto;
+import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -57,13 +60,15 @@ public class RandomEventServiceImpl implements RandomEventService {
     }
 
     @Override
-    public EventDto getEvent(int days) {
+    public EventDto getEvent(StartEndDatesDto dates) {
+        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
         FilterDto filter = profileClient.getProfileFilter();
-        Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, days);
+        Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, start, end);
         if (optRandomEventEntity.isPresent())
             return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
 
-        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
         if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
 
         EventEntity eventEntity = getRandomEventFromList(eventsByFilter);
@@ -77,6 +82,8 @@ public class RandomEventServiceImpl implements RandomEventService {
 
     @Override
     public void accept(String key) {
+        if (!innerEventService.getParticipantEvents(ZonedDateTime.now(), ZonedDateTime.now().plusMonths(2), accessChecker.getUserId(), List.of(ACTIVE), List.of(ParticipantStatus.OK)).isEmpty())
+            throw new RuntimeException();
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {
@@ -136,12 +143,12 @@ public class RandomEventServiceImpl implements RandomEventService {
         logger.info("accept(); event accepted: {}", randomEventEntity);
     }
 
-    private Optional<RandomEventEntity> checkAndGetPendingEvent(FilterDto filter, int days) {
+    private Optional<RandomEventEntity> checkAndGetPendingEvent(FilterDto filter, ZonedDateTime after, ZonedDateTime before) {
         Optional<RandomEventEntity> pendingRandomEvent = getCurrentPendingRandomEvent();
         if (pendingRandomEvent.isPresent()) {
             RandomEventEntity randomEventEntity = pendingRandomEvent.get();
             Long eventIdForCheck = randomEventEntity.getEvent().getId();
-            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusDays(days), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, after, before, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), Pageable.unpaged());
             if (!checkEvent.isEmpty())
                 return pendingRandomEvent;
             else {

@@ -3,6 +3,7 @@ package com.troojer.msevent.service.impl;
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
+import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.LanguageMapper;
 import com.troojer.msevent.model.AgeDto;
@@ -65,9 +66,8 @@ public class InnerEventServiceImpl implements InnerEventService {
     }
 
     @Override
-    public List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses) {
-        return List.of(EventEntity.builder().build());
-        //        return eventRepository.getEventsByParticipant(after, before, userId, eventStatuses, participantStatuses);
+    public List<SimpleEvent> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses) {
+        return eventRepository.getEventsByParticipant(after, before, userId, eventStatuses, participantStatuses);
     }
 
 }

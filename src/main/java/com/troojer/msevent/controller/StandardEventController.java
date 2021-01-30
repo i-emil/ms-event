@@ -31,9 +31,9 @@ public class StandardEventController {
         return eventService.getEvent(key);
     }
 
-    @GetMapping()
+    //todo check date
+    @GetMapping
     public Page<EventDto> getEvents(@RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime after, @RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime before, Pageable pageable) {
-        System.out.println("after "+after.getZone());
         return eventService.getEvents(after, before, pageable);
     }
 
