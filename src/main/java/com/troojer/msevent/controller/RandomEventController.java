@@ -18,8 +18,9 @@ public class RandomEventController {
         this.randomEventService = randomEventService;
     }
 
-    @GetMapping("standard")
+    @PostMapping("standard")
     public EventDto getEventForDay(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
+        System.out.println("cvb: " + startEndDatesDto);
         return randomEventService.getEvent(startEndDatesDto);
     }
 
