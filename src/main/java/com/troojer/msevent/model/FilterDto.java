@@ -15,7 +15,7 @@ public class FilterDto {
 
     private AgeDto age;
 
-    private Long locationId;
+//    private Long locationId;
 
     private Set<LanguageDto> languages;
 

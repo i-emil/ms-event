@@ -6,7 +6,9 @@ import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
+import com.troojer.msevent.mapper.StartEndDatesMapper;
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
@@ -58,8 +60,12 @@ public class OuterEventServiceImpl implements OuterEventService {
 
     @Override
     @Transactional
-    public Page<EventDto> getEvents(ZonedDateTime from, ZonedDateTime until, Pageable pageable) {
-        return eventRepository.getAuthorEvents(from, until, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+    public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
+        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        if (end.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now();
+        return eventRepository.getAuthorEvents(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
     }
 
     @Override

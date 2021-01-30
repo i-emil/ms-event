@@ -2,6 +2,7 @@ package com.troojer.msevent.service;
 
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,7 @@ public interface OuterEventService {
 
     EventDto getEvent(String key);
 
-    Page<EventDto> getEvents(ZonedDateTime from, ZonedDateTime before, Pageable pageable);
+    Page<EventDto> getEvents(StartEndDatesDto startEndDatesDto, Pageable pageable);
 
     EventDto createEvent(EventDto eventDto);
 

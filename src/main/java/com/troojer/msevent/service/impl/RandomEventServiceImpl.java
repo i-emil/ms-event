@@ -62,7 +62,9 @@ public class RandomEventServiceImpl implements RandomEventService {
     @Override
     public EventDto getEvent(StartEndDatesDto dates) {
         ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        if (start.isBefore(ZonedDateTime.now())) start = ZonedDateTime.now();
         ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        if (end.isAfter(ZonedDateTime.now().plusMonths(6))) start = ZonedDateTime.now().plusMonths(6);
         FilterDto filter = profileClient.getProfileFilter();
         Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, start, end);
         if (optRandomEventEntity.isPresent())

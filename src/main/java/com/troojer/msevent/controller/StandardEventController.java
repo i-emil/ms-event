@@ -1,19 +1,15 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.CreateValidation;
+import com.troojer.msevent.model.label.FilterValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
 import com.troojer.msevent.service.OuterEventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.print.attribute.standard.MediaSize;
-import java.time.ZonedDateTime;
-
-import static org.springframework.format.annotation.DateTimeFormat.ISO.*;
 
 @RestController
 @RequestMapping("events/standard")
@@ -31,10 +27,9 @@ public class StandardEventController {
         return eventService.getEvent(key);
     }
 
-    //todo check date
-    @GetMapping
-    public Page<EventDto> getEvents(@RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime after, @RequestParam @DateTimeFormat(iso = DATE_TIME) ZonedDateTime before, Pageable pageable) {
-        return eventService.getEvents(after, before, pageable);
+    @PostMapping("filter")
+    public Page<EventDto> getEvents(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
+        return eventService.getEvents(startEndDatesDto, pageable);
     }
 
     @PostMapping
