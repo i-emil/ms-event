@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("events/random")
-@CrossOrigin
 public class RandomEventController {
 
     private final RandomEventService randomEventService;

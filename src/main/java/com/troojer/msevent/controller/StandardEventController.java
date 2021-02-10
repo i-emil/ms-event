@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("events/standard")
-@CrossOrigin
 public class StandardEventController {
 
     private final OuterEventService eventService;

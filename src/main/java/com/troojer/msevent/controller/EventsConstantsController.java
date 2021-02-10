@@ -7,7 +7,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("events/rules")
-@CrossOrigin
 public class EventsConstantsController {
 
     private final UserPlanConstantsClient userPlanConstantsClient;
