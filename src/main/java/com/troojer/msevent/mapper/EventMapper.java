@@ -7,6 +7,7 @@ import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.InvitingDto;
 import com.troojer.msevent.service.ParticipantService;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +65,7 @@ public class EventMapper {
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
+                .inviting(InvitingDto.builder().active(entity.isInviteActive()).key(entity.getInviteKey()).password(entity.getInvitePassword()).build())
                 .build();
     }
 
@@ -90,6 +92,7 @@ public class EventMapper {
         eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), eventEntity));
         eventEntity.setParticipantsType(participantTypeMapper.dtosToEntities(dto.getParticipantsType(), eventEntity));
+        setInviting(eventEntity, dto);
         return eventEntity;
     }
 
@@ -112,11 +115,18 @@ public class EventMapper {
             entity.setCover(dto.getCover());
         }
         if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), entity));
+        setInviting(entity, dto);
         return entity;
     }
 
-    public List<EventDto> simpleEventsToDtos(List<SimpleEvent> simpleEvents){
+    public List<EventDto> simpleEventsToDtos(List<SimpleEvent> simpleEvents) {
         return simpleEvents.stream().map(this::simpleToDto).collect(Collectors.toList());
     }
 
+    private void setInviting(EventEntity eventEntity, EventDto eventDto) {
+        if (eventDto.getInviting() != null) {
+            eventEntity.setInviteActive(eventDto.getInviting().isActive());
+            eventEntity.setInvitePassword(eventDto.getInviting().getPassword());
+        }
+    }
 }

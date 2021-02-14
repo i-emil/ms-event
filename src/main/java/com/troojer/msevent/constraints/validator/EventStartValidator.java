@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -38,7 +39,7 @@ public class EventStartValidator
         } catch (Exception e) {
             return false;
         }
-        return startDate.toLocalDate().compareTo(LocalDate.now().plus(maxPeriodBeforeStarting)) <= 0 &&
-                startDate.toLocalDate().compareTo(LocalDate.now().plus(minPeriodBeforeStarting)) >= 0;
+        return startDate.toLocalDateTime().compareTo(LocalDateTime.now().plus(maxPeriodBeforeStarting)) <= 0 &&
+                startDate.toLocalDateTime().compareTo(LocalDateTime.now().plus(minPeriodBeforeStarting)) >= 0;
     }
 }

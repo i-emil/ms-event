@@ -24,6 +24,7 @@ public class ParticipantRepositoryImpl implements ParticipantExtendedRepository 
         EventParticipantTypeEntity entity = entityManager.find(EventParticipantTypeEntity.class, participantTypeId, LockModeType.PESSIMISTIC_READ);
         if (!entity.isFree())
             throw new IllegalStateException("addParticipant(); can't added participant " + participant.getUserId() + " to participantType " + participantTypeId);
+        entity.increaseAccepted();
         entityManager.persist(participant);
         entityManager.persist(entity);
     }

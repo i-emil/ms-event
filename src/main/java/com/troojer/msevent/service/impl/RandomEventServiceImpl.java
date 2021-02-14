@@ -84,8 +84,6 @@ public class RandomEventServiceImpl implements RandomEventService {
 
     @Override
     public void accept(String key) {
-        if (!innerEventService.getParticipantEvents(ZonedDateTime.now(), ZonedDateTime.now().plusMonths(2), accessChecker.getUserId(), List.of(ACTIVE), List.of(ParticipantStatus.OK)).isEmpty())
-            throw new RuntimeException();
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {

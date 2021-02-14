@@ -62,7 +62,6 @@ public class ParticipantServiceImpl implements ParticipantService {
         if (eventOpt.isPresent()) {
             EventEntity event = eventOpt.get();
             try {
-
                 Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(event);
                 if (event.getStatus() == EventStatus.ACTIVE && participantTypeOpt.isPresent()) {
                     Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOpt.get());
@@ -76,7 +75,6 @@ public class ParticipantServiceImpl implements ParticipantService {
                 logger.warn("joinEvent(); something wrong; eventKey: {}; userId: {}", eventKey, userId);
             }
         }
-
         throw new ForbiddenException("event.accept.notAvailable");
     }
 

@@ -21,6 +21,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     Optional<EventEntity> getFirstByKey(String key);
 
+    Optional<EventEntity> getFirstByInviteKey(String inviteKey);
+
     @Query(value = "SELECT e FROM EventEntity e " +
             "WHERE e.startDate >= :from AND e.startDate <= :until " +
             "AND e.authorId = :userId ")

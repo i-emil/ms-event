@@ -5,12 +5,13 @@ import com.troojer.msevent.model.enm.ParticipantType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "event")
@@ -66,9 +67,15 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.ACTIVE;
 
-//    @Builder.Default
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
-//    private final List<ParticipantEntity> participants = new ArrayList<>();
+    @Column(name = "invite_active")
+    private boolean inviteActive;
+
+    @Column(name = "invite_key")
+    @Builder.Default
+    private String inviteKey = UUID.randomUUID().toString().replace("-","");
+
+    @Column(name = "invite_password")
+    private String invitePassword;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     @MapKey(name = "type")

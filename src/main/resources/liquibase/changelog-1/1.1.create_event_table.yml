@@ -68,6 +68,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: invite_active
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: invite_key
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: invite_password
+                  type: varchar(255)
+              - column:
                   name: rating
                   type: decimal
               - column:

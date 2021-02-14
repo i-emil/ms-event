@@ -48,14 +48,18 @@ public class OuterEventServiceImpl implements OuterEventService {
     }
 
     @Override
-    @Transactional
     public EventDto getEvent(String key) {
         EventEntity eventEntity = getEventEntity(key);
-        if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
+        if (accessChecker.isUserId(eventEntity.getAuthorId()) || checkParticipating(key)) {
+            return eventMapper.entityToDto(eventEntity);
+        } else {
             logger.warn("getUserEvent: It's not user's event; eventId: {};", key);
             throw new ForbiddenException("event.event.forbidden");
         }
-        return eventMapper.entityToDto(eventEntity);
+    }
+
+    private boolean checkParticipating(String key) {
+        return participantService.getParticipants(key, List.of(OK)).stream().anyMatch(x -> x.getProfile().getUserId().equals(accessChecker.getUserId()));
     }
 
     @Override

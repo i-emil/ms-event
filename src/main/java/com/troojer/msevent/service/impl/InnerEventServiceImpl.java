@@ -11,6 +11,7 @@ import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
+import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,11 @@ public class InnerEventServiceImpl implements InnerEventService {
     public void setEndedStatusToAllExpired() {
         eventRepository.setStatusByEndDate(EventStatus.ENDED, ZonedDateTime.now());
         logger.info("setEndedStatusToAllExpired(): done");
+    }
+
+    @Override
+    public Optional<EventEntity> getEventByInviteKey(String inviteKey) {
+        return eventRepository.getFirstByInviteKey(inviteKey);
     }
 
     @Override

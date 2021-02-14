@@ -74,6 +74,9 @@ public class EventDto {
     @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private @Valid Set<TagDto> tags;
 
+    @JsonInclude(NON_NULL)
+    private @Valid InvitingDto inviting;
+
 //---READ ONLY FIELDS---
 
     @JsonInclude(NON_NULL)
