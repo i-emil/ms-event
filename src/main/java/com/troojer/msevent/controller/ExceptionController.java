@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,16 @@ public class ExceptionController {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ExceptionDto> handleRuntimeException(ValidationException exc) {
+        if (exc.getCause() instanceof ClientException) {
+            return new ResponseEntity<>(new ExceptionDto("default.service.temporaryError"), HttpStatus.valueOf(503));
+        }
+        logger.warn("unexpected exception; message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto("unexpected error"), HttpStatus.valueOf(500));
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -81,6 +92,7 @@ public class ExceptionController {
         logger.warn("message: ", exc);
         return new ExceptionDto("default.service.temporaryError");
     }
+
 
     @ExceptionHandler(FileFormatException.class)
     public ResponseEntity<ExceptionDto> handleFileFormatException(Exception exc) {

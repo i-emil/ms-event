@@ -7,8 +7,12 @@ import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 public class ClientException extends RuntimeException {
     private String message;
+
+    public ClientException(String message) {
+        super(message);
+    }
 }
