@@ -13,6 +13,7 @@ import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
+import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
@@ -75,7 +76,7 @@ public class ParticipantServiceImpl implements ParticipantService {
                 logger.warn("joinEvent(); something wrong; eventKey: {}; userId: {}", eventKey, userId);
             }
         }
-        throw new ForbiddenException("event.accept.notAvailable");
+        throw new ConflictException("event.accept.notAvailable");
     }
 
     @Override
