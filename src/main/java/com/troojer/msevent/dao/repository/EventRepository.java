@@ -52,8 +52,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
             "AND e = el.event " +
             "AND el.languageId IN :languagesId " +
-            "AND e.id NOT IN :eventsExceptList " +
-            "AND e.authorId <> :userId ")
-    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, String userId, Pageable pageable);
+            "AND (-1L IN :eventsExceptList OR e.id NOT IN :eventsExceptList) " +
+            "AND (' ' IN :authorsExceptList OR e.authorId NOT IN :authorsExceptList ) " +
+            "AND (:isPrivate is NULL OR ((:isPrivate=false) AND (e.invitePassword is NULL)) OR ((:isPrivate=true) AND (e.invitePassword is NOT NULL))) ")
+    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, List<String> authorsExceptList, boolean isPrivate, Pageable pageable);
 
 }

@@ -50,7 +50,9 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     public EventDto getEvent(String key) {
         EventEntity eventEntity = getEventEntity(key);
-        if (accessChecker.isUserId(eventEntity.getAuthorId()) || checkParticipating(key)) {
+        if (accessChecker.isUserId(eventEntity.getAuthorId())) {
+            return eventMapper.entityToDtoForAuthor(eventEntity);
+        } else if (checkParticipating(key)) {
             return eventMapper.entityToDto(eventEntity);
         } else {
             logger.warn("getUserEvent: It's not user's event; eventId: {};", key);
@@ -77,8 +79,9 @@ public class OuterEventServiceImpl implements OuterEventService {
     public EventDto createEvent(EventDto eventDto) {
         EventEntity eventEntity = eventMapper.createEntity(eventDto, accessChecker.getUserId());
         eventRepository.save(eventEntity);
+        participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId());
         logger.info("addEvent; event: {};", eventEntity);
-        return eventMapper.entityToDto(eventEntity);
+        return eventMapper.entityToDtoForAuthor(eventEntity);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class OuterEventServiceImpl implements OuterEventService {
         eventRepository.save(newEvent);
 
         logger.info("updateEvent; old: {}; new: {}", oldEntity, newEvent);
-        return eventMapper.entityToDto(newEvent);
+        return eventMapper.entityToDtoForAuthor(newEvent);
     }
 
     @Override

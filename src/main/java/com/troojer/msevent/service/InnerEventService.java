@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface InnerEventService {
 
-    List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime before, ZonedDateTime after, List<EventStatus> eventStatuses, List<Long> eventsExceptList, Pageable pageable);
+    List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime before, ZonedDateTime after, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPrivate, Pageable pageable);
 
     Optional<EventEntity> getEventEntity(String key);
 

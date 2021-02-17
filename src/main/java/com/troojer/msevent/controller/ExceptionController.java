@@ -65,7 +65,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoContentExcepton.class)
-    public ResponseEntity<ExceptionDto> handleNoContentExcpetion(Exception exc) {
+    public ResponseEntity<ExceptionDto> handleNoContentException(Exception exc) {
         logger.warn("message: ", exc);
         return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.NO_CONTENT);
     }

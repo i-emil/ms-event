@@ -61,7 +61,7 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
         if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
 
         FilterDto filter = profileClient.getProfileFilter();
-        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), Pageable.unpaged());
+        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), null, Pageable.unpaged());
         if (!checkEvent.isEmpty()) {
             participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId());
             return;

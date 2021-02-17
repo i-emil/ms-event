@@ -65,8 +65,13 @@ public class EventMapper {
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
-                .inviting(InvitingDto.builder().active(entity.isInviteActive()).key(entity.getInviteKey()).password(entity.getInvitePassword()).build())
                 .build();
+    }
+
+    public EventDto entityToDtoForAuthor(EventEntity entity) {
+        EventDto eventDto = entityToDto(entity);
+        eventDto.setInviting(InvitingDto.builder().active(entity.isInviteActive()).key(entity.getInviteKey()).password(entity.getInvitePassword()).build());
+        return eventDto;
     }
 
     public EventDto randomEventEntityToEventDto(RandomEventEntity randomEventEntity) {

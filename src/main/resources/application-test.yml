@@ -22,3 +22,5 @@ client:
     url: http://localhost:8089/location/
   image:
     url: http://localhost:8090/private/images/
+logging:
+  my-level: INFO

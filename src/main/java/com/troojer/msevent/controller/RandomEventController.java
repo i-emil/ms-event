@@ -18,7 +18,7 @@ public class RandomEventController {
     }
 
     @PostMapping("standard")
-    public EventDto getEventForDay(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
+    public EventDto getEvent(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
         return randomEventService.getEvent(startEndDatesDto);
     }
 

@@ -11,7 +11,6 @@ import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
-import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
@@ -53,15 +52,16 @@ public class InnerEventServiceImpl implements InnerEventService {
     }
 
     @Override
-    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, Pageable pageable) {
-        if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
+    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPrivate, Pageable pageable) {
         if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
-        String userId = accessChecker.getUserId();
+        if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
+        if (authorsExceptList.isEmpty()) authorsExceptList = List.of(" ");
+
         AgeDto ageDto = filter.getAge();
         ParticipantType participantType = ParticipantType.valueOf(filter.getGender());
         List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, after, before, eventStatuses,
                 ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
-                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, userId, pageable);
+                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, authorsExceptList, false, pageable);
         logger.debug("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         return eventEntityList;
     }
