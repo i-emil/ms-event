@@ -21,7 +21,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     Optional<EventEntity> getFirstByKey(String key);
 
-    Optional<EventEntity> getFirstByInviteKey(String inviteKey);
+    Optional<EventEntity> getFirstByInviteKeyAndInviteActive(String inviteKey, boolean isInviteActive);
 
     @Query(value = "SELECT e FROM EventEntity e " +
             "WHERE e.startDate >= :from AND e.startDate <= :until " +
@@ -54,7 +54,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND el.languageId IN :languagesId " +
             "AND (-1L IN :eventsExceptList OR e.id NOT IN :eventsExceptList) " +
             "AND (' ' IN :authorsExceptList OR e.authorId NOT IN :authorsExceptList ) " +
-            "AND (:isPrivate is NULL OR ((:isPrivate=false) AND (e.invitePassword is NULL)) OR ((:isPrivate=true) AND (e.invitePassword is NOT NULL))) ")
-    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, List<String> authorsExceptList, boolean isPrivate, Pageable pageable);
+            "AND (:isPublic = false OR e.invitePassword is NULL)")
+    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, List<String> authorsExceptList, boolean isPublic, Pageable pageable);
 
 }

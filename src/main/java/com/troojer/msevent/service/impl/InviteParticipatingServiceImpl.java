@@ -39,14 +39,14 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
 
     @Override
     public boolean isInviteByPassword(String inviteKey) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey).orElseThrow
+        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
                 (() -> new NotFoundException("event.event.notFound"));
         return eventEntity.getInvitePassword() == null;
     }
 
     @Override
     public EventDto getEvent(String inviteKey, String invitePass) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey).orElseThrow
+        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
                 (() -> new NotFoundException("event.event.notFound"));
         String pass = eventEntity.getInvitePassword();
         if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
@@ -55,13 +55,13 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
 
     @Override
     public void acceptInvite(String inviteKey, String invitePass) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey).orElseThrow
+        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
                 (() -> new NotFoundException("event.event.notFound"));
         String pass = eventEntity.getInvitePassword();
         if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
 
         FilterDto filter = profileClient.getProfileFilter();
-        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), null, Pageable.unpaged());
+        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
         if (!checkEvent.isEmpty()) {
             participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId());
             return;

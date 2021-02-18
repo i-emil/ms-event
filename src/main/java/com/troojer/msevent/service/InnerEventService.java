@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface InnerEventService {
 
-    List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime before, ZonedDateTime after, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPrivate, Pageable pageable);
+    List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime before, ZonedDateTime after, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPublic, Pageable pageable);
 
     Optional<EventEntity> getEventEntity(String key);
 
@@ -23,5 +23,5 @@ public interface InnerEventService {
 
     void setEndedStatusToAllExpired();
 
-    Optional<EventEntity> getEventByInviteKey(String inviteKey);
+    Optional<EventEntity> getEventByInviteKey(String inviteKey, boolean isInviteActive);
 }

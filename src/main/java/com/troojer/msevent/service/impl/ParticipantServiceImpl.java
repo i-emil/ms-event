@@ -117,7 +117,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         if (oldUserEvents.isEmpty()) return;
         List<Long> userEventsId = oldUserEvents.stream().map(SimpleEvent::getId).collect(Collectors.toList());
         FilterDto filter = profileClient.getProfileFilter();
-        List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), List.of(), null, Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
+        List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), List.of(), false, Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
         List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e.getId()) && e.getStatus() == ACTIVE).map(SimpleEvent::getKey).collect(Collectors.toList());
         inappropriate.forEach(eventKey -> leftEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
     }

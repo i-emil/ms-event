@@ -47,12 +47,12 @@ public class InnerEventServiceImpl implements InnerEventService {
     }
 
     @Override
-    public Optional<EventEntity> getEventByInviteKey(String inviteKey) {
-        return eventRepository.getFirstByInviteKey(inviteKey);
+    public Optional<EventEntity> getEventByInviteKey(String inviteKey, boolean isInviteActive) {
+        return eventRepository.getFirstByInviteKeyAndInviteActive(inviteKey, isInviteActive);
     }
 
     @Override
-    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPrivate, Pageable pageable) {
+    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPublic, Pageable pageable) {
         if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
         if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
         if (authorsExceptList.isEmpty()) authorsExceptList = List.of(" ");
@@ -61,7 +61,7 @@ public class InnerEventServiceImpl implements InnerEventService {
         ParticipantType participantType = ParticipantType.valueOf(filter.getGender());
         List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, after, before, eventStatuses,
                 ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
-                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, authorsExceptList, false, pageable);
+                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, authorsExceptList, isEventPublic, pageable);
         logger.debug("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         return eventEntityList;
     }

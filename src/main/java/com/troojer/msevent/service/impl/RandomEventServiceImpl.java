@@ -70,7 +70,7 @@ public class RandomEventServiceImpl implements RandomEventService {
         if (optRandomEventEntity.isPresent())
             return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
 
-        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
+        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
         if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
 
         EventEntity eventEntity = getRandomEventFromList(eventsByFilter);
@@ -88,7 +88,7 @@ public class RandomEventServiceImpl implements RandomEventService {
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {
             FilterDto filter = profileClient.getProfileFilter();
-            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
             if (!checkEvent.isEmpty()) {
                 joinEvent(pendingEvent, randomEventEntity);
                 return;
@@ -148,7 +148,7 @@ public class RandomEventServiceImpl implements RandomEventService {
         if (pendingRandomEvent.isPresent()) {
             RandomEventEntity randomEventEntity = pendingRandomEvent.get();
             Long eventIdForCheck = randomEventEntity.getEvent().getId();
-            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, after, before, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
+            List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventIdForCheck), filter, after, before, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
             if (!checkEvent.isEmpty())
                 return pendingRandomEvent;
             else {

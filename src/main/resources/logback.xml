@@ -20,6 +20,8 @@
     </appender>
 
     <springProperty scope="context" name="level" source="logging.my-level"/>
+    <logger name="org.hibernate.SQL" level="TRACE" />
+    <logger name="org.hibernate.type" level="TRACE" />
     <root level="${level}">
         <appender-ref ref="ROLLINGFILE"/>
         <appender-ref ref="CONSOLE"/>
