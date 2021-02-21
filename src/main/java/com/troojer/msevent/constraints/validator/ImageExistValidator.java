@@ -17,6 +17,6 @@ public class ImageExistValidator
 
     @Override
     public boolean isValid(String imageId, ConstraintValidatorContext context) {
-        return imageId == null || (!imageId.isBlank() && imageClient.isImageExist(imageId));
+        return (!imageId.isBlank() && imageClient.isImageExist(imageId));
     }
 }

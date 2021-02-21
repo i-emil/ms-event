@@ -62,7 +62,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         logger.info("updateEventTitle(); old: {}", eventEntity.getTitle());
         eventEntity.setTitle(title);
         innerEventService.saveOrUpdateEntity(eventEntity);
-//        notifyAboutChanges(eventEntity.getKey(), "change.eventTitle.title", "change.eventTitle.description::" + oldTitle);
+        notifyAboutChanges(eventEntity.getKey(), "change.eventTitle.title", "change.eventTitle.description::" + oldTitle);
         return title;
     }
 
@@ -99,8 +99,10 @@ public class ManageEventServiceImpl implements MangeEventService {
         String oldCoverId = eventEntity.getCover();
         logger.info("updateEventCover(); old: {}", oldCoverId);
         eventEntity.setCover(cover);
-        innerEventService.saveOrUpdateEntity(eventEntity);
-        imageClient.deleteImage(oldCoverId);
+        if (!cover.equals(eventEntity.getCover())) {
+            innerEventService.saveOrUpdateEntity(eventEntity);
+//        imageClient.deleteImage(oldCoverId);
+        }
         notifyAboutChanges(eventEntity.getKey(), "change.eventCover.title", "change.eventCover.description::" + eventEntity.getTitle());
         return imageClient.getImageUrl(cover);
     }
@@ -125,6 +127,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         eventEntity.setInviteActive(invitingDto.isActive());
         eventEntity.setInvitePassword(invitingDto.getPassword());
         innerEventService.saveOrUpdateEntity(eventEntity);
+        invitingDto.setKey(eventEntity.getKey());
         return invitingDto;
     }
 
