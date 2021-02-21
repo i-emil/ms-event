@@ -104,17 +104,10 @@ public class EventMapper {
     public EventEntity updateEntity(EventDto dto, EventEntity entity) {
         if (dto.getTitle() != null) entity.setTitle(dto.getTitle().strip().toLowerCase());
         if (dto.getDescription() != null) entity.setDescription(dto.getDescription().strip().toLowerCase());
-        if (dto.getLocation() != null && dto.getLocation().getId() != null)
-            entity.setLocationId(dto.getLocation().getId());
-        if (dto.getDate() != null) {
-            entity.setStartDate(StartEndDatesMapper.dtoToStartDate(dto.getDate()));
-            entity.setEndDate(StartEndDatesMapper.dtoToEndDate(dto.getDate()));
-        }
         if (dto.getBudget() != null) {
             entity.setBudget(dto.getBudget().getAmount());
             entity.setCurrency(dto.getBudget().getCurrency().getCode());
         }
-
         if (dto.getCover() != null) {
             imageClient.deleteImage(entity.getCover());
             entity.setCover(dto.getCover());

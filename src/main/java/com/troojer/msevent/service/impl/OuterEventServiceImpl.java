@@ -9,7 +9,6 @@ import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.StartEndDatesMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.StartEndDatesDto;
-import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.OuterEventService;
@@ -35,15 +34,13 @@ public class OuterEventServiceImpl implements OuterEventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final AccessCheckerUtil accessChecker;
-    private final ImageClient imageClient;
 
     private final ParticipantService participantService;
 
-    public OuterEventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, AccessCheckerUtil accessChecker, ImageClient imageClient, ParticipantService participantService) {
+    public OuterEventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, AccessCheckerUtil accessChecker, ParticipantService participantService) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.accessChecker = accessChecker;
-        this.imageClient = imageClient;
         this.participantService = participantService;
     }
 
@@ -85,36 +82,11 @@ public class OuterEventServiceImpl implements OuterEventService {
     }
 
     @Override
-    @Transactional
-    public EventDto updateEvent(String key, EventDto eventDto) {
-        EventEntity oldEntity = getEventEntity(key);
-        if (!accessChecker.isUserId(oldEntity.getAuthorId())) {
-            logger.warn("updateEvent: It's not user's event; eventId: {};", key);
-            throw new ForbiddenException("event.event.forbidden");
-        }
-        EventEntity newEvent = eventMapper.updateEntity(eventDto, oldEntity);
-        eventRepository.save(newEvent);
-
-        logger.info("updateEvent; old: {}; new: {}", oldEntity, newEvent);
-        return eventMapper.entityToDtoForAuthor(newEvent);
-    }
-
-    @Override
-    public void deleteEvent(String key) {
-        EventEntity eventEntity = getEventEntity(key);
-        if (!accessChecker.isUserId(eventEntity.getAuthorId())) {
-            logger.warn("deleteUserEvent: It's not user's event; User-eventId: {}; eventId: {};", accessChecker.getUserId(), key);
-            throw new ForbiddenException("event.event.forbidden");
-        }
-        imageClient.deleteImage(eventEntity.getCover());
-        eventEntity.setStatus(EventStatus.CANCELED);
-        eventRepository.save(eventEntity);
-        logger.info("deleteEvent(); eventId:{}", key);
-    }
-
-    @Override
-    public List<EventDto> getEventsByParticipant(ZonedDateTime from, ZonedDateTime before) {
-        return eventMapper.simpleEventsToDtos(eventRepository.getEventsByParticipant(from, before, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)));
+    public List<EventDto> getEventsByParticipant(StartEndDatesDto dates) {
+        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        return eventMapper.simpleEventsToDtos(eventRepository.getEventsByParticipant(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)));
     }
 
     private EventEntity getEventEntity(String key) {

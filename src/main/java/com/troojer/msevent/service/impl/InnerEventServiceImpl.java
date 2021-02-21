@@ -42,7 +42,7 @@ public class InnerEventServiceImpl implements InnerEventService {
     @Override
     @Transactional
     public void setEndedStatusToAllExpired() {
-        eventRepository.setStatusByEndDate(EventStatus.ENDED, ZonedDateTime.now());
+        eventRepository.setStatusByEndDate(EventStatus.ENDED,ZonedDateTime.now().minusDays(1), ZonedDateTime.now());
         logger.info("setEndedStatusToAllExpired(): done");
     }
 

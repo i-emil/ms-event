@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.troojer.msevent.constraints.ImageExist;
 import com.troojer.msevent.constraints.IsLocationExist;
+import com.troojer.msevent.constraints.NullOrNotBlank;
 import com.troojer.msevent.constraints.PersonCountValidation;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.UpdateValidation;
-import com.troojer.msevent.model.label.manageevent.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,25 +30,27 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @NoArgsConstructor
 @Data
 @Builder
-public class EventDto {
+public class EventDtoOld {
 
-    @NotBlank(message = "event.title.notBlank", groups = {CreateValidation.class, TitleUpdateValidation.class})
-    @Pattern(regexp = "[a-zA-z0-9 -]{2,16}", message = "event.title.pattern::2::16::a-z, 0-9,  , -, _", groups = {CreateValidation.class, TitleUpdateValidation.class})
+    @NotBlank(message = "event.title.notBlank", groups = CreateValidation.class)
+//    @NullOrNotBlank(message = "event.title.nullOrNotBlank", param = "title", groups = UpdateValidation.class)
+    @Pattern(regexp = "[a-zA-z0-9 -]{2,16}", message = "event.title.pattern::2::16::a-z, 0-9,  , -, _", groups = {CreateValidation.class, UpdateValidation.class})
     private String title;
 
-    @NotBlank(message = "event.description.notBlank", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
-    @Pattern(regexp = "[a-zA-z0-9 -]{1,150}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
+    @NotBlank(message = "event.description.notBlank", groups = CreateValidation.class)
+    @NullOrNotBlank(message = "event.description.nullOrNotBlank", param = "description", groups = {CreateValidation.class, UpdateValidation.class})
+    @Pattern(regexp = "[a-zA-z0-9 -]{1,150}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, UpdateValidation.class})
     private String description;
 
-    @NotBlank(message = "event.cover.notBlank", groups = {CreateValidation.class, CoverUpdateValidation.class})
-    @ImageExist(param = "cover", message = "event.cover.notExist", groups = {CreateValidation.class, CoverUpdateValidation.class})
+    @NotBlank(message = "event.cover.notBlank", groups = {CreateValidation.class})
+    @ImageExist(param = "cover", message = "event.cover.notExist", groups = {CreateValidation.class, UpdateValidation.class})
     private String cover;
 
-    @NotNull(message = "event.date.notNull", groups = {CreateValidation.class, DatesUpdateValidation.class})
+    @NotNull(message = "event.date.notNull", groups = {CreateValidation.class})
     private @Valid StartEndDatesDto date;
 
     @JsonInclude(NON_NULL)
-    @IsLocationExist(param = "locationId", message = "event.locationId.incorrect", groups = {CreateValidation.class, LocationUpdateValidation.class})
+    @IsLocationExist(param = "locationId", message = "event.locationId.incorrect", groups = {CreateValidation.class, UpdateValidation.class})
     private LocationDto location;
 
     @JsonInclude(NON_NULL)
@@ -69,7 +71,7 @@ public class EventDto {
     private @Valid BudgetDto budget;
 
     @JsonInclude(NON_NULL)
-    @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, TagsUpdateValidation.class})
+    @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
     private @Valid Set<TagDto> tags;
 
     @JsonInclude(NON_NULL)
@@ -94,5 +96,9 @@ public class EventDto {
     @JsonInclude(value = NON_NULL)
     @JsonProperty(access = READ_ONLY)
     private String participationKey;
+
+    @JsonIgnore
+    @Builder.Default
+    private Map<String, String> changes = new LinkedHashMap<>();
 
 }

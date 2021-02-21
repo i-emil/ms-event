@@ -17,10 +17,6 @@ public interface OuterEventService {
 
     EventDto createEvent(EventDto eventDto);
 
-    EventDto updateEvent(String key, EventDto eventDto);
-
-    void deleteEvent(String key);
-
-    List<EventDto> getEventsByParticipant(ZonedDateTime from, ZonedDateTime before);
+    List<EventDto> getEventsByParticipant(StartEndDatesDto dates);
 
 }

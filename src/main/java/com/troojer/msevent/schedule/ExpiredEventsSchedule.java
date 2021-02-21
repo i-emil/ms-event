@@ -33,7 +33,7 @@ public class ExpiredEventsSchedule {
     @Scheduled(fixedDelay = 30 * 24 * 60 * 60_000L)
     @SchedulerLock(name = "deleteOldUserFoundEvents")
     public void deleteOldUserFoundEvents() {
-        randomEventService.deleteOld(LocalDateTime.now().minusMonths(6));
+        randomEventService.deleteOld(LocalDateTime.now().minusMonths(24));
         logger.info("deleteOldUserFoundEvents() called");
     }
 }

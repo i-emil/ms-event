@@ -1,7 +1,6 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.service.ParticipantService;
-import com.troojer.msevent.util.AccessCheckerUtil;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ParticipantController {
 
     private final ParticipantService participantService;
-    private final AccessCheckerUtil accessChecker;
 
-    public ParticipantController(ParticipantService participantService, AccessCheckerUtil accessChecker) {
+    public ParticipantController(ParticipantService participantService) {
         this.participantService = participantService;
-        this.accessChecker = accessChecker;
     }
 
     @DeleteMapping("{eventKey}")
     public void leftEvent(@PathVariable String eventKey) {
-        participantService.leftEvent(eventKey);
+        participantService.deleteFromEvent(eventKey);
     }
 
 }

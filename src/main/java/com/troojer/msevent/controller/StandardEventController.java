@@ -4,12 +4,13 @@ import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.FilterValidation;
-import com.troojer.msevent.model.label.UpdateValidation;
 import com.troojer.msevent.service.OuterEventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("events/standard")
@@ -36,14 +37,10 @@ public class StandardEventController {
         return eventService.createEvent(eventDto);
     }
 
-    @PutMapping("{key}")
-    public EventDto updateEvent(@PathVariable String key, @RequestBody @Validated(UpdateValidation.class) EventDto eventDto) {
-        return eventService.updateEvent(key, eventDto);
-    }
-
-    @DeleteMapping("{key}")
-    public void deleteEvent(@PathVariable String key) {
-        eventService.deleteEvent(key);
+    //todo getAuthorEvents and participate event the same return type
+    @PostMapping("participate")
+    public List<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
+        return eventService.getEventsByParticipant(startEndDatesDto);
     }
 
 }

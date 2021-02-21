@@ -1,10 +1,14 @@
 package com.troojer.msevent.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.troojer.msevent.model.label.CreateValidation;
+import com.troojer.msevent.model.label.manageevent.LocationUpdateValidation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -14,6 +18,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @NoArgsConstructor
 public class LocationDto {
 
+    @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
     private String id;
 
     private String name;

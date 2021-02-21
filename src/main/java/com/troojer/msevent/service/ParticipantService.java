@@ -12,9 +12,9 @@ public interface ParticipantService {
 
     void joinEvent(String eventKey, String userId);
 
-    void leftEvent(String eventKey);
+    void deleteFromEvent(String eventKey);
 
-    boolean leftEvent(String eventKey, String userId, ParticipantStatus reason);
+    boolean deleteFromEvent(String eventKey, String userId, ParticipantStatus reason);
 
     void leftInappropriateEvents();
 }

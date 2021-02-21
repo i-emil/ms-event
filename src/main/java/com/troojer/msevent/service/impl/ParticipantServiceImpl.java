@@ -14,7 +14,6 @@ import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ConflictException;
-import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
@@ -80,14 +79,14 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     @Override
-    public void leftEvent(String eventKey) {
-        if (!leftEvent(eventKey, accessChecker.getUserId(), LEFT))
+    public void deleteFromEvent(String eventKey) {
+        if (!deleteFromEvent(eventKey, accessChecker.getUserId(), LEFT))
             throw new NotFoundException("participant.left.notFound");
     }
 
     @Override
     @Transactional
-    public boolean leftEvent(String eventKey, String userId, ParticipantStatus reason) {
+    public boolean deleteFromEvent(String eventKey, String userId, ParticipantStatus reason) {
         if (reason == DELETED_BY_AUTHOR || reason == LEFT || reason == INAPPROPRIATE) {
             try {
                 Optional<EventEntity> eventOpt = innerEventService.getEventEntity(eventKey);
@@ -119,7 +118,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         FilterDto filter = profileClient.getProfileFilter();
         List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), List.of(), false, Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
         List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e.getId()) && e.getStatus() == ACTIVE).map(SimpleEvent::getKey).collect(Collectors.toList());
-        inappropriate.forEach(eventKey -> leftEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
+        inappropriate.forEach(eventKey -> deleteFromEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
     }
 
     private Optional<EventParticipantTypeEntity> getEventParticipantEntityByUserParticipantType(String eventKey, ParticipantType userType) {
