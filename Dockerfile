@@ -13,6 +13,6 @@ EXPOSE 8080
 
 RUN mkdir /app
 
-COPY /build/libs/ms-localization.jar /app/ms-event.jar
+COPY /build/libs/ms-event.jar /app/ms-event.jar
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/ms-event.jar", "--server.port=8080"]
