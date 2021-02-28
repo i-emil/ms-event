@@ -1,4 +1,4 @@
-FROM gradle:6.7.1-jre15
+FROM registry.troojer.com/troojer/repo/gradle:6.7.1-jre15
 
 RUN mkdir -p /home/gradle/src
 COPY . /home/gradle/src
@@ -7,7 +7,7 @@ RUN chown -R gradle:gradle /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build -x test --no-daemon 
 
-FROM openjdk:15.0.1
+FROM registry.troojer.com/troojer/repo/openjdk:15.0.1
 
 EXPOSE 8080
 
