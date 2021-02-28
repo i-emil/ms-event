@@ -2,6 +2,9 @@ image: docker:latest
 services:
   - docker:dind
 
+variables:
+  PROJECT_NAME: "ms-event"
+
 stages:
   - build
   - package
@@ -12,6 +15,7 @@ build:
   stage: build
   script:
     - gradle build
+
   artifacts:
     paths:
       - build/libs/*.jar
@@ -20,9 +24,12 @@ build:
 package:
   stage: package
   script:
-    - docker build -t $CI_REGISTRY/troojer/ms-event .
+    - ls -alh
+    - pwd
+    - ls -alh build/libs/
+    - docker build -t $CI_REGISTRY/troojer/$PROJECT_NAME .
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY/troojer/ms-event
+    - docker push $CI_REGISTRY/troojer/$PROJECT_NAME
 
 deploy:
   image:
@@ -35,6 +42,6 @@ deploy:
     - chmod +x ./kubectl
     - mv kubectl /bin/kubectl
   script:
-    - kubectl scale --replicas=0 deployment ms-event --kubeconfig config
+    - kubectl scale --replicas=0 deployment $PROJECT_NAME -n app --kubeconfig $KUBECONFIG
     - sleep 15
-    - kubectl scale --replicas=1 deployment ms-event --kubeconfig config
+    - kubectl scale --replicas=1 deployment $PROJECT_NAME -n app --kubeconfig $KUBECONFIG

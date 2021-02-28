@@ -1,6 +1,9 @@
-FROM gradle:6.7.1-jre15 as build
+FROM gradle:6.7.1-jre15
 
-COPY --chown=gradle:gradle . /home/gradle/src
+RUN mkdir -p /home/gradle/src
+COPY . /home/gradle/src
+USER root
+RUN chown -R gradle:gradle /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build -x test --no-daemon 
 
@@ -10,6 +13,6 @@ EXPOSE 8080
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/ms-event.jar
+COPY /build/libs/ms-event.jar /app/ms-event.jar
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/ms-event.jar", "--server.port=8080"]
