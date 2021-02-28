@@ -187,7 +187,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         participantService.getParticipants(event.getKey(), List.of(OK))
                 .forEach(p -> {
                     if (!event.getAuthorId().equals(p.getProfile().getUserId()))
-                        mqService.sendNotificationToQueue(NotificationDto.builder().userId(p.getProfile().getUserId()).title(title).description(description).params(Map.of("key", event.getKey())).type(EVENT_CHANGE).build());
+                        mqService.sendNotificationToQueue(NotificationDto.builder().userId(p.getProfile().getUserId()).title(title).description(description).params(Map.of("eventKey", event.getKey())).type(EVENT_CHANGE).build());
                 });
     }
 }
