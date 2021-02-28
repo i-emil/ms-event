@@ -1,6 +1,6 @@
-image: docker:latest
+image: registry.troojer.com/troojer/repo/docker:latest
 services:
-  - docker:dind
+  - registry.troojer.com/troojer/repo/docker:dind
 
 variables:
   PROJECT_NAME: "ms-event"
@@ -11,7 +11,7 @@ stages:
   - deploy
 
 build:
-  image: gradle:6.7.1-jre15
+  image: registry.troojer.com/troojer/repo/gradle:6.7.1-jre15
   stage: build
   script:
     - gradle build
@@ -33,7 +33,7 @@ package:
 
 deploy:
   image:
-    name: alpine:latest
+    name: registry.troojer.com/troojer/repo/alpine:latest
   stage: deploy
   before_script:
     - apk update
