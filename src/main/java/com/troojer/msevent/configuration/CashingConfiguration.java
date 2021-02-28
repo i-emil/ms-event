@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class CashingConfiguration {
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("languagesCodes", "currencies");
+        return new ConcurrentMapCacheManager("languagesCodes", "currencies", "plansPermits");
     }
 }

@@ -1,9 +1,9 @@
 package com.troojer.msevent.constraints.validator;
 
 import ch.qos.logback.classic.Logger;
+import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.constraints.ConsistentEventDuration;
 import com.troojer.msevent.model.StartEndDatesDto;
-import com.troojer.msevent.client.UserPlanConstantsClient;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +19,18 @@ public class EventDurationValidator
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
     private final AccessCheckerUtil accessChecker;
+    private final UserPlanClient userPlanClient;
 
     private int duration;
 
-    public EventDurationValidator(AccessCheckerUtil accessChecker) {
+    public EventDurationValidator(AccessCheckerUtil accessChecker, UserPlanClient userPlanClient) {
         this.accessChecker = accessChecker;
+        this.userPlanClient = userPlanClient;
     }
 
     @Override
     public void initialize(ConsistentEventDuration constraintAnnotation) {
-        this.duration = UserPlanConstantsClient.getMaxEventDurationHour(accessChecker.getPlan());
+        duration = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_MAX_DURATION_HOURS");
     }
 
     @Override

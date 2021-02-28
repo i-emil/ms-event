@@ -1,6 +1,6 @@
 package com.troojer.msevent.constraints.validator;
 
-import com.troojer.msevent.client.UserPlanConstantsClient;
+import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.constraints.ConsistentEventStart;
 import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.util.AccessCheckerUtil;
@@ -8,7 +8,6 @@ import com.troojer.msevent.util.AccessCheckerUtil;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,17 +16,19 @@ public class EventStartValidator
         implements ConstraintValidator<ConsistentEventStart, StartEndDatesDto> {
 
     private final AccessCheckerUtil accessChecker;
+    private final UserPlanClient userPlanClient;
     private Duration maxPeriodBeforeStarting;
     private Duration minPeriodBeforeStarting;
 
-    public EventStartValidator(AccessCheckerUtil accessChecker) {
+    public EventStartValidator(AccessCheckerUtil accessChecker, UserPlanClient userPlanClient) {
         this.accessChecker = accessChecker;
+        this.userPlanClient = userPlanClient;
     }
 
     @Override
     public void initialize(ConsistentEventStart constraintAnnotation) {
-        this.maxPeriodBeforeStarting = Duration.ofDays(UserPlanConstantsClient.getMaxDaysBeforeStarting(accessChecker.getPlan()));
-        this.minPeriodBeforeStarting = Duration.ofMinutes(UserPlanConstantsClient.getMinMinutesBeforeStarting());
+        this.maxPeriodBeforeStarting = Duration.ofDays(userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_MAX_DAYS_BEFORE_START"));
+        this.minPeriodBeforeStarting = Duration.ofMinutes(userPlanClient.getPermitValue(accessChecker.getPlan(),"EVENT_MIN_MINUTES_BEFORE_START"));
     }
 
     @Override

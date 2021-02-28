@@ -33,9 +33,8 @@ public class TagClient {
         Set<String> stringIdSet = ids.stream().map(String::valueOf).collect(Collectors.toSet());
         String uri = url + "id/" + String.join(",", stringIdSet);
         try {
-            ParameterizedTypeReference<Set<TagDto>> responseType =
-                    new ParameterizedTypeReference<>() {
-                    };
+            ParameterizedTypeReference<Set<TagDto>> responseType = new ParameterizedTypeReference<>() {
+            };
             ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity.EMPTY, responseType);
             logger.info("getAllByIds(); client response: {}", responseEntity);
             return responseEntity.getBody();

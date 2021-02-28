@@ -1,7 +1,7 @@
 package com.troojer.msevent.constraints.validator;
 
 import com.troojer.msevent.client.ProfileClient;
-import com.troojer.msevent.client.UserPlanConstantsClient;
+import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.constraints.PersonCountValidation;
 import com.troojer.msevent.model.EventParticipantTypeDto;
 import com.troojer.msevent.model.enm.Gender;
@@ -18,17 +18,21 @@ public class PersonCountValidator
 
     private final AccessCheckerUtil accessChecker;
     private final ProfileClient profileClient;
+    private final UserPlanClient userPlanClient;
 
     private int maxPersonCount;
+    private int minPersonCount;
 
-    public PersonCountValidator(AccessCheckerUtil accessChecker, ProfileClient profileClient) {
+    public PersonCountValidator(AccessCheckerUtil accessChecker, ProfileClient profileClient, UserPlanClient userPlanClient) {
         this.accessChecker = accessChecker;
         this.profileClient = profileClient;
+        this.userPlanClient = userPlanClient;
     }
 
     @Override
     public void initialize(PersonCountValidation constraintAnnotation) {
-        maxPersonCount = UserPlanConstantsClient.getMaxPersonCount(accessChecker.getPlan());
+        maxPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MAX_COUNT");
+        minPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MIN_COUNT");
     }
 
     @Override
@@ -43,7 +47,7 @@ public class PersonCountValidator
 
         Gender gender = Gender.valueOf(profileClient.getProfileFilter().getGender());
         return ((gender == Gender.MALE && maleCount > 0) || (gender == Gender.FEMALE && femaleCount > 0) || allCount > 0)
-                && totalPersonCount > 2 && totalPersonCount <= maxPersonCount;
+                && totalPersonCount >= minPersonCount && totalPersonCount <= maxPersonCount;
     }
 
 }
