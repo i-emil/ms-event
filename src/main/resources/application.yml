@@ -25,7 +25,7 @@ client:
   user-plan:
     url: http://ms-user-plan:8080/user-plans/
   location:
-    url: http://ms-user-plan:8080/location/
+    url: http://ms-location:8080/location/
   image:
     url: http://ms-image:8080/private/images/
 logging:
