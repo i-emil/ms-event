@@ -62,7 +62,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         logger.info("updateEventTitle(); old: {}", eventEntity.getTitle());
         eventEntity.setTitle(title);
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventTitle.title", "change.eventTitle.description::" + oldTitle);
+        notifyAboutChanges(eventEntity, "change.eventTitle.title", "change.eventTitle.description::" + oldTitle);
         return title;
     }
 
@@ -74,7 +74,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         logger.info("updateEventDescription(); old: {}", eventEntity.getDescription());
         eventEntity.setTitle(description);
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventDescription.title", "change.eventDescription.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventDescription.title", "change.eventDescription.description::" + eventEntity.getTitle());
         return description;
     }
 
@@ -87,7 +87,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         eventEntity.setBudget(budgetDto.getAmount());
         eventEntity.setCurrency(budgetDto.getCurrency().getCode());
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventBudget.title", "change.eventBudget.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventBudget.title", "change.eventBudget.description::" + eventEntity.getTitle());
         return budgetMaper.eventToBudgetDto(eventEntity);
     }
 
@@ -103,7 +103,7 @@ public class ManageEventServiceImpl implements MangeEventService {
             innerEventService.saveOrUpdateEntity(eventEntity);
 //        imageClient.deleteImage(oldCoverId);
         }
-        notifyAboutChanges(eventEntity.getKey(), "change.eventCover.title", "change.eventCover.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventCover.title", "change.eventCover.description::" + eventEntity.getTitle());
         return imageClient.getImageUrl(cover);
     }
 
@@ -115,7 +115,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         logger.info("updateEventTags(); old: {}", eventEntity.getTags());
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(tags, eventEntity));
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventTags.title", "change.eventTags.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventTags.title", "change.eventTags.description::" + eventEntity.getTitle());
         return tagMapper.entitySetToDtoSet(eventEntity.getTags());
     }
 
@@ -142,7 +142,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         if (startEndDatesDto.getEnd() != null)
             eventEntity.setEndDate(StartEndDatesMapper.dtoToEndDate(startEndDatesDto));
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventDate.title", "change.eventDate.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventDate.title", "change.eventDate.description::" + eventEntity.getTitle());
         return StartEndDatesMapper.entityDatesToDto(eventEntity.getStartDate(), eventEntity.getEndDate());
     }
 
@@ -154,7 +154,7 @@ public class ManageEventServiceImpl implements MangeEventService {
         logger.info("updateEventLocation(); old: {}", eventEntity.getLocationId());
         eventEntity.setLocationId(locationDto.getId());
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "change.eventLocation.title", "change.eventLocation.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "change.eventLocation.title", "change.eventLocation.description::" + eventEntity.getTitle());
         return locationClient.getLocation(eventEntity.getLocationId());
     }
 
@@ -165,7 +165,7 @@ public class ManageEventServiceImpl implements MangeEventService {
 //        imageClient.deleteImage(eventEntity.getCover());
         eventEntity.setStatus(EventStatus.CANCELED);
         innerEventService.saveOrUpdateEntity(eventEntity);
-        notifyAboutChanges(eventEntity.getKey(), "delete.event.title", "delete.event.description::" + eventEntity.getTitle());
+        notifyAboutChanges(eventEntity, "delete.event.title", "delete.event.description::" + eventEntity.getTitle());
         logger.info("deleteEvent(); eventId:{}", key);
     }
 
@@ -183,10 +183,11 @@ public class ManageEventServiceImpl implements MangeEventService {
             throw new ForbiddenException("event.change.forbidden::3");
     }
 
-    private void notifyAboutChanges(String eventKey, String title, String description) {
-        participantService.getParticipants(eventKey, List.of(OK))
+    private void notifyAboutChanges(EventEntity event, String title, String description) {
+        participantService.getParticipants(event.getKey(), List.of(OK))
                 .forEach(p -> {
-                    mqService.sendNotificationToQueue(NotificationDto.builder().userId(p.getProfile().getUserId()).title(title).description(description).params(Map.of("key", eventKey)).type(EVENT_CHANGE).build());
+                    if (!event.getAuthorId().equals(p.getProfile().getUserId()))
+                        mqService.sendNotificationToQueue(NotificationDto.builder().userId(p.getProfile().getUserId()).title(title).description(description).params(Map.of("key", event.getKey())).type(EVENT_CHANGE).build());
                 });
     }
 }
