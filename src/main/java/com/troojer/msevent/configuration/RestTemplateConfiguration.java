@@ -13,7 +13,7 @@ public class RestTemplateConfiguration {
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(20))
+                .setConnectTimeout(Duration.ofSeconds(5))
                 .interceptors(new RestTemplateClientInterceptor()).build();
     }
 }
