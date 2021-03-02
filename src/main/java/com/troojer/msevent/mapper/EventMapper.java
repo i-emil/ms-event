@@ -101,22 +101,6 @@ public class EventMapper {
         return eventEntity;
     }
 
-    public EventEntity updateEntity(EventDto dto, EventEntity entity) {
-        if (dto.getTitle() != null) entity.setTitle(dto.getTitle().strip().toLowerCase());
-        if (dto.getDescription() != null) entity.setDescription(dto.getDescription().strip().toLowerCase());
-        if (dto.getBudget() != null) {
-            entity.setBudget(dto.getBudget().getAmount());
-            entity.setCurrency(dto.getBudget().getCurrency().getCode());
-        }
-        if (dto.getCover() != null) {
-            imageClient.deleteImage(entity.getCover());
-            entity.setCover(dto.getCover());
-        }
-        if (dto.getTags() != null) entity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), entity));
-        setInviting(entity, dto);
-        return entity;
-    }
-
     public List<EventDto> simpleEventsToDtos(List<SimpleEvent> simpleEvents) {
         return simpleEvents.stream().map(this::simpleToDto).collect(Collectors.toList());
     }

@@ -1,11 +1,7 @@
 package com.troojer.msevent.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.troojer.msevent.constraints.ImageExist;
-import com.troojer.msevent.constraints.IsLocationExist;
-import com.troojer.msevent.constraints.PersonCountValidation;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.label.CreateValidation;
@@ -18,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,18 +36,17 @@ public class EventDto {
     private String description;
 
     @NotBlank(message = "event.cover.notBlank", groups = {CreateValidation.class, CoverUpdateValidation.class})
-    @ImageExist(param = "cover", message = "event.cover.notExist", groups = {CreateValidation.class, CoverUpdateValidation.class})
     private String cover;
 
     @NotNull(message = "event.date.notNull", groups = {CreateValidation.class, DatesUpdateValidation.class})
     private @Valid StartEndDatesDto date;
 
     @JsonInclude(NON_NULL)
-    @IsLocationExist(param = "locationId", message = "event.locationId.incorrect", groups = {CreateValidation.class, LocationUpdateValidation.class})
     private LocationDto location;
 
     @JsonInclude(NON_NULL)
-    @PersonCountValidation(param = "total", message = "event.personCount.incorrect", groups = {CreateValidation.class, UpdateValidation.class})
+    @NotNull
+    @NotEmpty
     private Map<ParticipantType, EventParticipantTypeDto> participantsType;
 
     @JsonInclude(NON_NULL)

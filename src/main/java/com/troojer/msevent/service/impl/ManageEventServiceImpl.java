@@ -93,6 +93,7 @@ public class ManageEventServiceImpl implements MangeEventService {
 
     @Override
     public String updateEventCover(String key, EventDto eventDto) {
+        imageClient.isImageExist(eventDto.getCover());
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
         String cover = eventDto.getCover();
@@ -148,6 +149,7 @@ public class ManageEventServiceImpl implements MangeEventService {
 
     @Override
     public LocationDto updateEventLocation(String key, EventDto eventDto) {
+        locationClient.getLocation(eventDto.getLocation().getId());
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
         LocationDto locationDto = eventDto.getLocation();

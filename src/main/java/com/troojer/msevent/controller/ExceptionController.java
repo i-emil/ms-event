@@ -57,6 +57,12 @@ public class ExceptionController {
         return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidEntityException.class)
+    public ResponseEntity<ExceptionDto> handleInvalidEntityException(Exception exc) {
+        logger.warn("message: ", exc);
+        return new ResponseEntity<>(new ExceptionDto(exc.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     @ExceptionHandler(PropertyReferenceException.class)
     public ResponseEntity<ExceptionDto> handleEventException(PropertyReferenceException exc) {
         logger.warn("message: ", exc);
