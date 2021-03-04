@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
-
 @Component
 public class EventMapper {
 
@@ -53,14 +51,13 @@ public class EventMapper {
         return EventDto.builder()
                 .key(entity.getKey())
                 .authorId(entity.getAuthorId())
-                .location(locationClient.getLocation(entity.getLocationId()))
+                .locationId(entity.getLocationId())
                 .description(entity.getDescription())
                 .cover(entity.getCover() != null ? imageClient.getImageUrl(entity.getCover()) : null)
                 .date(StartEndDatesMapper.entityDatesToDto(entity.getStartDate(), entity.getEndDate()))
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
-//                .participants(participantService.getParticipants(entity.getKey(), List.of(OK)))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
@@ -83,7 +80,7 @@ public class EventMapper {
     public EventEntity createEntity(EventDto dto, String authorId) {
         EventEntity eventEntity = EventEntity.builder()
                 .authorId(authorId)
-                .locationId(dto.getLocation().getId())
+                .locationId(dto.getLocationId())
                 .description(dto.getDescription().strip().toLowerCase())
                 .cover(dto.getCover())
                 .startDate(StartEndDatesMapper.dtoToStartDate(dto.getDate()))

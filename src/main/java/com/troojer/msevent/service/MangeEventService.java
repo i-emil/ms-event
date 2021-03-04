@@ -2,7 +2,7 @@ package com.troojer.msevent.service;
 
 import com.troojer.msevent.model.*;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface MangeEventService {
@@ -21,7 +21,7 @@ public interface MangeEventService {
 
     StartEndDatesDto updateEventDate(String key, EventDto eventDto);
 
-    LocationDto updateEventLocation(String key, EventDto eventDto);
+    Optional<String> updateEventLocation(String key, EventDto eventDto);
 
     void deleteEvent(String key);
 

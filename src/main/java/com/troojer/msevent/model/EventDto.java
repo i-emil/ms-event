@@ -41,8 +41,8 @@ public class EventDto {
     @NotNull(message = "event.date.notNull", groups = {CreateValidation.class, DatesUpdateValidation.class})
     private @Valid StartEndDatesDto date;
 
-    @JsonInclude(NON_NULL)
-    private LocationDto location;
+    @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
+    private String locationId;
 
     @JsonInclude(NON_NULL)
     @NotNull

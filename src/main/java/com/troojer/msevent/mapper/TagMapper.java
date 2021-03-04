@@ -20,8 +20,8 @@ public class TagMapper {
     }
 
     public Set<TagDto> entitySetToDtoSet(Set<EventTagEntity> entitySet) {
-        return (entitySet == null || entitySet.isEmpty()) ? Set.of() : tagClient.getAllByIds(entitySet.stream()
-                .map(EventTagEntity::getTagId).collect(Collectors.toSet()));
+        return (entitySet == null || entitySet.isEmpty()) ? Set.of() : entitySet.stream()
+                .map(x->TagDto.builder().id(x.getId()).build()).collect(Collectors.toSet());
     }
 
     public Set<EventTagEntity> dtoSetToEntitySet(Set<TagDto> dtoSet, EventEntity event) {

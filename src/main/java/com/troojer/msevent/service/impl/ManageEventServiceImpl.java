@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.troojer.msevent.model.InnerNotificationType.EVENT_CHANGE;
@@ -148,16 +149,15 @@ public class ManageEventServiceImpl implements MangeEventService {
     }
 
     @Override
-    public LocationDto updateEventLocation(String key, EventDto eventDto) {
-        locationClient.getLocation(eventDto.getLocation().getId());
+    public Optional<String> updateEventLocation(String key, EventDto eventDto) {
+        locationClient.getLocation(eventDto.getLocationId());
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
-        LocationDto locationDto = eventDto.getLocation();
         logger.info("updateEventLocation(); old: {}", eventEntity.getLocationId());
-        eventEntity.setLocationId(locationDto.getId());
+        eventEntity.setLocationId(eventDto.getLocationId());
         innerEventService.saveOrUpdateEntity(eventEntity);
         notifyAboutChanges(eventEntity, "change.eventLocation.title", "change.eventLocation.description::" + eventEntity.getTitle());
-        return locationClient.getLocation(eventEntity.getLocationId());
+        return Optional.of(eventDto.getLocationId());
     }
 
     @Override

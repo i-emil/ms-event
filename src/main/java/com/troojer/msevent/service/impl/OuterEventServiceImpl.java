@@ -110,7 +110,7 @@ public class OuterEventServiceImpl implements OuterEventService {
 
     private void checkLocationAndCover(EventDto eventDto) {
         try {
-            locationClient.getLocation(eventDto.getLocation().getId());
+            locationClient.getLocation(eventDto.getLocationId());
             imageClient.isImageExist(eventDto.getCover());
         } catch (NotFoundException e) {
             throw new InvalidEntityException(e.getMessage());

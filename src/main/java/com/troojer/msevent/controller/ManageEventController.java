@@ -55,7 +55,7 @@ public class ManageEventController {
     }
 
     @PutMapping("location/{key}")
-    public LocationDto updateEventLocation(@PathVariable String key, @Validated(LocationUpdateValidation.class) @RequestBody EventDto eventDto) {
+    public Optional<String> updateEventLocation(@PathVariable String key, @Validated(LocationUpdateValidation.class) @RequestBody EventDto eventDto) {
         return manageEventService.updateEventLocation(key, eventDto);
     }
 
