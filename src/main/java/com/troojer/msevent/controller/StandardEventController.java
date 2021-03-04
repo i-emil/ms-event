@@ -1,6 +1,7 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.FilterValidation;
@@ -37,7 +38,6 @@ public class StandardEventController {
         return eventService.createEvent(eventDto);
     }
 
-    //todo getAuthorEvents and participate event the same return type
     @PostMapping("participate")
     public List<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
         return eventService.getEventsByParticipant(startEndDatesDto);

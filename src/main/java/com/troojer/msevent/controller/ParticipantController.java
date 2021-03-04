@@ -1,10 +1,10 @@
 package com.troojer.msevent.controller;
 
+import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.service.ParticipantService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("events/participants")
@@ -14,6 +14,11 @@ public class ParticipantController {
 
     public ParticipantController(ParticipantService participantService) {
         this.participantService = participantService;
+    }
+
+    @GetMapping("{eventKey}")
+    public List<ParticipantDto> getParticipants(@PathVariable String eventKey) {
+        return participantService.getOkParticipants(eventKey);
     }
 
     @DeleteMapping("{eventKey}")

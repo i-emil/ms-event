@@ -10,10 +10,7 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.StartEndDatesMapper;
-import com.troojer.msevent.model.AgeDto;
-import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.EventParticipantTypeDto;
-import com.troojer.msevent.model.StartEndDatesDto;
+import com.troojer.msevent.model.*;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -67,16 +64,12 @@ public class OuterEventServiceImpl implements OuterEventService {
         EventEntity eventEntity = getEventEntity(key);
         if (accessChecker.isUserId(eventEntity.getAuthorId())) {
             return eventMapper.entityToDtoForAuthor(eventEntity);
-        } else if (checkParticipating(key)) {
+        } else if (participantService.checkParticipating(key)) {
             return eventMapper.entityToDto(eventEntity);
         } else {
             logger.warn("getUserEvent: It's not user's event; eventId: {};", key);
             throw new ForbiddenException("event.event.forbidden");
         }
-    }
-
-    private boolean checkParticipating(String key) {
-        return participantService.getParticipants(key, List.of(OK)).stream().anyMatch(x -> x.getProfile().getUserId().equals(accessChecker.getUserId()));
     }
 
     @Override
@@ -151,6 +144,6 @@ public class OuterEventServiceImpl implements OuterEventService {
                 minAge <= maxAge &&
                 minAge >= min && maxAge <= max &&
                 current >= minAge && current <= maxAge) return;
-        throw new InvalidEntityException("age range is: "+ min + "-" +max+" and userAge have to be in selected range");
+        throw new InvalidEntityException("age range is: " + min + "-" + max + " and userAge have to be in selected range");
     }
 }

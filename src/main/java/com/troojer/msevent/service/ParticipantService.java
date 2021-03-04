@@ -2,11 +2,14 @@ package com.troojer.msevent.service;
 
 import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.enm.ParticipantStatus;
-import com.troojer.msevent.model.enm.ParticipantType;
 
 import java.util.List;
 
 public interface ParticipantService {
+
+    boolean checkParticipating(String key);
+
+    List<ParticipantDto> getOkParticipants(String eventKey);
 
     List<ParticipantDto> getParticipants(String eventKey, List<ParticipantStatus> statuses);
 

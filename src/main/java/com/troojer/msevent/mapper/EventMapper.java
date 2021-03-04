@@ -60,7 +60,7 @@ public class EventMapper {
                 .title(entity.getTitle())
                 .budget((entity.getBudget() != null) ? budgetMaper.eventToBudgetDto(entity) : null)
                 .participantsType(participantTypeMapper.entitiesToDtos(entity.getParticipantsType()))
-                .participants(participantService.getParticipants(entity.getKey(), List.of(OK)))
+//                .participants(participantService.getParticipants(entity.getKey(), List.of(OK)))
                 .age(AgeDto.builder().min(entity.getMinAge()).max(entity.getMaxAge()).build())
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))

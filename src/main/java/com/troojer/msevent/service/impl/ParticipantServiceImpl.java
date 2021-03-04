@@ -14,6 +14,7 @@ import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ConflictException;
+import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
@@ -50,6 +51,13 @@ public class ParticipantServiceImpl implements ParticipantService {
         this.participantMapper = participantMapper;
         this.profileClient = profileClient;
         this.accessChecker = accessChecker;
+    }
+
+    public List<ParticipantDto> getOkParticipants(String eventKey) {
+        if (checkParticipating(eventKey))
+            return getParticipants(eventKey, List.of(OK));
+        logger.warn("getOkParticipants: It's not user's event; eventId: {};", eventKey);
+        throw new ForbiddenException("event.event.forbidden");
     }
 
     @Override
@@ -145,5 +153,9 @@ public class ParticipantServiceImpl implements ParticipantService {
     private Optional<ParticipantType> getParticipantTypeByProfile(EventEntity event) {
         FilterDto filter = profileClient.getProfileFilter();
         return Optional.of(ParticipantType.valueOf(filter.getGender()));
+    }
+
+    public boolean checkParticipating(String key) {
+        return getParticipants(key, List.of(OK)).stream().anyMatch(x -> x.getProfile().getUserId().equals(accessChecker.getUserId()));
     }
 }
