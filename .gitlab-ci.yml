@@ -38,10 +38,10 @@ deploy:
   before_script:
     - apk update
     - apk add curl
-    - curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-    - chmod +x ./kubectl
-    - mv kubectl /bin/kubectl
+    - wget https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
+    - tar -zxvf helm-v3.5.2-linux-amd64.tar.gz
+    - mv linux-amd64/helm /usr/local/bin/helm
+    - helm repo add troojer --username $HELM_USERNAME --password $HELM_PASSWORD https://chartmuseum.troojer.com
+    - helm repo update
   script:
-    - kubectl scale --replicas=0 deployment $PROJECT_NAME -n app --kubeconfig $KUBECONFIG
-    - sleep 15
-    - kubectl scale --replicas=1 deployment $PROJECT_NAME -n app --kubeconfig $KUBECONFIG
+    - helm upgrade $PROJECT_NAME -n app --set image.tag=$CI_COMMIT_SHORT_SHA troojer/$PROJECT_NAME --kubeconfig $KUBECONFIG
