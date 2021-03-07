@@ -32,7 +32,7 @@ public class EventDto {
     private String title;
 
     @NotBlank(message = "event.description.notBlank", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
-    @Pattern(regexp = "[a-zA-z0-9 -]{10,150}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
+    @Pattern(regexp = "[a-zA-z0-9 -]{10,500}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
     private String description;
 
     @NotBlank(message = "event.cover.notBlank", groups = {CreateValidation.class, CoverUpdateValidation.class})
