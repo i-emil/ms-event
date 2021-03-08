@@ -25,6 +25,7 @@ public class ImageClient {
     }
 
     public String getImageUrl(String imageId) {
+        imageId = imageId.replace("/", "::");
         try {
             return restTemplate.getForEntity(url + "url/" + bucket + "/" + imageId, String.class).getBody();
         } catch (RestClientResponseException exc) {
@@ -49,6 +50,7 @@ public class ImageClient {
     }
 
     public Boolean isImageExist(String imageId) {
+        imageId = imageId.replace("/", "::");
         try {
             if (restTemplate.getForEntity(url + "check/" + bucket + "/" + imageId, Boolean.class).getBody())
                 return true;
