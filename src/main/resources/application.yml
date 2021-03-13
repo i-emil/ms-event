@@ -1,4 +1,9 @@
 spring:
+  rabbitmq:
+    host: ${RABBITMQ_URL}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_USER_PASSWORD}
+    port: 5672
   datasource:
     url: jdbc:postgresql://${DATABASE_URL}/ms_event
     username: ${MS_EVENT_USER}
