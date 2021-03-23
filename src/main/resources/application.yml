@@ -33,5 +33,7 @@ client:
     url: http://ms-location:8080/location/
   image:
     url: http://ms-image:8080/private/images/
+  message:
+    url: http://ms-message:8080/private/messages/
 logging:
   my-level: INFO

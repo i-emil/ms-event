@@ -13,3 +13,5 @@ databaseChangeLog:
       path: liquibase/changelog-6/
   - includeAll:
       path: liquibase/changelog-7/
+  - includeAll:
+      path: liquibase/changelog-8/

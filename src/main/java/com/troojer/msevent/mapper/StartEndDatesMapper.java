@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 public class StartEndDatesMapper {
 
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
 
     public static StartEndDatesDto entityDatesToDto(ZonedDateTime startDate, ZonedDateTime endDate) {
         return StartEndDatesDto.builder()

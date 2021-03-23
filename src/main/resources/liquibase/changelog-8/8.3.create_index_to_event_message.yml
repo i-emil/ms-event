@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateIndexEventMessageUserId
+      author: emilr
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_event_message_user_id
+            tableName: event_message
+            unique: false

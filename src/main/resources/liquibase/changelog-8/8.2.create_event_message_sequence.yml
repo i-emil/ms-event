@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateEventMessageSequence
+      author: emilr
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: event_message_seq
