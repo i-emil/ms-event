@@ -189,7 +189,7 @@ public class ManageEventServiceImpl implements MangeEventService {
 
     private void notifyAboutChanges(EventEntity event, String title, String description) {
         List<String> recipientsId = participantService.getParticipants(event.getKey(), List.of(OK)).stream().map(p -> p.getProfile().getUserId()).collect(Collectors.toList());
-//        recipientsId.remove(accessChecker.getUserId());//todo
+        recipientsId.remove(accessChecker.getUserId());
         mqService.sendNotificationToQueue(NotificationDto.builder().recipientsId(recipientsId).title(title).description(description).params(Map.of("eventKey", event.getKey())).type(EVENT_CHANGE).build());
     }
 }
