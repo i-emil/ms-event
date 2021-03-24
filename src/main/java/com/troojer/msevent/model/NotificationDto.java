@@ -1,10 +1,13 @@
 package com.troojer.msevent.model;
 
+import com.troojer.msevent.model.enm.MessageType;
+import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -19,10 +22,12 @@ public class NotificationDto {
 
     private Map<String, String> params;
 
-    private InnerNotificationType type;
+    private MessageType type;
 
     private String userId;
 
     private String sendingDate;
+
+    private List<String> recipientsId;
 
 }

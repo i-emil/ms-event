@@ -9,6 +9,7 @@ import com.troojer.msevent.mapper.StartEndDatesMapper;
 import com.troojer.msevent.mapper.TagMapper;
 import com.troojer.msevent.model.*;
 import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.MessageType;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
@@ -24,9 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.troojer.msevent.model.InnerNotificationType.EVENT_CHANGE;
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
+import static com.troojer.msevent.model.enm.MessageType.EVENT_CHANGE;
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
 
 @Service
@@ -186,10 +188,8 @@ public class ManageEventServiceImpl implements MangeEventService {
     }
 
     private void notifyAboutChanges(EventEntity event, String title, String description) {
-        participantService.getParticipants(event.getKey(), List.of(OK))
-                .forEach(p -> {
-                    if (!event.getAuthorId().equals(p.getProfile().getUserId()))
-                        mqService.sendNotificationToQueue(NotificationDto.builder().userId(p.getProfile().getUserId()).title(title).description(description).params(Map.of("eventKey", event.getKey())).type(EVENT_CHANGE).build());
-                });
+        List<String> recipientsId = participantService.getParticipants(event.getKey(), List.of(OK)).stream().map(p -> p.getProfile().getUserId()).collect(Collectors.toList());
+//        recipientsId.remove(accessChecker.getUserId());//todo
+        mqService.sendNotificationToQueue(NotificationDto.builder().recipientsId(recipientsId).title(title).description(description).params(Map.of("eventKey", event.getKey())).type(EVENT_CHANGE).build());
     }
 }

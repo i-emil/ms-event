@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.troojer.msevent.model.enm.MessageType.EVENT_MESSAGE;
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
 
 @Service
@@ -53,7 +54,7 @@ public class EventMessageServiceImpl implements EventMessageService {
         eventMessageRepository.save(messageEntity);
         List<String> usersId = participantService.getParticipants(eventKey, List.of(OK)).stream().map(x -> x.getProfile().getUserId()).collect(Collectors.toList());
         usersId.remove(accessChecker.getUserId());
-        messageClient.addMessage(MessageDto.builder().type(MessageType.EVENT_MESSAGE).title("New message - " + eventEntity.getTitle()).message(eventMessageDto.getMessage()).usersId(usersId).build());
+        messageClient.addMessage(MessageDto.builder().type(EVENT_MESSAGE).title(eventEntity.getTitle()).message(eventMessageDto.getMessage()).usersId(usersId).build());
     }
 
     @Override
