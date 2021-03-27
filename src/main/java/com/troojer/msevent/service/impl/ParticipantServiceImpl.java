@@ -123,7 +123,8 @@ public class ParticipantServiceImpl implements ParticipantService {
         List<SimpleEvent> oldUserEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK));
         if (oldUserEvents.isEmpty()) return;
         List<Long> userEventsId = oldUserEvents.stream().map(SimpleEvent::getId).collect(Collectors.toList());
-        FilterDto filter = profileClient.getProfileFilter();
+        FilterDto filter = new FilterDto();
+        filter.setProfileInfo(profileClient.getProfileFilter());
         List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), List.of(), false, Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
         List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e.getId()) && e.getStatus() == ACTIVE).map(SimpleEvent::getKey).collect(Collectors.toList());
         inappropriate.forEach(eventKey -> deleteFromEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
@@ -151,8 +152,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     private Optional<ParticipantType> getParticipantTypeByProfile(EventEntity event) {
-        FilterDto filter = profileClient.getProfileFilter();
-        return Optional.of(ParticipantType.valueOf(filter.getGender()));
+        return Optional.of(ParticipantType.valueOf(profileClient.getProfileFilter().getGender().toString()));
     }
 
     public boolean checkParticipating(String key) {

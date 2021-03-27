@@ -42,7 +42,7 @@ public class InnerEventServiceImpl implements InnerEventService {
     @Override
     @Transactional
     public void setEndedStatusToAllExpired() {
-        eventRepository.setStatusByEndDate(EventStatus.ENDED,ZonedDateTime.now().minusDays(1), ZonedDateTime.now());
+        eventRepository.setStatusByEndDate(EventStatus.ENDED, ZonedDateTime.now().minusDays(1), ZonedDateTime.now());
         logger.info("setEndedStatusToAllExpired(): done");
     }
 
@@ -56,12 +56,13 @@ public class InnerEventServiceImpl implements InnerEventService {
         if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
         if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
         if (authorsExceptList.isEmpty()) authorsExceptList = List.of(" ");
+        List<String> languages = (filter.getLanguages() == null) ? List.of(" ") : LanguageMapper.dtosToIds(filter.getLanguages());
 
         AgeDto ageDto = filter.getAge();
-        ParticipantType participantType = ParticipantType.valueOf(filter.getGender());
+        ParticipantType participantType = ParticipantType.valueOf(filter.getGender().toString());
         List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, after, before, eventStatuses,
                 ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
-                LanguageMapper.dtosToIds(filter.getLanguages()), eventsExceptList, authorsExceptList, isEventPublic, pageable);
+                languages, eventsExceptList, authorsExceptList, isEventPublic, pageable);
         logger.debug("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         return eventEntityList;
     }

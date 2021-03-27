@@ -45,13 +45,13 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
             "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
             "AND e.status in :eventStatuses " +
-            "AND e.minAge BETWEEN :minAge AND :maxAge " +
-            "AND e.maxAge BETWEEN  :minAge AND :maxAge " +
+            "AND (:maxAge=0 OR (e.minAge BETWEEN :minAge AND :maxAge " +
+            "AND e.maxAge BETWEEN  :minAge AND :maxAge ))" +
             "AND :currentAge BETWEEN  e.minAge AND e.maxAge " +
             "AND e = ept.event " +
             "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
-            "AND e = el.event " +
-            "AND el.languageId IN :languagesId " +
+            "AND (' ' IN :languagesId OR (e = el.event " +
+            "AND el.languageId IN :languagesId ))" +
             "AND (-1L IN :eventsExceptList OR e.id NOT IN :eventsExceptList) " +
             "AND (' ' IN :authorsExceptList OR e.authorId NOT IN :authorsExceptList ) " +
             "AND (:isPublic = false OR e.invitePassword is NULL)")

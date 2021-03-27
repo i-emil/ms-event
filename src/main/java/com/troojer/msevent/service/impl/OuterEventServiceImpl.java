@@ -10,7 +10,10 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.StartEndDatesMapper;
-import com.troojer.msevent.model.*;
+import com.troojer.msevent.model.AgeDto;
+import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.EventParticipantTypeDto;
+import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -127,7 +130,7 @@ public class OuterEventServiceImpl implements OuterEventService {
 
         int totalPersonCount = maleCount + femaleCount + allCount;
 
-        Gender gender = Gender.valueOf(profileClient.getProfileFilter().getGender());
+        Gender gender = Gender.valueOf(profileClient.getProfileFilter().getGender().toString());
         if (((gender == Gender.MALE && maleCount > 0) || (gender == Gender.FEMALE && femaleCount > 0) || allCount > 0)
                 && totalPersonCount >= minPersonCount && totalPersonCount <= maxPersonCount) return;
         throw new InvalidEntityException("person count is incorrect");
@@ -139,7 +142,7 @@ public class OuterEventServiceImpl implements OuterEventService {
         Integer maxAge = ageDto.getMax();
         int min = 18;
         int max = 100;
-        Integer current = profileClient.getProfileFilter().getAge().getCurrent();
+        Integer current = profileClient.getProfileFilter().getCurrentAge();
         if (minAge != null && maxAge != null &&
                 minAge <= maxAge &&
                 minAge >= min && maxAge <= max &&

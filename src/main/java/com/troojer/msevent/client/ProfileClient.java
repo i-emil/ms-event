@@ -1,8 +1,8 @@
 package com.troojer.msevent.client;
 
 import ch.qos.logback.classic.Logger;
-import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ProfileDto;
+import com.troojer.msevent.model.ProfileInfo;
 import com.troojer.msevent.model.exception.ClientException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import org.slf4j.LoggerFactory;
@@ -25,9 +25,9 @@ public class ProfileClient {
         this.restTemplate = restTemplate;
     }
 
-    public FilterDto getProfileFilter() {
+    public ProfileInfo getProfileFilter() {
         try {
-            ResponseEntity<FilterDto> forEntity = restTemplate.getForEntity(url + "filter/", FilterDto.class);
+            ResponseEntity<ProfileInfo> forEntity = restTemplate.getForEntity(url + "filter/", ProfileInfo.class);
             return forEntity.getBody();
         } catch (RestClientResponseException exc) {
             logger.warn("getFilter(); exc: ", exc);

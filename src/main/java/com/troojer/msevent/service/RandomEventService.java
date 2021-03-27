@@ -1,13 +1,15 @@
 package com.troojer.msevent.service;
 
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.StartEndDatesDto;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public interface RandomEventService {
-    EventDto getEvent(StartEndDatesDto dates);
+
+    EventDto getRandomEvent(FilterDto filter);
 
     void accept(String key);
 

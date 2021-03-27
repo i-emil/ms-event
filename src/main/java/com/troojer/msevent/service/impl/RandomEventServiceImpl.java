@@ -9,7 +9,7 @@ import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.StartEndDatesMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
-import com.troojer.msevent.model.StartEndDatesDto;
+import com.troojer.msevent.model.ProfileInfo;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -58,14 +58,16 @@ public class RandomEventServiceImpl implements RandomEventService {
         this.accessChecker = accessChecker;
     }
 
+
     @Override
-    public EventDto getEvent(StartEndDatesDto dates) {
-        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+    public EventDto getRandomEvent(FilterDto filter) {
+        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(filter.getDates());
         if (start.isBefore(ZonedDateTime.now(start.getZone()))) start = ZonedDateTime.now(start.getZone());
-        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(filter.getDates());
         if (end.isAfter(ZonedDateTime.now(end.getZone()).plusMonths(6)))
             end = ZonedDateTime.now(end.getZone()).plusMonths(6);
-        FilterDto filter = profileClient.getProfileFilter();
+        ProfileInfo profileInfo = profileClient.getProfileFilter();
+        filter.setProfileInfo(profileInfo);
         Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, start, end);
         if (optRandomEventEntity.isPresent())
             return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
@@ -81,13 +83,35 @@ public class RandomEventServiceImpl implements RandomEventService {
         return eventMapper.randomEventEntityToEventDto(randomEventEntity);
     }
 
+//    public EventDto getEvent(StartEndDatesDto dates) {
+//        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+//        if (start.isBefore(ZonedDateTime.now(start.getZone()))) start = ZonedDateTime.now(start.getZone());
+//        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+//        if (end.isAfter(ZonedDateTime.now(end.getZone()).plusMonths(6)))
+//            end = ZonedDateTime.now(end.getZone()).plusMonths(6);
+//        FilterDto filter = profileClient.getProfileFilter();
+//        Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, start, end);
+//        if (optRandomEventEntity.isPresent())
+//            return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
+//
+//        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
+//        if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
+//
+//        EventEntity eventEntity = getRandomEventFromList(eventsByFilter);
+//        RandomEventEntity randomEventEntity = RandomEventEntity.create(accessChecker.getUserId(), eventEntity);
+//        randomEventRepository.save(randomEventEntity);
+//        logger.info("getEvent(); save to userFoundEvent: {}", randomEventEntity);
+//
+//        return eventMapper.randomEventEntityToEventDto(randomEventEntity);
+//    }
 
     @Override
     public void accept(String key) {
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {
-            FilterDto filter = profileClient.getProfileFilter();
+            FilterDto filter = new FilterDto();
+            filter.setProfileInfo(profileClient.getProfileFilter());
             List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
             if (!checkEvent.isEmpty()) {
                 joinEvent(pendingEvent, randomEventEntity);

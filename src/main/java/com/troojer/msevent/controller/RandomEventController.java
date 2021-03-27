@@ -1,11 +1,14 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.FilterValidation;
 import com.troojer.msevent.service.RandomEventService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("events/random")
@@ -17,9 +20,9 @@ public class RandomEventController {
         this.randomEventService = randomEventService;
     }
 
-    @PostMapping("standard")
-    public EventDto getEvent(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
-        return randomEventService.getEvent(startEndDatesDto);
+    @PostMapping("filter")
+    public EventDto getEventByFilter(@RequestBody @Valid FilterDto filter) {
+        return randomEventService.getRandomEvent(filter);
     }
 
     @PostMapping("accept/{key}")
