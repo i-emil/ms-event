@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AgeDto {
     @Builder.Default
-    private Integer min = 0;
+    private Integer min = 18;
     @Builder.Default
-    private Integer max = 0;
+    private Integer max = 100;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer current;
 }

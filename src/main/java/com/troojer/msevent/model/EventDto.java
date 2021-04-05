@@ -32,7 +32,7 @@ public class EventDto {
     private String title;
 
     @NotBlank(message = "event.description.notBlank", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
-    @Pattern(regexp = "[a-zA-z0-9 -]{10,500}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
+    @Pattern(regexp = "[a-zA-z0-9 -]{5,500}", message = "event.description.pattern::1::150::a-z, 0-9,  , -, _", groups = {CreateValidation.class, DescriptionUpdateValidation.class})
     private String description;
 
     @NotBlank(message = "event.cover.notBlank", groups = {CreateValidation.class, CoverUpdateValidation.class})
@@ -49,25 +49,23 @@ public class EventDto {
     @NotEmpty
     private Map<ParticipantType, EventParticipantTypeDto> participantsType;
 
-    @JsonInclude(NON_NULL)
-    @NotNull(message = "event.age.notNull", groups = CreateValidation.class)
-    private @Valid AgeDto age;
-
-    @JsonInclude(NON_NULL)
-    @NotEmpty(message = "event.languages.notEmpty", groups = CreateValidation.class)
-    @Size(min = 1, max = 10, message = "language.languageList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
-    private Set<@Valid LanguageDto> languages;
-
     //---NOT MANDATORY---
     @JsonInclude(NON_NULL)
     private @Valid BudgetDto budget;
+
+    @JsonInclude(NON_NULL)
+    private @Valid InvitingDto inviting = new InvitingDto();
+
+    @JsonInclude(NON_NULL)
+    private @Valid AgeDto age = new AgeDto();
 
     @JsonInclude(NON_NULL)
     @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, TagsUpdateValidation.class})
     private @Valid Set<TagDto> tags;
 
     @JsonInclude(NON_NULL)
-    private @Valid InvitingDto inviting;
+    @Size(max = 10, message = "language.languageList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
+    private Set<@Valid LanguageDto> languages;
 
 //---READ ONLY FIELDS---
 

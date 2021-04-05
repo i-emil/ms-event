@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Size;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +20,13 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Builder
 public class InvitingDto {
 
-    private boolean active;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String key;
+    private boolean active = true;
 
     @JsonInclude(NON_NULL)
     @Size(min = 6, max = 10, message = "event.invitePassword.size::{min}::{max}", groups = {CreateValidation.class, InvitingUpdateValidation.class})
     private String password;
+
+    //read only
+    @JsonProperty(access = READ_ONLY)
+    private String key;
 }
