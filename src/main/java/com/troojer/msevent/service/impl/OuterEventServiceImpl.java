@@ -9,7 +9,7 @@ import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
-import com.troojer.msevent.mapper.StartEndDatesMapper;
+import com.troojer.msevent.mapper.DatesMapper;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.EventParticipantTypeDto;
@@ -78,9 +78,9 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     @Transactional
     public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
-        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
-        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         if (end.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now();
         return eventRepository.getAuthorEvents(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
     }
@@ -100,9 +100,9 @@ public class OuterEventServiceImpl implements OuterEventService {
 
     @Override
     public List<EventDto> getEventsByParticipant(StartEndDatesDto dates) {
-        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
+        ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
-        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
+        ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         return eventMapper.simpleEventsToDtos(eventRepository.getEventsByParticipant(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)));
     }
 

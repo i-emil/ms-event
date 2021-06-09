@@ -18,7 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface ConsistentEventDuration {
 
     String message() default
-            "End date must be after begin date and both must be in the future";
+            "duration is invalid";
 
     Class<?>[] groups() default {};
 

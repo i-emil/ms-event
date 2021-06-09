@@ -1,6 +1,9 @@
 package com.troojer.msevent.controller;
 
-import com.troojer.msevent.model.*;
+import com.troojer.msevent.model.BudgetDto;
+import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.InvitingDto;
+import com.troojer.msevent.model.TagDto;
 import com.troojer.msevent.model.label.manageevent.*;
 import com.troojer.msevent.service.impl.ManageEventServiceImpl;
 import org.springframework.validation.annotation.Validated;
@@ -50,8 +53,13 @@ public class ManageEventController {
     }
 
     @PutMapping("date/{key}")
-    public StartEndDatesDto updateEventDate(@PathVariable String key, @Validated(DatesUpdateValidation.class) @RequestBody EventDto eventDto) {
+    public String updateEventDate(@PathVariable String key, @Validated(DatesUpdateValidation.class) @RequestBody EventDto eventDto) {
         return manageEventService.updateEventDate(key, eventDto);
+    }
+
+    @PutMapping("duration/{key}")
+    public Integer updateEventDuration(@PathVariable String key, @Validated(DurationUpdateValidation.class) @RequestBody EventDto eventDto) {
+        return manageEventService.updateEventDuration(key, eventDto);
     }
 
     @PutMapping("location/{key}")

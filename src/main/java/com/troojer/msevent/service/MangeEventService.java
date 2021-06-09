@@ -19,7 +19,9 @@ public interface MangeEventService {
 
     InvitingDto updateEventInviting(String key, EventDto eventDto);
 
-    StartEndDatesDto updateEventDate(String key, EventDto eventDto);
+    String updateEventDate(String key, EventDto eventDto);
+
+    Integer updateEventDuration(String key, EventDto eventDto);
 
     Optional<String> updateEventLocation(String key, EventDto eventDto);
 

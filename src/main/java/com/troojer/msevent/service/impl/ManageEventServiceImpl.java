@@ -5,11 +5,10 @@ import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.mapper.BudgetMaper;
-import com.troojer.msevent.mapper.StartEndDatesMapper;
+import com.troojer.msevent.mapper.DatesMapper;
 import com.troojer.msevent.mapper.TagMapper;
 import com.troojer.msevent.model.*;
 import com.troojer.msevent.model.enm.EventStatus;
-import com.troojer.msevent.model.enm.MessageType;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
@@ -136,18 +135,29 @@ public class ManageEventServiceImpl implements MangeEventService {
     }
 
     @Override
-    public StartEndDatesDto updateEventDate(String key, EventDto eventDto) {
+    public String updateEventDate(String key, EventDto eventDto) {
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
-        StartEndDatesDto startEndDatesDto = eventDto.getDate();
-        logger.info("updateEventDate(); old: {} - {}", eventEntity.getStartDate(), eventEntity.getEndDate());
-        if (startEndDatesDto.getStart() != null)
-            eventEntity.setStartDate(StartEndDatesMapper.dtoToStartDate(startEndDatesDto));
-        if (startEndDatesDto.getEnd() != null)
-            eventEntity.setEndDate(StartEndDatesMapper.dtoToEndDate(startEndDatesDto));
+        String startDate = eventDto.getStartDate();
+        logger.info("updateEventDate(); old: {}", eventEntity.getStartDate());
+        if (startDate != null)
+            eventEntity.setStartDate(DatesMapper.dtoToEntity(startDate));
         innerEventService.saveOrUpdateEntity(eventEntity);
         notifyAboutChanges(eventEntity, "change.eventDate.title", "change.eventDate.description::" + eventEntity.getTitle());
-        return StartEndDatesMapper.entityDatesToDto(eventEntity.getStartDate(), eventEntity.getEndDate());
+        return startDate;
+    }
+
+    @Override
+    public Integer updateEventDuration(String key, EventDto eventDto) {
+        EventEntity eventEntity = getEventEntity(key);
+        checkEventChangeable(eventEntity.getStartDate());
+        Integer duration = eventDto.getDuration();
+        logger.info("updateEventDate(); old: {}", eventEntity.getStartDate());
+        if (duration != null)
+            eventEntity.setDuration(duration);
+        innerEventService.saveOrUpdateEntity(eventEntity);
+        notifyAboutChanges(eventEntity, "change.duration.title", "change.duration.description::" + eventEntity.getTitle());
+        return duration;
     }
 
     @Override

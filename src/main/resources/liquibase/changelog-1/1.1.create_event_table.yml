@@ -44,8 +44,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: end_date
-                  type: timestamptz
+                  name: duration
+                  type: int
               - column:
                   name: location_id
                   type: varchar(255)

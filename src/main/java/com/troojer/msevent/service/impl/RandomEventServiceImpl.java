@@ -6,7 +6,7 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.repository.RandomEventRepository;
 import com.troojer.msevent.mapper.EventMapper;
-import com.troojer.msevent.mapper.StartEndDatesMapper;
+import com.troojer.msevent.mapper.DatesMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ProfileInfo;
@@ -61,9 +61,9 @@ public class RandomEventServiceImpl implements RandomEventService {
 
     @Override
     public EventDto getRandomEvent(FilterDto filter) {
-        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(filter.getDates());
+        ZonedDateTime start = DatesMapper.dtoToEntity(filter.getDates().getStart());
         if (start.isBefore(ZonedDateTime.now(start.getZone()))) start = ZonedDateTime.now(start.getZone());
-        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(filter.getDates());
+        ZonedDateTime end = DatesMapper.dtoToEntity(filter.getDates().getEnd());
         if (end.isAfter(ZonedDateTime.now(end.getZone()).plusMonths(6)))
             end = ZonedDateTime.now(end.getZone()).plusMonths(6);
         ProfileInfo profileInfo = profileClient.getProfileFilter();
