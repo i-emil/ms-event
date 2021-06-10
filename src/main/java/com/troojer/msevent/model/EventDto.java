@@ -60,9 +60,11 @@ public class EventDto {
     private @Valid BudgetDto budget;
 
     @JsonInclude(NON_NULL)
+    @Builder.Default
     private @Valid InvitingDto inviting = new InvitingDto();
 
     @JsonInclude(NON_NULL)
+    @Builder.Default
     private @Valid AgeDto age = new AgeDto();
 
     @JsonInclude(NON_NULL)
