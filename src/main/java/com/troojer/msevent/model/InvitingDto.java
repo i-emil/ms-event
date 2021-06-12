@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @Builder
 public class InvitingDto {
 
+    @Builder.Default
     private boolean active = true;
 
     @JsonInclude(NON_NULL)
