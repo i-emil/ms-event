@@ -44,4 +44,4 @@ deploy:
     - helm repo add troojer --username $HELM_USERNAME --password $HELM_PASSWORD https://chartmuseum.troojer.com
     - helm repo update
   script:
-    - helm upgrade $PROJECT_NAME -n app --set image.repository=hub.docker.com/zmmdv/ms-event troojer/$PROJECT_NAME --kubeconfig $KUBECONFIG
+    - helm upgrade $PROJECT_NAME -n app --set image.repository=docker.io/zmmdv/ms-event troojer/$PROJECT_NAME --set image.tag=$CI_COMMIT_SHORT_SHA --kubeconfig $KUBECONFIG
