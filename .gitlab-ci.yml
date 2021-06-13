@@ -27,9 +27,9 @@ package:
     - ls -alh
     - pwd
     - ls -alh build/libs/
-    - docker build -t $CI_REGISTRY/troojer/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY/troojer/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+    - docker build -t zmmdv/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker login -u zmmdv -p zmmdv89682329P@ssw0rD
+    - docker push zmmdv/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
 
 deploy:
   image:
