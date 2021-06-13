@@ -27,9 +27,9 @@ package:
     - ls -alh
     - pwd
     - ls -alh build/libs/
-    - docker build -t $CI_REGISTRY/troojer/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY/troojer/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+    - docker build -t zmmdv/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker login -u zmmdv -p zmmdv89682329P@ssw0rD
+    - docker push zmmdv/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
 
 deploy:
   image:
@@ -44,4 +44,4 @@ deploy:
     - helm repo add troojer --username $HELM_USERNAME --password $HELM_PASSWORD https://chartmuseum.troojer.com
     - helm repo update
   script:
-    - helm upgrade $PROJECT_NAME -n app --set image.tag=$CI_COMMIT_SHORT_SHA troojer/$PROJECT_NAME --kubeconfig $KUBECONFIG
+    - helm upgrade $PROJECT_NAME -n app --set image.repository=docker.io/zmmdv/ms-event troojer/$PROJECT_NAME --set image.tag=$CI_COMMIT_SHORT_SHA --kubeconfig $KUBECONFIG
