@@ -30,7 +30,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE EventEntity ee SET ee.status=:status WHERE ee.endDate>:from AND ee.endDate<=:to")
+    @Query(value = "UPDATE EventEntity ee SET ee.status=:status WHERE ee.startDate>:from AND ee.startDate<=:to")
     void setStatusByEndDate(EventStatus status, ZonedDateTime from, ZonedDateTime to);
 
     @Query(value = "SELECT e FROM EventEntity e " +

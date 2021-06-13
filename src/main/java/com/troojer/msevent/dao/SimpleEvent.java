@@ -18,7 +18,7 @@ public interface SimpleEvent {
 
     ZonedDateTime getStartDate();
 
-    ZonedDateTime getEndDate();
+    Integer duration();
 
     EventStatus getStatus();
 
