@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventStartValidator
-        implements ConstraintValidator<ConsistentEventStart, StartEndDatesDto> {
+        implements ConstraintValidator<ConsistentEventStart, String> {
 
     private final AccessCheckerUtil accessChecker;
     private final UserPlanClient userPlanClient;
@@ -32,11 +32,11 @@ public class EventStartValidator
     }
 
     @Override
-    public boolean isValid(StartEndDatesDto startEndDatesDto, ConstraintValidatorContext context) {
+    public boolean isValid(String startDateStr, ConstraintValidatorContext context) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
         ZonedDateTime startDate;
         try {
-            startDate = ZonedDateTime.parse(startEndDatesDto.getStart(), dateTimeFormatter);
+            startDate = ZonedDateTime.parse(startDateStr, dateTimeFormatter);
         } catch (Exception e) {
             return false;
         }
