@@ -33,14 +33,14 @@ package:
 
 deploy:
   image:
-    name: alpine/k8s
+    name: registry.troojer.com/troojer/repo/alpine:latest
   stage: deploy
   before_script:
-    # - apk update
-    # - apk add curl
-    # - wget https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
-    # - tar -zxvf helm-v3.5.2-linux-amd64.tar.gz
-    # - mv linux-amd64/helm /usr/local/bin/helm
+    - apk update
+    - apk add curl
+    - wget https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
+    - tar -zxvf helm-v3.5.2-linux-amd64.tar.gz
+    - mv linux-amd64/helm /usr/local/bin/helm
     - helm repo add troojer --username $HELM_USERNAME --password $HELM_PASSWORD https://chartmuseum.troojer.com
     - helm repo update
   script:
