@@ -47,7 +47,6 @@ public class EventEntity {
     @Column(name = "start_date")
     private ZonedDateTime startDate;
 
-    @Column(name = "end_date")
     private Integer duration;
 
     @Column(name = "location_id")
