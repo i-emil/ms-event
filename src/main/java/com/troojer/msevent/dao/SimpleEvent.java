@@ -1,8 +1,11 @@
 package com.troojer.msevent.dao;
 
+import com.troojer.msevent.model.EventParticipantTypeDto;
 import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.ParticipantType;
 
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 public interface SimpleEvent {
 
@@ -14,11 +17,13 @@ public interface SimpleEvent {
 
     String getDescription();
 
+    Map<ParticipantType, EventParticipantTypeDto> getParticipantsType();
+
     String getCover();
 
     ZonedDateTime getStartDate();
 
-    Integer duration();
+    Integer getDuration();
 
     EventStatus getStatus();
 
