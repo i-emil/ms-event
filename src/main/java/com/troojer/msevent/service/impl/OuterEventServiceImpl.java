@@ -79,7 +79,7 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     @Transactional
     public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
-        if (dates == null) return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+        if (dates.isDisableDate()) return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         return eventRepository.getAuthorEventsByDate(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
@@ -100,7 +100,7 @@ public class OuterEventServiceImpl implements OuterEventService {
 
     @Override
     public Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable) {
-        if (dates == null) return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
+        if (dates.isDisableDate()) return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         return eventRepository.getEventsPageByParticipantAndDate(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
