@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 @FilterDateParameters(message = "event.date.startEndDate", param = "eventDate", groups = FilterValidation.class)
 public class StartEndDatesDto {
+    @Builder.Default
+    private boolean disableDate = false;
     private String start;
     private String end;
 }

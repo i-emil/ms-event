@@ -13,7 +13,7 @@ public class FilterDateParameterValidator
 
     @Override
     public boolean isValid(StartEndDatesDto startEndDatesDto, ConstraintValidatorContext context) {
-        if (startEndDatesDto == null) return true;
+        if (startEndDatesDto.isDisableDate()) return true;
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z");
         ZonedDateTime startDate;
         ZonedDateTime endDate;
