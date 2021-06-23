@@ -7,6 +7,7 @@ import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.dao.EventEntity;
+import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.DatesMapper;
@@ -78,11 +79,10 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     @Transactional
     public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
+        if (dates == null) return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
-        if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
-        if (end.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now();
-        return eventRepository.getAuthorEvents(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+        return eventRepository.getAuthorEventsByDate(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
     }
 
     @Override
@@ -99,11 +99,11 @@ public class OuterEventServiceImpl implements OuterEventService {
     }
 
     @Override
-    public List<EventDto> getEventsByParticipant(StartEndDatesDto dates) {
+    public Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable) {
+        if (dates == null) return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
-        if (start.isAfter(ZonedDateTime.now())) start = ZonedDateTime.now().minusMinutes(5);
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
-        return eventMapper.simpleEventsToDtos(eventRepository.getEventsByParticipant(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)));
+        return eventRepository.getEventsPageByParticipantAndDate(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
     }
 
     private EventEntity getEventEntity(String key) {

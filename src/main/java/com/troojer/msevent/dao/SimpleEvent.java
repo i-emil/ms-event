@@ -17,7 +17,7 @@ public interface SimpleEvent {
 
     String getDescription();
 
-    Map<ParticipantType, EventParticipantTypeDto> getParticipantsType();
+    Map<ParticipantType, EventParticipantTypeEntity> getParticipantsType();
 
     String getCover();
 

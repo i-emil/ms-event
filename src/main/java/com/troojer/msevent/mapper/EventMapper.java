@@ -44,7 +44,7 @@ public class EventMapper {
                 .cover(imageClient.getImageUrl(simpleEvent.getCover()))
                 .startDate(DatesMapper.entityToDto(simpleEvent.getStartDate()))
                 .duration(simpleEvent.getDuration())
-                .participantsType(simpleEvent.getParticipantsType())
+                .participantsType(participantTypeMapper.entitiesToDtos(simpleEvent.getParticipantsType()))
                 .status(simpleEvent.getStatus())
                 .build();
     }

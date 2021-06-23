@@ -26,7 +26,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query(value = "SELECT e FROM EventEntity e " +
             "WHERE e.startDate >= :from AND e.startDate <= :until " +
             "AND e.authorId = :userId ")
-    Page<SimpleEvent> getAuthorEvents(ZonedDateTime from, ZonedDateTime until, String userId, Pageable pageable);
+    Page<SimpleEvent> getAuthorEventsByDate(ZonedDateTime from, ZonedDateTime until, String userId, Pageable pageable);
+
+    Page<SimpleEvent> getAllByAuthorId(String userId, Pageable pageable);
 
     @Transactional
     @Modifying
@@ -39,7 +41,24 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND p.userId = :userId " +
             "AND e.status IN :eventStatuses " +
             "AND p.status in :participantStatuses")
+    Page<SimpleEvent> getEventsPageByParticipantAndDate(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses, Pageable pageable);
+
+    @Query(value = "SELECT e FROM EventEntity e " +
+            "JOIN ParticipantEntity p ON p.event = e " +
+            "WHERE p.userId = :userId " +
+            "AND e.status IN :eventStatuses " +
+            "AND p.status in :participantStatuses")
+    Page<SimpleEvent> getEventsPageByParticipant(String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses, Pageable pageable);
+
+
+    @Query(value = "SELECT e FROM EventEntity e " +
+            "JOIN ParticipantEntity p ON p.event = e " +
+            "WHERE e.startDate >= :after AND e.startDate <= :before " +
+            "AND p.userId = :userId " +
+            "AND e.status IN :eventStatuses " +
+            "AND p.status in :participantStatuses")
     List<SimpleEvent> getEventsByParticipant(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
+
 
     @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
             "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +

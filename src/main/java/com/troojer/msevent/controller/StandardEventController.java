@@ -1,5 +1,6 @@
 package com.troojer.msevent.controller;
 
+import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.StartEndDatesDto;
@@ -39,8 +40,8 @@ public class StandardEventController {
     }
 
     @PostMapping("participate")
-    public List<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto) {
-        return eventService.getEventsByParticipant(startEndDatesDto);
+    public Page<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
+        return eventService.getEventsByParticipant(startEndDatesDto, pageable);
     }
 
 }

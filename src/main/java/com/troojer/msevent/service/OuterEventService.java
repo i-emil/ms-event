@@ -18,6 +18,6 @@ public interface OuterEventService {
 
     EventDto createEvent(EventDto eventDto);
 
-    List<EventDto> getEventsByParticipant(StartEndDatesDto dates);
+    Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable);
 
 }
