@@ -1,6 +1,7 @@
 package com.troojer.msevent.service;
 
 import com.troojer.msevent.model.ParticipantDto;
+import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ParticipantService {
 
     List<ParticipantDto> getParticipants(String eventKey, List<ParticipantStatus> statuses);
 
-    void joinEvent(String eventKey, String userId);
+    void joinEvent(String eventKey, String userId, Gender gender);
 
     void deleteFromEvent(String eventKey);
 

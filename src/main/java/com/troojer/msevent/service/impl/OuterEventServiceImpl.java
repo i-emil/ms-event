@@ -7,10 +7,9 @@ import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.client.UserPlanClient;
 import com.troojer.msevent.dao.EventEntity;
-import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.EventRepository;
-import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.DatesMapper;
+import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.EventParticipantTypeDto;
@@ -35,6 +34,8 @@ import java.util.Map;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
+import static com.troojer.msevent.model.enm.ParticipantType.FEMALE;
+import static com.troojer.msevent.model.enm.ParticipantType.MALE;
 
 
 @Service
@@ -79,7 +80,8 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     @Transactional
     public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
-        if (dates.isDisableDate()) return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+        if (dates.isDisableDate())
+            return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         return eventRepository.getAuthorEventsByDate(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
@@ -92,15 +94,17 @@ public class OuterEventServiceImpl implements OuterEventService {
         checkParticipantCount(eventDto.getParticipantsType());
         checkAge(eventDto);
         EventEntity eventEntity = eventMapper.createEntity(eventDto, accessChecker.getUserId());
+        eventEntity.setFilterDisabled(isFilterDisabled(eventDto));
         eventRepository.save(eventEntity);
-        participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId());
+        participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), profileClient.getProfileFilter().getGender());
         logger.info("addEvent; event: {};", eventEntity);
         return eventMapper.entityToDtoForAuthor(eventEntity);
     }
 
     @Override
     public Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable) {
-        if (dates.isDisableDate()) return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
+        if (dates.isDisableDate())
+            return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
         ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
         return eventRepository.getEventsPageByParticipantAndDate(start, end, accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
@@ -124,7 +128,7 @@ public class OuterEventServiceImpl implements OuterEventService {
         int maxPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MAX_COUNT");
         int minPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MIN_COUNT");
 
-        int maleCount = (participantsType.get(ParticipantType.MALE) == null) ? 0 : participantsType.get(ParticipantType.MALE).getTotal();
+        int maleCount = (participantsType.get(MALE) == null) ? 0 : participantsType.get(MALE).getTotal();
         int femaleCount = (participantsType.get(ParticipantType.FEMALE) == null) ? 0 : participantsType.get(ParticipantType.FEMALE).getTotal();
         int allCount = (participantsType.get(ParticipantType.ALL) == null) ? 0 : participantsType.get(ParticipantType.ALL).getTotal();
 
@@ -140,13 +144,19 @@ public class OuterEventServiceImpl implements OuterEventService {
         AgeDto ageDto = eventDto.getAge();
         Integer minAge = ageDto.getMin();
         Integer maxAge = ageDto.getMax();
-        int min = 18;
-        int max = 100;
         Integer current = profileClient.getProfileFilter().getCurrentAge();
         if (minAge != null && maxAge != null &&
                 minAge <= maxAge &&
-                minAge >= min && maxAge <= max &&
+                minAge >= AgeDto.MIN_AGE && maxAge <= AgeDto.MAX_AGE &&
                 current >= minAge && current <= maxAge) return;
-        throw new InvalidEntityException("age range is: " + min + "-" + max + " and userAge have to be in selected range");
+        throw new InvalidEntityException("age range is: " + AgeDto.MIN_AGE + "-" + AgeDto.MAX_AGE + " and userAge have to be in selected range");
+    }
+
+    private boolean isFilterDisabled(EventDto eventDto) {
+        return
+                eventDto.getAge().getMin().equals(AgeDto.MIN_AGE) &&
+                        eventDto.getAge().getMax().equals(AgeDto.MAX_AGE) &&
+                        !eventDto.getParticipantsType().containsKey(MALE) &&
+                        !eventDto.getParticipantsType().containsKey(FEMALE);
     }
 }

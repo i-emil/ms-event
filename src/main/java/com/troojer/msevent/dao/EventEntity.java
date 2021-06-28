@@ -86,6 +86,9 @@ public class EventEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     private Set<EventLanguageEntity> languages;
 
+    @Column(name = "filter_disabled")
+    private Boolean filterDisabled;
+
     private int watched;
 
     @CreationTimestamp

@@ -46,6 +46,7 @@ public class EventMapper {
                 .duration(simpleEvent.getDuration())
                 .participantsType(participantTypeMapper.entitiesToDtos(simpleEvent.getParticipantsType()))
                 .status(simpleEvent.getStatus())
+                .filterDisabled(simpleEvent.filterDisabled())
                 .build();
     }
 
@@ -65,6 +66,7 @@ public class EventMapper {
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
+                .filterDisabled(entity.getFilterDisabled())
                 .build();
     }
 

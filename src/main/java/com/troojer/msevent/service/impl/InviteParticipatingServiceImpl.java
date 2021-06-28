@@ -5,6 +5,7 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
+import com.troojer.msevent.model.ProfileInfo;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
+import static com.troojer.msevent.model.enm.Gender.MALE;
 
 @Service
 public class InviteParticipatingServiceImpl implements InviteParticipatingService {
@@ -61,10 +63,13 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
         if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
 
         FilterDto filter = new FilterDto();
-        filter.setProfileInfo(profileClient.getProfileFilter());
+        if (eventEntity.getFilterDisabled())
+            filter.setProfileInfo(ProfileInfo.builder().currentAge(27).gender(MALE).build());
+        else
+            filter.setProfileInfo(profileClient.getProfileFilter());
         List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
         if (!checkEvent.isEmpty()) {
-            participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId());
+            participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), filter.getGender());
             return;
         }
         throw new ConflictException("event.accept.notAvailable");

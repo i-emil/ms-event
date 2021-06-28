@@ -11,6 +11,7 @@ import com.troojer.msevent.mapper.ParticipantMapper;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ConflictException;
@@ -65,14 +66,14 @@ public class ParticipantServiceImpl implements ParticipantService {
         return participantMapper.entitiesToDtos(participantRepository.getParticipants(eventKey, status));
     }
 
-    public void joinEvent(String eventKey, String userId) {
+    public void joinEvent(String eventKey, String userId, Gender gender) {
         Optional<EventEntity> eventOpt = innerEventService.getEventEntity(eventKey);
         if (eventOpt.isPresent()) {
             EventEntity event = eventOpt.get();
             try {
-                Optional<ParticipantType> participantTypeOpt = getParticipantTypeByProfile(event);
-                if (event.getStatus() == EventStatus.ACTIVE && participantTypeOpt.isPresent()) {
-                    Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOpt.get());
+                Optional<ParticipantType> participantTypeOptByGender = Optional.of(ParticipantType.valueOf(gender.toString()));
+                if (event.getStatus() == EventStatus.ACTIVE) {
+                    Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOptByGender.get());
                     if (eventParticipantTypeOpt.isPresent()) {
                         EventParticipantTypeEntity eventParticipantType = eventParticipantTypeOpt.get();
                         addParticipant(eventParticipantType.getId(), ParticipantEntity.builder().userId(userId).event(event).type(eventParticipantType.getType()).build());
@@ -149,10 +150,6 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private void addParticipant(Long participantTypeId, ParticipantEntity participant) {
         participantRepository.addParticipant(participantTypeId, participant);
-    }
-
-    private Optional<ParticipantType> getParticipantTypeByProfile(EventEntity event) {
-        return Optional.of(ParticipantType.valueOf(profileClient.getProfileFilter().getGender().toString()));
     }
 
     public boolean checkParticipating(String key) {

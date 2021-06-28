@@ -95,4 +95,6 @@ public class EventDto {
     @JsonProperty(access = READ_ONLY)
     private String participationKey;
 
+    @JsonProperty(access = READ_ONLY)
+    private Boolean filterDisabled;
 }

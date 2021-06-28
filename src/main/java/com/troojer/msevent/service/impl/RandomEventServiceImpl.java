@@ -5,11 +5,12 @@ import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.repository.RandomEventRepository;
-import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.mapper.DatesMapper;
+import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ProfileInfo;
+import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.UserFoundEventStatus;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
@@ -33,6 +34,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
+import static com.troojer.msevent.model.enm.Gender.MALE;
 import static com.troojer.msevent.model.enm.UserFoundEventStatus.NO_AVAILABLE;
 
 @Service
@@ -83,38 +85,19 @@ public class RandomEventServiceImpl implements RandomEventService {
         return eventMapper.randomEventEntityToEventDto(randomEventEntity);
     }
 
-//    public EventDto getEvent(StartEndDatesDto dates) {
-//        ZonedDateTime start = StartEndDatesMapper.dtoToStartDate(dates);
-//        if (start.isBefore(ZonedDateTime.now(start.getZone()))) start = ZonedDateTime.now(start.getZone());
-//        ZonedDateTime end = StartEndDatesMapper.dtoToEndDate(dates);
-//        if (end.isAfter(ZonedDateTime.now(end.getZone()).plusMonths(6)))
-//            end = ZonedDateTime.now(end.getZone()).plusMonths(6);
-//        FilterDto filter = profileClient.getProfileFilter();
-//        Optional<RandomEventEntity> optRandomEventEntity = checkAndGetPendingEvent(filter, start, end);
-//        if (optRandomEventEntity.isPresent())
-//            return eventMapper.randomEventEntityToEventDto(optRandomEventEntity.get());
-//
-//        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
-//        if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.random.notFound");
-//
-//        EventEntity eventEntity = getRandomEventFromList(eventsByFilter);
-//        RandomEventEntity randomEventEntity = RandomEventEntity.create(accessChecker.getUserId(), eventEntity);
-//        randomEventRepository.save(randomEventEntity);
-//        logger.info("getEvent(); save to userFoundEvent: {}", randomEventEntity);
-//
-//        return eventMapper.randomEventEntityToEventDto(randomEventEntity);
-//    }
-
     @Override
     public void accept(String key) {
         RandomEventEntity randomEventEntity = getUserFoundEventByKey(key);
         EventEntity pendingEvent = randomEventEntity.getEvent();
         if (pendingEvent != null) {
             FilterDto filter = new FilterDto();
-            filter.setProfileInfo(profileClient.getProfileFilter());
+            if (pendingEvent.getFilterDisabled())
+                filter.setProfileInfo(ProfileInfo.builder().currentAge(27).gender(MALE).build());
+            else
+                filter.setProfileInfo(profileClient.getProfileFilter());
             List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(pendingEvent.getId()), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), getUserAcceptedAndRejectedEventIdList(accessChecker.getUserId()), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
             if (!checkEvent.isEmpty()) {
-                joinEvent(pendingEvent, randomEventEntity);
+                joinEvent(pendingEvent, randomEventEntity, filter.getGender());
                 return;
             }
         }
@@ -160,8 +143,8 @@ public class RandomEventServiceImpl implements RandomEventService {
         return eventList.get(index);
     }
 
-    private void joinEvent(EventEntity pendingEvent, RandomEventEntity randomEventEntity) {
-        participantService.joinEvent(pendingEvent.getKey(), accessChecker.getUserId());
+    private void joinEvent(EventEntity pendingEvent, RandomEventEntity randomEventEntity, Gender gender) {
+        participantService.joinEvent(pendingEvent.getKey(), accessChecker.getUserId(), gender);
         randomEventEntity.setStatus(UserFoundEventStatus.ACCEPTED);
         randomEventRepository.save(randomEventEntity);
         logger.info("accept(); event accepted: {}", randomEventEntity);

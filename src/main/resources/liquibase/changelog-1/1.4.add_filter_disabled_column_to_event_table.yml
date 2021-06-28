@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_filter_disabled_column_to_event_table
+      author: emilr
+      changes:
+        - addColumn:
+            tableName: event
+            columns:
+              - column:
+                  name: filter_disabled
+                  type: boolean
