@@ -46,7 +46,7 @@ public class EventMapper {
                 .duration(simpleEvent.getDuration())
                 .participantsType(participantTypeMapper.entitiesToDtos(simpleEvent.getParticipantsType()))
                 .status(simpleEvent.getStatus())
-                .filterDisabled(simpleEvent.filterDisabled())
+                .filterDisabled(simpleEvent.getFilterDisabled())
                 .build();
     }
 
