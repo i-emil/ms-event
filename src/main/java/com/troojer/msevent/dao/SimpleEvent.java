@@ -27,5 +27,5 @@ public interface SimpleEvent {
 
     EventStatus getStatus();
 
-    Boolean filterDisabled();
+    Boolean getFilterDisabled();
 }
