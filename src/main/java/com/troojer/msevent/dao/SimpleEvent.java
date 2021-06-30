@@ -28,4 +28,7 @@ public interface SimpleEvent {
     EventStatus getStatus();
 
     Boolean getFilterDisabled();
+
+    String getLocationId();
+
 }
