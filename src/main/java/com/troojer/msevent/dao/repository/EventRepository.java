@@ -45,7 +45,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     @Query(value = "SELECT e FROM EventEntity e " +
             "JOIN ParticipantEntity p ON p.event = e " +
-            "WHERE p.userId = :userId " +
+            "AND p.userId = :userId " +
             "AND e.status IN :eventStatuses " +
             "AND p.status in :participantStatuses")
     Page<SimpleEvent> getEventsPageByParticipant(String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses, Pageable pageable);
@@ -60,7 +60,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     List<SimpleEvent> getEventsByParticipant(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
 
-    @Query(value = "SELECT e FROM EventEntity e, EventLanguageEntity el, EventParticipantTypeEntity ept " +
+    @Query(value = "SELECT e FROM EventEntity e, EventParticipantTypeEntity ept " +
             "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
             "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
             "AND e.status in :eventStatuses " +
@@ -69,8 +69,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND :currentAge BETWEEN  e.minAge AND e.maxAge " +
             "AND e = ept.event " +
             "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
-            "AND (' ' IN :languagesId OR (e = el.event " +
-            "AND el.languageId IN :languagesId ))" +
+            "AND (' ' IN :languagesId) " +
             "AND (-1L IN :eventsExceptList OR e.id NOT IN :eventsExceptList) " +
             "AND (' ' IN :authorsExceptList OR e.authorId NOT IN :authorsExceptList ) " +
             "AND (:isPublic = false OR e.invitePassword is NULL)")
