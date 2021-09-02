@@ -8,13 +8,13 @@ import com.troojer.msevent.dao.repository.EventMessageRepository;
 import com.troojer.msevent.mapper.EventMessageMapper;
 import com.troojer.msevent.model.EventMessageDto;
 import com.troojer.msevent.model.MessageDto;
-import com.troojer.msevent.model.enm.MessageType;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.service.EventMessageService;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -58,9 +58,9 @@ public class EventMessageServiceImpl implements EventMessageService {
     }
 
     @Override
-    public List<EventMessageDto> getMessages(String eventKey, Pageable pageable) {
+    public Page<EventMessageDto> getMessages(String eventKey, Pageable pageable) {
         EventEntity eventEntity = checkAccessAndGetEventId(eventKey);
-        return eventMessageMapper.entitiesToDtos(eventMessageRepository.getAllByEventId(eventEntity.getId(), pageable));
+        return eventMessageRepository.getAllByEventId(eventEntity.getId(), pageable).map(eventMessageMapper::entityToDto);
     }
 
     private EventEntity checkAccessAndGetEventId(String eventKey) {

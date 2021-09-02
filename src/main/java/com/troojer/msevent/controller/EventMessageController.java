@@ -2,6 +2,7 @@ package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.EventMessageDto;
 import com.troojer.msevent.service.EventMessageService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class EventMessageController {
     }
 
     @GetMapping("{eventKey}")
-    public List<EventMessageDto> getMessages(@PathVariable String eventKey, Pageable pageable) {
+    public Page<EventMessageDto> getMessages(@PathVariable String eventKey, Pageable pageable) {
         return eventMessageService.getMessages(eventKey, pageable);
     }
 }
