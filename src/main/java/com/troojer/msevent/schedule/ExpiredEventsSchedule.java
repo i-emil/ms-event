@@ -3,7 +3,6 @@ package com.troojer.msevent.schedule;
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.RandomEventService;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,14 +23,12 @@ public class ExpiredEventsSchedule {
     }
 
     @Scheduled(fixedDelay = 5 * 60_000L)
-    @SchedulerLock(name = "closeOldEvents")
     public void closeOldEvents() {
         eventService.setEndedStatusToAllExpired();
         logger.info("closeOldEvents() called");
     }
 
     @Scheduled(fixedDelay = 30 * 24 * 60 * 60_000L)
-    @SchedulerLock(name = "deleteOldUserFoundEvents")
     public void deleteOldUserFoundEvents() {
         randomEventService.deleteOld(LocalDateTime.now().minusMonths(24));
         logger.info("deleteOldUserFoundEvents() called");
