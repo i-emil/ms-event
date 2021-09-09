@@ -1,11 +1,8 @@
 package com.troojer.msevent.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.RandomEventService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +15,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PrivateExpiredEventsController {
 
-    private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
-
     private final InnerEventService eventService;
     private final RandomEventService randomEventService;
 
@@ -27,7 +22,6 @@ public class PrivateExpiredEventsController {
     @GetMapping("close-expired")
     public void closeOldEvents() {
         eventService.setEndedStatusToAllExpired();
-        logger.info("closeOldEvents() called");
     }
 
     //todo skoree vsego logika budet izmenena
@@ -35,6 +29,5 @@ public class PrivateExpiredEventsController {
     @DeleteMapping("old-user-found-events")
     public void deleteOldUserFoundEvents() {
         randomEventService.deleteOld(LocalDateTime.now().minusMonths(24));
-        logger.info("deleteOldUserFoundEvents() called");
     }
 }
