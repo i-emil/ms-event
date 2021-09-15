@@ -3,7 +3,6 @@ package com.troojer.msevent.mapper;
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.dao.EventEntity;
-import com.troojer.msevent.dao.RandomEventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
@@ -48,6 +47,7 @@ public class EventMapper {
                 .status(simpleEvent.getStatus())
                 .filterDisabled(simpleEvent.getFilterDisabled())
                 .locationId(simpleEvent.getLocationId())
+                .isJoinInAppEnough(simpleEvent.getIsJoinInAppEnough())
                 .build();
     }
 
@@ -68,6 +68,7 @@ public class EventMapper {
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
                 .filterDisabled(entity.getFilterDisabled())
+                .isJoinInAppEnough(entity.getIsJoinInAppEnough())
                 .build();
     }
 
@@ -75,12 +76,6 @@ public class EventMapper {
         EventDto eventDto = entityToDto(entity);
         eventDto.setInviting(InvitingDto.builder().active(entity.isInviteActive()).key(entity.getInviteKey()).password(entity.getInvitePassword()).build());
         return eventDto;
-    }
-
-    public EventDto randomEventEntityToEventDto(RandomEventEntity randomEventEntity) {
-        EventDto dto = entityToDto(randomEventEntity.getEvent());
-        dto.setParticipationKey(randomEventEntity.getId());
-        return dto;
     }
 
     public EventEntity createEntity(EventDto dto, String authorId) {
@@ -96,6 +91,7 @@ public class EventMapper {
                 .currency((dto.getBudget() != null) ? dto.getBudget().getCurrency().getCode() : null)
                 .minAge(dto.getAge().getMin())
                 .maxAge(dto.getAge().getMax())
+                .isJoinInAppEnough(dto.getIsJoinInAppEnough())
                 .build();
         eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), eventEntity));
@@ -106,6 +102,10 @@ public class EventMapper {
 
     public List<EventDto> simpleEventsToDtos(List<SimpleEvent> simpleEvents) {
         return simpleEvents.stream().map(this::simpleToDto).collect(Collectors.toList());
+    }
+
+    public List<EventDto> entitiesToDtos(List<EventEntity> eventEntityList) {
+        return eventEntityList.stream().map(this::entityToDto).collect(Collectors.toList());
     }
 
     private void setInviting(EventEntity eventEntity, EventDto eventDto) {

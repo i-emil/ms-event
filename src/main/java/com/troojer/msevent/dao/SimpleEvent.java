@@ -31,4 +31,6 @@ public interface SimpleEvent {
 
     String getLocationId();
 
+    Boolean getIsJoinInAppEnough();
+
 }

@@ -5,7 +5,6 @@ import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.EventRepository;
-import com.troojer.msevent.mapper.LanguageMapper;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
@@ -52,17 +51,16 @@ public class InnerEventServiceImpl implements InnerEventService {
     }
 
     @Override
-    public List<EventEntity> getEventsByFilter(List<Long> eventsIdForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPublic, Pageable pageable) {
-        if (eventsIdForCheck.isEmpty()) eventsIdForCheck = List.of(-1L);
+    public List<EventEntity> getEventsByFilter(List<String> eventsKeyForCheck, FilterDto filter, ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPublic, Pageable pageable) {
+        if (eventsKeyForCheck.isEmpty()) eventsKeyForCheck = List.of(" ");
         if (eventsExceptList.isEmpty()) eventsExceptList = List.of(-1L);
         if (authorsExceptList.isEmpty()) authorsExceptList = List.of(" ");
-        List<String> languages = (filter.getLanguages() == null) ? List.of(" ") : LanguageMapper.dtosToIds(filter.getLanguages());
 
         AgeDto ageDto = filter.getAge();
         ParticipantType participantType = ParticipantType.valueOf(filter.getGender().toString());
-        List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsIdForCheck, after, before, eventStatuses,
-                ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
-                languages, eventsExceptList, authorsExceptList, isEventPublic, pageable);
+        List<EventEntity> eventEntityList = eventRepository.getListByFilter(eventsKeyForCheck, after, before, eventStatuses,
+                filter.getTagId(), ageDto.getMin(), ageDto.getMax(), ageDto.getCurrent(), participantType,
+                eventsExceptList, authorsExceptList, isEventPublic, pageable);
         logger.debug("getEventEntityByFilter(); eventEntityList: {}", eventEntityList);
         return eventEntityList;
     }

@@ -73,6 +73,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: is_join_in_app_enough
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
                   name: invite_key
                   type: varchar(255)
                   constraints:

@@ -18,6 +18,7 @@ import java.util.Set;
 public class FilterDto {
 
     @NotNull
+    //todo validation
     private StartEndDatesDto dates;
 
     private AgeDto age;
@@ -26,14 +27,11 @@ public class FilterDto {
     
     private Set<@Valid LanguageDto> languages;
 
-//    private BudgetDto budgetDto;
-
-//    private Long locationId;
+    private Long tagId;
 
     public void setProfileInfo(ProfileInfo profileInfo) {
         this.gender = profileInfo.getGender();
         age = new AgeDto();
         this.age.setCurrent(profileInfo.getCurrentAge());
     }
-
 }

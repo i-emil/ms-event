@@ -50,12 +50,11 @@ public class EventDto {
     @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
     private String locationId;
 
-    @JsonInclude(NON_NULL)
-    @NotNull
-    @NotEmpty
+    //---NOT MANDATORY---
     private Map<ParticipantType, EventParticipantTypeDto> participantsType;
 
-    //---NOT MANDATORY---
+    private Boolean isJoinInAppEnough = true;
+
     @JsonInclude(NON_NULL)
     private @Valid BudgetDto budget;
 

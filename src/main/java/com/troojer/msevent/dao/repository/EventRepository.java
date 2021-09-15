@@ -60,19 +60,19 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     List<SimpleEvent> getEventsByParticipant(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
 
-    @Query(value = "SELECT e FROM EventEntity e, EventParticipantTypeEntity ept " +
-            "WHERE (-1L IN :eventsIdForCheck OR e.id IN :eventsIdForCheck) " +
+    @Query(value = "SELECT e FROM EventEntity e, EventParticipantTypeEntity ept, EventTagEntity et " +
+            "WHERE (' ' IN :eventsIdForCheck OR e.key IN :eventsKeyForCheck) " +
             "AND e.startDate >= :afterDate AND e.startDate <= :beforeDate " +
             "AND e.status in :eventStatuses " +
+            "AND (:tagId is NULL or (e = et.event AND et.id = :tagId))" +
             "AND (:maxAge=0 OR (e.minAge BETWEEN :minAge AND :maxAge " +
             "AND e.maxAge BETWEEN  :minAge AND :maxAge ))" +
-            "AND :currentAge BETWEEN  e.minAge AND e.maxAge " +
+            "AND :currentAge BETWEEN e.minAge AND e.maxAge " +
             "AND e = ept.event " +
-            "AND ((ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
-            "AND (' ' IN :languagesId) " +
+            "AND (e.participantsType is EMPTY OR (ept.type=:participantType AND ept.total-ept.accepted>0) OR (ept.type='ALL' AND ept.total-ept.accepted>0)) " +
             "AND (-1L IN :eventsExceptList OR e.id NOT IN :eventsExceptList) " +
             "AND (' ' IN :authorsExceptList OR e.authorId NOT IN :authorsExceptList ) " +
             "AND (:isPublic = false OR e.invitePassword is NULL)")
-    List<EventEntity> getListByFilter(List<Long> eventsIdForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<String> languagesId, List<Long> eventsExceptList, List<String> authorsExceptList, boolean isPublic, Pageable pageable);
+    List<EventEntity> getListByFilter(List<String> eventsKeyForCheck, ZonedDateTime afterDate, ZonedDateTime beforeDate, List<EventStatus> eventStatuses, Long tagId, Integer minAge, Integer maxAge, Integer currentAge, ParticipantType participantType, List<Long> eventsExceptList, List<String> authorsExceptList, boolean isPublic, Pageable pageable);
 
 }

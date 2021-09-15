@@ -22,7 +22,6 @@ public class MqServiceRabbitImpl implements MqService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-
     @Override
     public void sendNotificationToQueue(NotificationDto message) {
         try {
