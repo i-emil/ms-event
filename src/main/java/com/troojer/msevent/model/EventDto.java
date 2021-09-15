@@ -15,7 +15,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,10 +53,9 @@ public class EventDto {
     @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
     private String locationId;
 
+
     //---NOT MANDATORY---
     private Map<ParticipantType, EventParticipantTypeDto> participantsType;
-
-    private Boolean isJoinInAppEnough = true;
 
     @JsonInclude(NON_NULL)
     private @Valid BudgetDto budget;
@@ -96,4 +98,11 @@ public class EventDto {
 
     @JsonProperty(access = READ_ONLY)
     private Boolean filterDisabled;
+
+    @JsonProperty(access = READ_ONLY)
+    @Builder.Default
+    private Boolean isJoinInAppEnough = true;
+
+    @JsonProperty(access = READ_ONLY)
+    private String source;
 }

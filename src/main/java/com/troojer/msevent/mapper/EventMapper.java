@@ -69,6 +69,7 @@ public class EventMapper {
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
                 .filterDisabled(entity.getFilterDisabled())
                 .isJoinInAppEnough(entity.getIsJoinInAppEnough())
+                .source(entity.getSource())
                 .build();
     }
 

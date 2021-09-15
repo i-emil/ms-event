@@ -86,6 +86,8 @@ public class EventEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     private Set<EventLanguageEntity> languages;
 
+    private String source;
+
     @Column(name = "is_join_in_app_enough")
     private Boolean isJoinInAppEnough;
 

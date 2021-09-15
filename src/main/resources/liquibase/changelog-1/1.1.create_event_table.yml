@@ -78,6 +78,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: source
+                  type: varchar(255)
+              - column:
                   name: invite_key
                   type: varchar(255)
                   constraints:
