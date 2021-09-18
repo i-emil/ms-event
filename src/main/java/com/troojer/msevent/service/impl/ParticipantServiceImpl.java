@@ -117,10 +117,10 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     @Override
-    public void leftInappropriateEvents(Integer age, String gender) {
+    public void leftInappropriateEvents(Integer age, Gender gender) {
         List<EventEntity> userEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)).stream().filter(e -> !e.isFilterDisabled()).collect(Collectors.toList());
         if (userEvents.isEmpty()) return;
-        List<EventEntity> inappropriateEvents = innerEventService.getEventsByFilter(userEvents, null, age, Gender.valueOf(gender), List.of(), List.of(), false, false);
+        List<EventEntity> inappropriateEvents = innerEventService.getEventsByFilter(userEvents, null, age, gender, List.of(), List.of(), false, false);
 
         inappropriateEvents.forEach(event -> deleteFromEvent(event.getKey(), accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
     }

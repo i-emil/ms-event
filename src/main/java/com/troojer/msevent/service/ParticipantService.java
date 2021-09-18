@@ -20,5 +20,5 @@ public interface ParticipantService {
 
     boolean deleteFromEvent(String eventKey, String userId, ParticipantStatus reason);
 
-    void leftInappropriateEvents(Integer age, String gender);
+    void leftInappropriateEvents(Integer age, Gender gender);
 }
