@@ -5,23 +5,19 @@ import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.client.ProfileClient;
-import com.troojer.msevent.client.UserPlanClient;
+import com.troojer.msevent.client.TagClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.DatesMapper;
 import com.troojer.msevent.mapper.EventMapper;
-import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.EventParticipantTypeDto;
 import com.troojer.msevent.model.StartEndDatesDto;
-import com.troojer.msevent.model.enm.Gender;
-import com.troojer.msevent.model.enm.ParticipantType;
 import com.troojer.msevent.model.exception.ForbiddenException;
-import com.troojer.msevent.model.exception.InvalidEntityException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.OuterEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,39 +26,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
-import static com.troojer.msevent.model.enm.ParticipantType.FEMALE;
-import static com.troojer.msevent.model.enm.ParticipantType.MALE;
 
 
 @Service
+@RequiredArgsConstructor
 public class OuterEventServiceImpl implements OuterEventService {
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final AccessCheckerUtil accessChecker;
+    private final EventDataChecker eventDataChecker;
 
-    private final LocationClient locationClient;
-    private final ImageClient imageClient;
     private final ProfileClient profileClient;
-    private final UserPlanClient userPlanClient;
-
     private final ParticipantService participantService;
-
-    public OuterEventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, AccessCheckerUtil accessChecker, LocationClient locationClient, ImageClient imageClient, ProfileClient profileClient, UserPlanClient userPlanClient, ParticipantService participantService) {
-        this.eventRepository = eventRepository;
-        this.eventMapper = eventMapper;
-        this.accessChecker = accessChecker;
-        this.locationClient = locationClient;
-        this.imageClient = imageClient;
-        this.profileClient = profileClient;
-        this.userPlanClient = userPlanClient;
-        this.participantService = participantService;
-    }
 
     @Override
     public EventDto getEvent(String key) {
@@ -90,13 +70,9 @@ public class OuterEventServiceImpl implements OuterEventService {
     @Override
     @Transactional
     public EventDto createEvent(EventDto eventDto) {
-        checkLocationAndCover(eventDto);
-        checkParticipantCount(eventDto.getParticipantsType());
-        checkAge(eventDto);
+        eventDataChecker.checkAllEventData(eventDto);
         EventEntity eventEntity = eventMapper.createEntity(eventDto, accessChecker.getUserId());
-        eventEntity.setFilterDisabled(isFilterDisabled(eventDto));
         eventRepository.save(eventEntity);
-        participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), profileClient.getProfileFilter().getGender());
         logger.info("addEvent; event: {};", eventEntity);
         return eventMapper.entityToDtoForAuthor(eventEntity);
     }
@@ -113,50 +89,5 @@ public class OuterEventServiceImpl implements OuterEventService {
     private EventEntity getEventEntity(String key) {
         return eventRepository.getFirstByKey(key)
                 .orElseThrow(() -> new NotFoundException("event.event.notFound"));
-    }
-
-    private void checkLocationAndCover(EventDto eventDto) {
-        try {
-            locationClient.getLocation(eventDto.getLocationId());
-            imageClient.isImageExist(eventDto.getCover());
-        } catch (NotFoundException e) {
-            throw new InvalidEntityException(e.getMessage());
-        }
-    }
-
-    private void checkParticipantCount(Map<ParticipantType, EventParticipantTypeDto> participantsType) {
-        int maxPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MAX_COUNT");
-        int minPersonCount = userPlanClient.getPermitValue(accessChecker.getPlan(), "EVENT_PERSON_MIN_COUNT");
-
-        int maleCount = (participantsType.get(MALE) == null) ? 0 : participantsType.get(MALE).getTotal();
-        int femaleCount = (participantsType.get(ParticipantType.FEMALE) == null) ? 0 : participantsType.get(ParticipantType.FEMALE).getTotal();
-        int allCount = (participantsType.get(ParticipantType.ALL) == null) ? 0 : participantsType.get(ParticipantType.ALL).getTotal();
-
-        int totalPersonCount = maleCount + femaleCount + allCount;
-
-        Gender gender = Gender.valueOf(profileClient.getProfileFilter().getGender().toString());
-        if (((gender == Gender.MALE && maleCount > 0) || (gender == Gender.FEMALE && femaleCount > 0) || allCount > 0)
-                && totalPersonCount >= minPersonCount && totalPersonCount <= maxPersonCount) return;
-        throw new InvalidEntityException("person count is incorrect");
-    }
-
-    private void checkAge(EventDto eventDto) {
-        AgeDto ageDto = eventDto.getAge();
-        Integer minAge = ageDto.getMin();
-        Integer maxAge = ageDto.getMax();
-        Integer current = profileClient.getProfileFilter().getCurrentAge();
-        if (minAge != null && maxAge != null &&
-                minAge <= maxAge &&
-                minAge >= AgeDto.MIN_AGE && maxAge <= AgeDto.MAX_AGE &&
-                current >= minAge && current <= maxAge) return;
-        throw new InvalidEntityException("age range is: " + AgeDto.MIN_AGE + "-" + AgeDto.MAX_AGE + " and userAge have to be in selected range");
-    }
-
-    private boolean isFilterDisabled(EventDto eventDto) {
-        return
-                eventDto.getAge().getMin().equals(AgeDto.MIN_AGE) &&
-                        eventDto.getAge().getMax().equals(AgeDto.MAX_AGE) &&
-                        !eventDto.getParticipantsType().containsKey(MALE) &&
-                        !eventDto.getParticipantsType().containsKey(FEMALE);
     }
 }

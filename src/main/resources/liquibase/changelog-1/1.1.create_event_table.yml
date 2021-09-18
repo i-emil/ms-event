@@ -60,13 +60,9 @@ databaseChangeLog:
               - column:
                   name: min_age
                   type: int
-                  constraints:
-                    nullable: false
               - column:
                   name: max_age
                   type: int
-                  constraints:
-                    nullable: false
               - column:
                   name: invite_active
                   type: boolean

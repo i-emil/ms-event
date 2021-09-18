@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @AllArgsConstructor
@@ -14,6 +16,7 @@ import java.util.List;
 @Builder
 public class EventParticipantTypeDto {
 
+    @Positive
     private int total;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

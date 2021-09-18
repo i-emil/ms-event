@@ -15,10 +15,6 @@ public class AgeDto {
     public final static Integer MIN_AGE = 18;
     public final static Integer MAX_AGE = 100;
 
-    @Builder.Default
-    private Integer min = MIN_AGE;
-    @Builder.Default
-    private Integer max = MAX_AGE;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer current;
+    private Integer min;
+    private Integer max;
 }

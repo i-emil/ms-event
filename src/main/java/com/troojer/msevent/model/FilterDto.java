@@ -23,18 +23,7 @@ public class FilterDto {
     @FilterDateParameters(groups = FilterValidation.class, param = "dates", message = "startDate must be less than endDate")
     private StartEndDatesDto dates;
 
-    private AgeDto age;
-
-    private Gender gender;
-
-    private Set<@Valid LanguageDto> languages;
-
     @Positive
     private Long tagId;
 
-    public void setProfileInfo(ProfileInfo profileInfo) {
-        this.gender = profileInfo.getGender();
-        age = new AgeDto();
-        this.age.setCurrent(profileInfo.getCurrentAge());
-    }
 }

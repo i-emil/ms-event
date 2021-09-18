@@ -4,6 +4,7 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.enm.EventStatus;
+import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.enm.ParticipantStatus;
 import org.springframework.data.domain.Pageable;
 
@@ -13,13 +14,15 @@ import java.util.Optional;
 
 public interface InnerEventService {
 
-    List<EventEntity> getEventsByFilter(List<String> eventsKeyForCheck, FilterDto filter, ZonedDateTime before, ZonedDateTime after, List<EventStatus> eventStatuses, List<Long> eventsExceptList, List<String> authorsExceptList, Boolean isEventPublic, Pageable pageable);
+    List<EventEntity> getEventsByDateAndStatus(ZonedDateTime after, ZonedDateTime before, List<EventStatus> eventStatuses);
+
+    List<EventEntity> getEventsByFilter(List<EventEntity> eventList, Long tagId, Integer currentAge, Gender gender, List<String> eventsKeyExceptList, List<String> authorsExceptList, Boolean isEventPublic, Boolean isShuffledOrder);
 
     Optional<EventEntity> getEventEntity(String key);
 
     EventEntity saveOrUpdateEntity(EventEntity eventEntity);
 
-    List<SimpleEvent> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
+    List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
     void setEndedStatusToAllExpired();
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -71,14 +72,15 @@ public class EventEntity {
 
     @Column(name = "invite_key")
     @Builder.Default
-    private String inviteKey = UUID.randomUUID().toString().replace("-","");
+    private String inviteKey = UUID.randomUUID().toString().replace("-", "");
 
     @Column(name = "invite_password")
     private String invitePassword;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     @MapKey(name = "type")
-    private Map<ParticipantType, EventParticipantTypeEntity> participantsType;
+    @Builder.Default
+    private Map<ParticipantType, EventParticipantTypeEntity> participantsType = new HashMap<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     private Set<EventTagEntity> tags;
@@ -91,9 +93,6 @@ public class EventEntity {
     @Column(name = "is_join_in_app_enough")
     private Boolean isJoinInAppEnough;
 
-    @Column(name = "filter_disabled")
-    private Boolean filterDisabled;
-
     private int watched;
 
     @CreationTimestamp
@@ -104,4 +103,7 @@ public class EventEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public boolean isFilterDisabled() {
+        return minAge == null && participantsType.isEmpty();
+    }
 }

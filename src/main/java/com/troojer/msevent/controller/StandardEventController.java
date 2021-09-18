@@ -1,8 +1,6 @@
 package com.troojer.msevent.controller;
 
-import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.FilterValidation;
@@ -11,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("events/standard")

@@ -15,10 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,9 +51,14 @@ public class EventDto {
     @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
     private String locationId;
 
+    @Size(min = 1, max = 5, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, TagsUpdateValidation.class})
+    @NotNull(groups = {CreateValidation.class, TagsUpdateValidation.class})
+    @NotEmpty(groups = {CreateValidation.class, TagsUpdateValidation.class})
+    private @Valid Set<TagDto> tags;
 
     //---NOT MANDATORY---
-    private Map<ParticipantType, EventParticipantTypeDto> participantsType;
+    @Builder.Default
+    private Map<ParticipantType, EventParticipantTypeDto> participantsType = new HashMap<>();
 
     @JsonInclude(NON_NULL)
     private @Valid BudgetDto budget;
@@ -65,12 +68,7 @@ public class EventDto {
     private @Valid InvitingDto inviting = new InvitingDto();
 
     @JsonInclude(NON_NULL)
-    @Builder.Default
-    private @Valid AgeDto age = new AgeDto();
-
-    @JsonInclude(NON_NULL)
-    @Size(max = 10, message = "tag.tagList.size::{min}::{max}", groups = {CreateValidation.class, TagsUpdateValidation.class})
-    private @Valid Set<TagDto> tags;
+    private @Valid AgeDto age;
 
     @JsonInclude(NON_NULL)
     @Size(max = 10, message = "language.languageList.size::{min}::{max}", groups = {CreateValidation.class, UpdateValidation.class})
@@ -95,9 +93,6 @@ public class EventDto {
     @JsonInclude(value = NON_NULL)
     @JsonProperty(access = READ_ONLY)
     private String participationKey;
-
-    @JsonProperty(access = READ_ONLY)
-    private Boolean filterDisabled;
 
     @JsonProperty(access = READ_ONLY)
     @Builder.Default

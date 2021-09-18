@@ -1,10 +1,7 @@
 package com.troojer.msevent.controller;
 
 import com.troojer.msevent.service.ParticipantService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("private/events/participants")
@@ -16,8 +13,8 @@ public class PrivateParticipantController {
         this.participantService = participantService;
     }
 
-    @DeleteMapping("inappropriate")
-    public void removeInappropriateEvents() {
+    @DeleteMapping("inappropriate/{age}/{gender}")
+    public void removeInappropriateEvents(@PathVariable String age, @PathVariable String gender) {
         participantService.leftInappropriateEvents();
     }
 }

@@ -1,38 +1,26 @@
 package com.troojer.msevent.mapper;
 
 import com.troojer.msevent.client.ImageClient;
-import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
 import com.troojer.msevent.model.InvitingDto;
-import com.troojer.msevent.service.ParticipantService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class EventMapper {
 
     private final LanguageMapper languageMapper;
     private final TagMapper tagMapper;
-    private final ParticipantService participantService;
-    private final LocationClient locationClient;
     private final EventParticipantTypeMapper participantTypeMapper;
     private final BudgetMaper budgetMaper;
     private final ImageClient imageClient;
-
-    public EventMapper(LanguageMapper languageMapper, TagMapper tagMapper, ParticipantService participantService, LocationClient locationClient, EventParticipantTypeMapper participantTypeMapper, BudgetMaper budgetMaper, ImageClient imageClient) {
-        this.languageMapper = languageMapper;
-        this.tagMapper = tagMapper;
-        this.participantService = participantService;
-        this.locationClient = locationClient;
-        this.participantTypeMapper = participantTypeMapper;
-        this.budgetMaper = budgetMaper;
-        this.imageClient = imageClient;
-    }
 
     public EventDto simpleToDto(SimpleEvent simpleEvent) {
         return EventDto
@@ -45,7 +33,6 @@ public class EventMapper {
                 .duration(simpleEvent.getDuration())
                 .participantsType(participantTypeMapper.entitiesToDtos(simpleEvent.getParticipantsType()))
                 .status(simpleEvent.getStatus())
-                .filterDisabled(simpleEvent.getFilterDisabled())
                 .locationId(simpleEvent.getLocationId())
                 .isJoinInAppEnough(simpleEvent.getIsJoinInAppEnough())
                 .build();
@@ -67,7 +54,6 @@ public class EventMapper {
                 .status(entity.getStatus())
                 .languages(languageMapper.entitySetToDtoSet(entity.getLanguages()))
                 .tags(tagMapper.entitySetToDtoSet(entity.getTags()))
-                .filterDisabled(entity.getFilterDisabled())
                 .isJoinInAppEnough(entity.getIsJoinInAppEnough())
                 .source(entity.getSource())
                 .build();
@@ -90,8 +76,8 @@ public class EventMapper {
                 .title(dto.getTitle().strip().toLowerCase())
                 .budget((dto.getBudget() != null) ? dto.getBudget().getAmount() : null)
                 .currency((dto.getBudget() != null) ? dto.getBudget().getCurrency().getCode() : null)
-                .minAge(dto.getAge().getMin())
-                .maxAge(dto.getAge().getMax())
+                .minAge((dto.getAge() != null) ? dto.getAge().getMin() : null)
+                .maxAge((dto.getAge() != null) ? dto.getAge().getMax() : null)
                 .isJoinInAppEnough(dto.getIsJoinInAppEnough())
                 .build();
         eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));

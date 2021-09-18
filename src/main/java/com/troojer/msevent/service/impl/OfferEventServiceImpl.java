@@ -11,17 +11,16 @@ import com.troojer.msevent.model.ProfileInfo;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.NoContentExcepton;
+import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.OfferEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
@@ -44,25 +43,33 @@ public class OfferEventServiceImpl implements OfferEventService {
         ZonedDateTime start = DatesMapper.dtoToEntity(filter.getDates().getStart());
         ZonedDateTime end = DatesMapper.dtoToEntity(filter.getDates().getEnd());
         ProfileInfo profileInfo = profileClient.getProfileFilter();
-        filter.setProfileInfo(profileInfo);
 
-        List<EventEntity> eventsByFilter = innerEventService.getEventsByFilter(new ArrayList<>(), filter, start, end, List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
-        if (eventsByFilter.isEmpty()) throw new NoContentExcepton("event.offer.notFound");
+        List<EventEntity> allEvents = innerEventService.getEventsByDateAndStatus(start, end, List.of(ACTIVE));
+        List<EventEntity> filteredEvents = innerEventService.getEventsByFilter(allEvents, filter.getTagId(), profileInfo.getCurrentAge(), profileInfo.getGender(), List.of(), List.of(accessChecker.getUserId()), true, true);
+        if (filteredEvents.isEmpty()) throw new NoContentExcepton("event.offer.notFound");
 
-        return eventMapper.entitiesToDtos(eventsByFilter);
+        return eventMapper.entitiesToDtos(filteredEvents);
     }
 
     @Override
     public void accept(String eventKey) {
-        FilterDto filter = new FilterDto();
-        filter.setProfileInfo(profileClient.getProfileFilter());
+        EventEntity eventEntity = innerEventService.getEventEntity(eventKey).orElseThrow(() -> new NotFoundException("event.event.notFound"));
 
-        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventKey), filter, ZonedDateTime.now().plusMinutes(30), ZonedDateTime.now().plusMonths(1), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), true, Pageable.unpaged());
+        Integer currentAge = null;
+        Gender gender = null;
+
+        if (!eventEntity.isFilterDisabled()) {
+            ProfileInfo profileInfo = profileClient.getProfileFilter();
+            currentAge = profileInfo.getCurrentAge();
+            gender = profileInfo.getGender();
+        }
+
+        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity), null, currentAge, gender, List.of(), List.of(accessChecker.getUserId()), false, false);
 
         if (checkEvent.isEmpty()) {
             throw new ConflictException("event.accept.notAvailable");
         } else {
-            joinEvent(checkEvent.get(0), filter.getGender());
+            joinEvent(checkEvent.get(0), gender);
         }
     }
 

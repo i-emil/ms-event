@@ -2,7 +2,6 @@ package com.troojer.msevent.service.impl;
 
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.client.ImageClient;
-import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.mapper.BudgetMaper;
 import com.troojer.msevent.mapper.DatesMapper;
@@ -16,6 +15,7 @@ import com.troojer.msevent.service.MangeEventService;
 import com.troojer.msevent.service.MqService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,7 @@ import static com.troojer.msevent.model.enm.MessageType.EVENT_CHANGE;
 import static com.troojer.msevent.model.enm.ParticipantStatus.OK;
 
 @Service
+@RequiredArgsConstructor
 public class ManageEventServiceImpl implements MangeEventService {
 
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
@@ -40,20 +41,9 @@ public class ManageEventServiceImpl implements MangeEventService {
     private final AccessCheckerUtil accessChecker;
     private final BudgetMaper budgetMaper;
     private final TagMapper tagMapper;
-    private final LocationClient locationClient;
     private final MqService mqService;
     private final ParticipantService participantService;
-
-    public ManageEventServiceImpl(ImageClient imageClient, InnerEventService innerEventService, AccessCheckerUtil accessChecker, BudgetMaper budgetMaper, TagMapper tagMapper, LocationClient locationClient, MqService mqService, ParticipantService participantService) {
-        this.imageClient = imageClient;
-        this.innerEventService = innerEventService;
-        this.accessChecker = accessChecker;
-        this.budgetMaper = budgetMaper;
-        this.tagMapper = tagMapper;
-        this.locationClient = locationClient;
-        this.mqService = mqService;
-        this.participantService = participantService;
-    }
+    private final EventDataChecker eventDataChecker;
 
     @Override
     public String updateEventTitle(String key, EventDto eventDto) {
@@ -95,9 +85,9 @@ public class ManageEventServiceImpl implements MangeEventService {
 
     @Override
     public String updateEventCover(String key, EventDto eventDto) {
-        imageClient.isImageExist(eventDto.getCover());
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
+        eventDataChecker.checkCover(eventDto.getCover());
         String cover = eventDto.getCover();
         String oldCoverId = eventEntity.getCover();
         logger.info("updateEventCover(); old: {}", oldCoverId);
@@ -114,6 +104,7 @@ public class ManageEventServiceImpl implements MangeEventService {
     public Set<TagDto> updateEventTags(String key, EventDto eventDto) {
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
+        eventDataChecker.checkTags(eventDto.getTags());
         Set<TagDto> tags = eventDto.getTags();
         logger.info("updateEventTags(); old: {}", eventEntity.getTags());
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(tags, eventEntity));
@@ -162,9 +153,9 @@ public class ManageEventServiceImpl implements MangeEventService {
 
     @Override
     public Optional<String> updateEventLocation(String key, EventDto eventDto) {
-        locationClient.getLocation(eventDto.getLocationId());
         EventEntity eventEntity = getEventEntity(key);
         checkEventChangeable(eventEntity.getStartDate());
+        eventDataChecker.checkLocation(eventDto.getLocationId());
         logger.info("updateEventLocation(); old: {}", eventEntity.getLocationId());
         eventEntity.setLocationId(eventDto.getLocationId());
         innerEventService.saveOrUpdateEntity(eventEntity);

@@ -21,12 +21,11 @@ public class TagMapper {
 
     public Set<TagDto> entitySetToDtoSet(Set<EventTagEntity> entitySet) {
         return (entitySet == null || entitySet.isEmpty()) ? Set.of() : entitySet.stream()
-                .map(x->TagDto.builder().id(x.getId()).build()).collect(Collectors.toSet());
+                .map(x -> TagDto.builder().id(x.getTagId()).build()).collect(Collectors.toSet());
     }
 
     public Set<EventTagEntity> dtoSetToEntitySet(Set<TagDto> dtoSet, EventEntity event) {
-        return (dtoSet == null || dtoSet.isEmpty()) ? Set.of() : tagClient.getOrAddTags(dtoSet).stream()
-                .map((TagDto dto) -> dtoToEntity(dto, event)).collect(Collectors.toSet());
+        return (dtoSet == null || dtoSet.isEmpty()) ? Set.of() : dtoSet.stream().map(x -> dtoToEntity(x, event)).collect(Collectors.toSet());
     }
 
     private EventTagEntity dtoToEntity(TagDto dto, EventEntity event) {

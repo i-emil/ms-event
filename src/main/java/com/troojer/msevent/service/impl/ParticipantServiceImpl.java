@@ -5,10 +5,8 @@ import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.dao.ParticipantEntity;
-import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.dao.repository.ParticipantRepository;
 import com.troojer.msevent.mapper.ParticipantMapper;
-import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ParticipantDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.Gender;
@@ -21,7 +19,6 @@ import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,15 +117,12 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     @Override
-    public void leftInappropriateEvents() {
-        List<SimpleEvent> oldUserEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK));
-        if (oldUserEvents.isEmpty()) return;
-        List<Long> userEventsId = oldUserEvents.stream().map(SimpleEvent::getId).collect(Collectors.toList());
-        FilterDto filter = new FilterDto();
-        filter.setProfileInfo(profileClient.getProfileFilter());
-        List<Long> currentUserEvents = innerEventService.getEventsByFilter(userEventsId, filter, ZonedDateTime.now().plusMinutes(10), ZonedDateTime.now().plusMonths(6), List.of(ACTIVE), List.of(), List.of(), false, Pageable.unpaged()).stream().map(EventEntity::getId).collect(Collectors.toList());
-        List<String> inappropriate = oldUserEvents.stream().filter(e -> !currentUserEvents.contains(e.getId()) && e.getStatus() == ACTIVE).map(SimpleEvent::getKey).collect(Collectors.toList());
-        inappropriate.forEach(eventKey -> deleteFromEvent(eventKey, accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
+    public void leftInappropriateEvents(Integer age, String gender) {
+        List<EventEntity> userEvents = innerEventService.getParticipantEvents(ZonedDateTime.now().minusYears(1), ZonedDateTime.now(), accessChecker.getUserId(), List.of(ACTIVE), List.of(OK)).stream().filter(e -> !e.isFilterDisabled()).collect(Collectors.toList());
+        if (userEvents.isEmpty()) return;
+        List<EventEntity> inappropriateEvents = innerEventService.getEventsByFilter(userEvents, null, age, Gender.valueOf(gender), List.of(), List.of(), false, false);
+
+        inappropriateEvents.forEach(event -> deleteFromEvent(event.getKey(), accessChecker.getUserId(), ParticipantStatus.INAPPROPRIATE));
     }
 
     private Optional<EventParticipantTypeEntity> getEventParticipantEntityByUserParticipantType(String eventKey, ParticipantType userType) {

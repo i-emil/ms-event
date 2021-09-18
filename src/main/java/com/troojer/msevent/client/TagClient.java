@@ -5,15 +5,15 @@ import com.troojer.msevent.model.TagDto;
 import com.troojer.msevent.model.exception.ClientException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class TagClient {
@@ -29,26 +29,12 @@ public class TagClient {
         this.restTemplate = restTemplate;
     }
 
-    public Set<TagDto> getAllByIds(Set<Long> ids) {
-        Set<String> stringIdSet = ids.stream().map(String::valueOf).collect(Collectors.toSet());
-        String uri = url + "id/" + String.join(",", stringIdSet);
+    @Cacheable("tagList")
+    public Set<TagDto> getAllTags() {
         try {
             ParameterizedTypeReference<Set<TagDto>> responseType = new ParameterizedTypeReference<>() {
             };
-            ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity.EMPTY, responseType);
-            logger.info("getAllByIds(); client response: {}", responseEntity);
-            return responseEntity.getBody();
-        } catch (Exception e) {
-            logger.warn("getLanguagesMap(); exc: ", e);
-            throw new ClientException(e.getMessage());
-        }
-    }
-
-    public Set<TagDto> getOrAddTags(Set<TagDto> dtoSet) {
-        try {
-            ParameterizedTypeReference<Set<TagDto>> responseType = new ParameterizedTypeReference<>() {
-            };
-            ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(dtoSet), responseType);
+            ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(url + "en", HttpMethod.GET, null, responseType);
             logger.info("getOrAddTags(); client response: {}", responseEntity);
             return responseEntity.getBody();
         } catch (Exception e) {

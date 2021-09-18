@@ -4,8 +4,8 @@ import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.mapper.EventMapper;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ProfileInfo;
+import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
@@ -13,14 +13,9 @@ import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.InviteParticipatingService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-
-import static com.troojer.msevent.model.enm.EventStatus.ACTIVE;
-import static com.troojer.msevent.model.enm.Gender.MALE;
 
 @Service
 public class InviteParticipatingServiceImpl implements InviteParticipatingService {
@@ -62,14 +57,17 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
         String pass = eventEntity.getInvitePassword();
         if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
 
-        FilterDto filter = new FilterDto();
-        if (eventEntity.getFilterDisabled())
-            filter.setProfileInfo(ProfileInfo.builder().currentAge(27).gender(MALE).build());
-        else
-            filter.setProfileInfo(profileClient.getProfileFilter());
-        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity.getId()), filter, ZonedDateTime.now(), ZonedDateTime.now().plusMonths(12), List.of(ACTIVE), List.of(), List.of(accessChecker.getUserId()), false, Pageable.unpaged());
+        Integer currentAge = null;
+        Gender gender = null;
+
+        if (!eventEntity.isFilterDisabled()) {
+            ProfileInfo profileInfo = profileClient.getProfileFilter();
+            currentAge = profileInfo.getCurrentAge();
+            gender = profileInfo.getGender();
+        }
+        List<EventEntity> checkEvent = innerEventService.getEventsByFilter(List.of(eventEntity), null, currentAge, gender, List.of(), List.of(accessChecker.getUserId()), false, false);
         if (!checkEvent.isEmpty()) {
-            participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), filter.getGender());
+            participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), gender);
             return;
         }
         throw new ConflictException("event.accept.notAvailable");
