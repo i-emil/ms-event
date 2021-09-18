@@ -9,17 +9,13 @@
             <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{dd.MM.YYYY HH:mm:ss.SSS}; session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; -
-                [%thread] %-5level %logger{36} - %msg%n
-            </pattern>
+            <pattern>%d{dd.MM.YYYY HH:mm:ss.SSS}; session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; - [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{dd.MM.YYYY HH:mm:ss.SSS}; session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; -
-                [%thread] %-5level %logger{36} - %msg%n
-            </pattern>
+            <pattern>%d{dd.MM.YYYY HH:mm:ss.SSS}; session: %X{Session-Id}; request: %X{Request-Id}; user: %X{User-Id}; - [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
