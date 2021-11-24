@@ -1,7 +1,6 @@
 package com.troojer.msevent.service.impl;
 
 import ch.qos.logback.classic.Logger;
-import com.troojer.msevent.client.ProfileClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.EventParticipantTypeEntity;
 import com.troojer.msevent.dao.ParticipantEntity;
@@ -18,6 +17,7 @@ import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
 import com.troojer.msevent.service.ParticipantService;
 import com.troojer.msevent.util.AccessCheckerUtil;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +33,7 @@ import static com.troojer.msevent.model.enm.ParticipantStatus.*;
 import static com.troojer.msevent.model.enm.ParticipantType.ALL;
 
 @Service
+@RequiredArgsConstructor
 public class ParticipantServiceImpl implements ParticipantService {
 
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
@@ -40,27 +41,19 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final ParticipantRepository participantRepository;
     private final InnerEventService innerEventService;
     private final ParticipantMapper participantMapper;
-    private final ProfileClient profileClient;
     private final AccessCheckerUtil accessChecker;
 
-    public ParticipantServiceImpl(ParticipantRepository participantRepository, InnerEventService innerEventService, ParticipantMapper participantMapper, ProfileClient profileClient, AccessCheckerUtil accessChecker) {
-        this.participantRepository = participantRepository;
-        this.innerEventService = innerEventService;
-        this.participantMapper = participantMapper;
-        this.profileClient = profileClient;
-        this.accessChecker = accessChecker;
-    }
-
     public List<ParticipantDto> getOkParticipants(String eventKey) {
-        if (checkParticipating(eventKey))
+        Optional<EventEntity> eventOpt = innerEventService.getEventEntity(eventKey);
+        if (eventOpt.isPresent() && !eventOpt.get().isPrivate())
             return getParticipants(eventKey, List.of(OK));
         logger.warn("getOkParticipants: It's not user's event; eventId: {};", eventKey);
         throw new ForbiddenException("event.event.forbidden");
     }
 
     @Override
-    public List<ParticipantDto> getParticipants(String eventKey, List<ParticipantStatus> status) {
-        return participantMapper.entitiesToDtos(participantRepository.getParticipants(eventKey, status));
+    public List<ParticipantDto> getParticipants(String eventKey, List<ParticipantStatus> statuses) {
+        return participantMapper.entitiesToDtos(participantRepository.getParticipants(eventKey, statuses));
     }
 
     public void joinEvent(String eventKey, String userId, Gender gender) {
@@ -68,9 +61,13 @@ public class ParticipantServiceImpl implements ParticipantService {
         if (eventOpt.isPresent()) {
             EventEntity event = eventOpt.get();
             try {
-                Optional<ParticipantType> participantTypeOptByGender = Optional.of(ParticipantType.valueOf(gender.toString()));
                 if (event.getStatus() == EventStatus.ACTIVE) {
-                    Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeOptByGender.get());
+                    if (!event.isLimitlessParticipating()) {
+                        participantRepository.save(ParticipantEntity.builder().userId(userId).event(event).type(ALL).build());
+                        return;
+                    }
+                    ParticipantType participantTypeByGender = ParticipantType.valueOf(gender.toString());
+                    Optional<EventParticipantTypeEntity> eventParticipantTypeOpt = getEventParticipantEntityByUserParticipantType(eventKey, participantTypeByGender);
                     if (eventParticipantTypeOpt.isPresent()) {
                         EventParticipantTypeEntity eventParticipantType = eventParticipantTypeOpt.get();
                         addParticipant(eventParticipantType.getId(), ParticipantEntity.builder().userId(userId).event(event).type(eventParticipantType.getType()).build());
@@ -78,7 +75,7 @@ public class ParticipantServiceImpl implements ParticipantService {
                     }
                 }
             } catch (Exception e) {
-                logger.warn("joinEvent(); something wrong; eventKey: {}; userId: {}", eventKey, userId);
+                logger.warn("joinEvent(); something wrong; eventKey: {}, exc: ", eventKey, e);
             }
         }
         throw new ConflictException("event.accept.notAvailable");

@@ -3,7 +3,7 @@ package com.troojer.msevent.service.impl;
 import ch.qos.logback.classic.Logger;
 import com.troojer.msevent.client.ImageClient;
 import com.troojer.msevent.dao.EventEntity;
-import com.troojer.msevent.dao.SimpleEvent;
+import com.troojer.msevent.dao.EventTagEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.Gender;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -41,15 +42,15 @@ public class InnerEventServiceImpl implements InnerEventService {
     }
 
     @Override
-    public List<EventEntity> getEventsByFilter(List<EventEntity> eventList, Long tagId, Integer currentAge, Gender gender, List<String> eventsKeyExceptList, List<String> authorsExceptList, Boolean isEventPublic, Boolean isShuffledOrder) {
+    public List<EventEntity> getEventsByFilter(List<EventEntity> eventList, Collection<Long> tagIdList, Integer currentAge, Gender gender, List<String> eventsKeyExceptList, List<String> usersExceptList, Boolean isEventPublic, Boolean isShuffledOrder) {
         ParticipantType participantType = (gender == null) ? null : ParticipantType.valueOf(gender.toString());
 
         List<EventEntity> filteredEventList = eventList.stream().filter(e ->
-                (tagId == null || e.getTags().stream().anyMatch(t -> tagId.equals(t.getTagId())))
+                (tagIdList == null || tagIdList.stream().anyMatch(tagId -> e.getTags().stream().map(EventTagEntity::getTagId).collect(Collectors.toList()).contains(tagId)))
                         && (e.getMinAge() == null || (currentAge >= e.getMinAge() && currentAge <= e.getMaxAge()))
                         && (e.getParticipantsType().isEmpty() || (e.getParticipantsType().containsKey(participantType) && e.getParticipantsType().get(participantType).isFree()) || (e.getParticipantsType().containsKey(ALL) && e.getParticipantsType().get(ALL).isFree()))
                         && (eventsKeyExceptList.isEmpty() || !eventsKeyExceptList.contains(e.getKey()))
-                        && (authorsExceptList.isEmpty() || !authorsExceptList.contains(e.getAuthorId()))
+                        && (usersExceptList.isEmpty() || !usersExceptList.contains(e.getAuthorId()))
                         && (!isEventPublic || e.getInvitePassword() == null)
         ).collect(Collectors.toList());
         if (isShuffledOrder) Collections.shuffle(filteredEventList);
@@ -81,7 +82,7 @@ public class InnerEventServiceImpl implements InnerEventService {
 
     @Override
     public List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses) {
-        return eventRepository.getEventsByParticipant(after, before, userId, eventStatuses, participantStatuses);
+        return eventRepository.getParticipantEvents(after, before, userId, eventStatuses, participantStatuses);
     }
 
 }

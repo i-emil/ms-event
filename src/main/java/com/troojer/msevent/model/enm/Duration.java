@@ -6,7 +6,7 @@ public enum Duration {
     H1(1), H3(3), H5(5), H12(12), D1(24);
 
     @Getter
-    private int hours;
+    private final int hours;
 
     Duration(int hours) {
         this.hours = hours;

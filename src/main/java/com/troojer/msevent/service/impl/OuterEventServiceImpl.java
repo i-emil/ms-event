@@ -2,10 +2,7 @@ package com.troojer.msevent.service.impl;
 
 
 import ch.qos.logback.classic.Logger;
-import com.troojer.msevent.client.ImageClient;
-import com.troojer.msevent.client.LocationClient;
 import com.troojer.msevent.client.ProfileClient;
-import com.troojer.msevent.client.TagClient;
 import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.repository.EventRepository;
 import com.troojer.msevent.mapper.DatesMapper;
@@ -41,30 +38,15 @@ public class OuterEventServiceImpl implements OuterEventService {
     private final AccessCheckerUtil accessChecker;
     private final EventDataChecker eventDataChecker;
 
-    private final ProfileClient profileClient;
-    private final ParticipantService participantService;
-
     @Override
     public EventDto getEvent(String key) {
         EventEntity eventEntity = getEventEntity(key);
-        if (accessChecker.isUserId(eventEntity.getAuthorId())) {
-            return eventMapper.entityToDtoForAuthor(eventEntity);
-        } else if (participantService.checkParticipating(key)) {
-            return eventMapper.entityToDto(eventEntity);
-        } else {
-            logger.warn("getUserEvent: It's not user's event; eventId: {};", key);
-            throw new ForbiddenException("event.event.forbidden");
-        }
-    }
+        if (eventEntity.isPrivate()) throw new ForbiddenException("event.event.forbidden");
 
-    @Override
-    @Transactional
-    public Page<EventDto> getEvents(StartEndDatesDto dates, Pageable pageable) {
-        if (dates.isDisableDate())
-            return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
-        ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
-        ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
-        return eventRepository.getAuthorEventsByDate(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+        if (accessChecker.isUserId(eventEntity.getAuthorId()))
+            return eventMapper.entityToDtoForAuthor(eventEntity);
+
+        return eventMapper.entityToDto(eventEntity);
     }
 
     @Override
@@ -78,7 +60,16 @@ public class OuterEventServiceImpl implements OuterEventService {
     }
 
     @Override
-    public Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable) {
+    public Page<EventDto> getEventsAsAuthor(StartEndDatesDto dates, Pageable pageable) {
+        if (dates.isDisableDate())
+            return eventRepository.getAllByAuthorId(accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+        ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());
+        ZonedDateTime end = DatesMapper.dtoToEntity(dates.getEnd());
+        return eventRepository.getAuthorEventsByDate(start, end, accessChecker.getUserId(), pageable).map(eventMapper::simpleToDto);
+    }
+
+    @Override
+    public Page<EventDto> getEventsAsParticipant(StartEndDatesDto dates, Pageable pageable) {
         if (dates.isDisableDate())
             return eventRepository.getEventsPageByParticipant(accessChecker.getUserId(), List.of(ACTIVE), List.of(OK), pageable).map(eventMapper::simpleToDto);
         ZonedDateTime start = DatesMapper.dtoToEntity(dates.getStart());

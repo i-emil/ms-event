@@ -60,6 +60,6 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND p.userId = :userId " +
             "AND e.status IN :eventStatuses " +
             "AND p.status in :participantStatuses")
-    List<EventEntity> getEventsByParticipant(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
+    List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
 }

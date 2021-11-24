@@ -65,7 +65,7 @@ public class EventDataChecker {
 
     public void checkTags(Set<TagDto> tagDtoSet) {
         Set<TagDto> allTags = tagClient.getAllTags();
-        if (!allTags.containsAll(tagDtoSet)) throw new InvalidEntityException("person count is incorrect");
+        if (!allTags.containsAll(tagDtoSet)) throw new InvalidEntityException("tag is incorrect");
     }
 
 }

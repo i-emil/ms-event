@@ -41,11 +41,12 @@ public class OfferEventServiceImpl implements OfferEventService {
     @Override
     public List<EventDto> getOfferEvents(FilterDto filter) {
         ZonedDateTime start = DatesMapper.dtoToEntity(filter.getDates().getStart());
+        if (start.isBefore(ZonedDateTime.now())) start = ZonedDateTime.now();
         ZonedDateTime end = DatesMapper.dtoToEntity(filter.getDates().getEnd());
         ProfileInfo profileInfo = profileClient.getProfileFilter();
 
         List<EventEntity> allEvents = innerEventService.getEventsByDateAndStatus(start, end, List.of(ACTIVE));
-        List<EventEntity> filteredEvents = innerEventService.getEventsByFilter(allEvents, filter.getTagId(), profileInfo.getCurrentAge(), profileInfo.getGender(), List.of(), List.of(accessChecker.getUserId()), true, true);
+        List<EventEntity> filteredEvents = innerEventService.getEventsByFilter(allEvents, filter.getTagIdList(), profileInfo.getCurrentAge(), profileInfo.getGender(), List.of(), List.of(accessChecker.getUserId()), true, true);
         if (filteredEvents.isEmpty()) throw new NoContentExcepton("event.offer.notFound");
 
         return eventMapper.entitiesToDtos(filteredEvents);

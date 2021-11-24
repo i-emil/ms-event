@@ -106,4 +106,12 @@ public class EventEntity {
     public boolean isFilterDisabled() {
         return minAge == null && participantsType.isEmpty();
     }
+
+    public boolean isPrivate() {
+        return invitePassword != null;
+    }
+
+    public boolean isLimitlessParticipating() {
+        return participantsType == null || participantsType.isEmpty();
+    }
 }

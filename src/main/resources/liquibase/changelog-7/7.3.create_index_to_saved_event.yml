@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: CreateIndexSavedEventEventIdUserId
+      author: emilr
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: event_id
+              - column:
+                  name: user_id
+            indexName: idx_saved_event_event_id_user_id
+            tableName: saved_event
+            unique: true
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_saved_event_user_id
+            tableName: participant
+            unique: false

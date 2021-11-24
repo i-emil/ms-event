@@ -14,10 +14,10 @@ public interface OuterEventService {
 
     EventDto getEvent(String key);
 
-    Page<EventDto> getEvents(StartEndDatesDto startEndDatesDto, Pageable pageable);
+    Page<EventDto> getEventsAsAuthor(StartEndDatesDto startEndDatesDto, Pageable pageable);
 
     EventDto createEvent(EventDto eventDto);
 
-    Page<EventDto> getEventsByParticipant(StartEndDatesDto dates, Pageable pageable);
+    Page<EventDto> getEventsAsParticipant(StartEndDatesDto dates, Pageable pageable);
 
 }

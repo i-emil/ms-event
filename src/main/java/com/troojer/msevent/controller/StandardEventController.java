@@ -5,6 +5,7 @@ import com.troojer.msevent.model.StartEndDatesDto;
 import com.troojer.msevent.model.label.CreateValidation;
 import com.troojer.msevent.model.label.FilterValidation;
 import com.troojer.msevent.service.OuterEventService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -12,22 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("events/standard")
+@RequiredArgsConstructor
 public class StandardEventController {
 
     private final OuterEventService eventService;
 
-    public StandardEventController(OuterEventService eventService) {
-        this.eventService = eventService;
-    }
-
     @GetMapping("{key}")
     public EventDto getEvent(@PathVariable String key) {
         return eventService.getEvent(key);
-    }
-
-    @PostMapping("filter")
-    public Page<EventDto> getEvents(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
-        return eventService.getEvents(startEndDatesDto, pageable);
     }
 
     @PostMapping
@@ -35,9 +28,13 @@ public class StandardEventController {
         return eventService.createEvent(eventDto);
     }
 
-    @PostMapping("participate")
-    public Page<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
-        return eventService.getEventsByParticipant(startEndDatesDto, pageable);
+    @PostMapping("filter-author")
+    public Page<EventDto> getEvents(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
+        return eventService.getEventsAsAuthor(startEndDatesDto, pageable);
     }
 
+    @PostMapping("filter-participant")
+    public Page<EventDto> getEventsAsParticipant(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
+        return eventService.getEventsAsParticipant(startEndDatesDto, pageable);
+    }
 }

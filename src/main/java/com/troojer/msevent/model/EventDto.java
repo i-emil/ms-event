@@ -2,7 +2,6 @@ package com.troojer.msevent.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.troojer.msevent.constraints.ConsistentEventDuration;
 import com.troojer.msevent.constraints.ConsistentEventStart;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.enm.ParticipantType;
@@ -13,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -45,9 +45,6 @@ public class EventDto {
     @ConsistentEventStart(message = "event.date.startDate", param = "date", groups = {CreateValidation.class, DatesUpdateValidation.class})
     private String startDate;
 
-    @ConsistentEventDuration(message = "event.date.duration", param = "duration", groups = {CreateValidation.class, DurationUpdateValidation.class})
-    private Integer duration;
-
     @NotNull(groups = {CreateValidation.class, LocationUpdateValidation.class})
     private String locationId;
 
@@ -57,6 +54,10 @@ public class EventDto {
     private @Valid Set<TagDto> tags;
 
     //---NOT MANDATORY---
+
+    @Range(min = 15, max = 60 * 24, message = "event.date.duration", groups = {CreateValidation.class, DurationUpdateValidation.class})
+    private Integer duration;
+
     @Builder.Default
     private Map<ParticipantType, EventParticipantTypeDto> participantsType = new HashMap<>();
 
@@ -66,6 +67,8 @@ public class EventDto {
     @JsonInclude(NON_NULL)
     @Builder.Default
     private @Valid InvitingDto inviting = new InvitingDto();
+
+    // ---NOT NEEDED NOW ---
 
     @JsonInclude(NON_NULL)
     private @Valid AgeDto age;
