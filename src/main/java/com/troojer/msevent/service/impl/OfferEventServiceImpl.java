@@ -10,6 +10,7 @@ import com.troojer.msevent.model.FilterDto;
 import com.troojer.msevent.model.ProfileInfo;
 import com.troojer.msevent.model.enm.Gender;
 import com.troojer.msevent.model.exception.ConflictException;
+import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NoContentExcepton;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
@@ -56,6 +57,8 @@ public class OfferEventServiceImpl implements OfferEventService {
     public void accept(String eventKey) {
         EventEntity eventEntity = innerEventService.getEventEntity(eventKey).orElseThrow(() -> new NotFoundException("event.event.notFound"));
 
+        throwExceptionIfEventPrivateForUser(eventEntity);
+
         Integer currentAge = null;
         Gender gender = null;
 
@@ -77,5 +80,10 @@ public class OfferEventServiceImpl implements OfferEventService {
     private void joinEvent(EventEntity eventEntity, Gender gender) {
         participantService.joinEvent(eventEntity.getKey(), accessChecker.getUserId(), gender);
         logger.info("accept(); event accepted: {}", eventEntity);
+    }
+
+    private void throwExceptionIfEventPrivateForUser(EventEntity eventEntity) {
+        if (eventEntity.isPrivate() && (accessChecker.isUserId(eventEntity.getAuthorId()) || participantService.getOkParticipants(eventEntity.getKey()).stream().anyMatch(p -> accessChecker.isUserId(p.getProfile().getUserId()))))
+            throw new ForbiddenException("event.event.forbidden");
     }
 }

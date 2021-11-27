@@ -6,7 +6,10 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.mapper.BudgetMaper;
 import com.troojer.msevent.mapper.DatesMapper;
 import com.troojer.msevent.mapper.TagMapper;
-import com.troojer.msevent.model.*;
+import com.troojer.msevent.model.BudgetDto;
+import com.troojer.msevent.model.EventDto;
+import com.troojer.msevent.model.NotificationDto;
+import com.troojer.msevent.model.TagDto;
 import com.troojer.msevent.model.enm.EventStatus;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
@@ -114,15 +117,11 @@ public class ManageEventServiceImpl implements MangeEventService {
     }
 
     @Override
-    public InvitingDto updateEventInviting(String key, EventDto eventDto) {
+    public void updateEventPassword(String key, EventDto eventDto) {
         EventEntity eventEntity = getEventEntity(key);
-        InvitingDto invitingDto = eventDto.getInviting();
-        logger.info("updateEventInviting(); old: {}", eventEntity.isInviteActive());
-        eventEntity.setInviteActive(invitingDto.isActive());
-        eventEntity.setInvitePassword(invitingDto.getPassword());
+        checkEventChangeable(eventEntity.getStartDate());
+        eventEntity.setPassword(eventDto.getPassword());
         innerEventService.saveOrUpdateEntity(eventEntity);
-        invitingDto.setKey(eventEntity.getKey());
-        return invitingDto;
     }
 
     @Override

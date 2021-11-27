@@ -17,7 +17,7 @@ public interface MangeEventService {
 
     Set<TagDto> updateEventTags(String key, EventDto eventDto);
 
-    InvitingDto updateEventInviting(String key, EventDto eventDto);
+    void updateEventPassword(String key, EventDto eventDto);
 
     String updateEventDate(String key, EventDto eventDto);
 

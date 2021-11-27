@@ -5,7 +5,6 @@ import com.troojer.msevent.dao.EventEntity;
 import com.troojer.msevent.dao.SimpleEvent;
 import com.troojer.msevent.model.AgeDto;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.InvitingDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +60,7 @@ public class EventMapper {
 
     public EventDto entityToDtoForAuthor(EventEntity entity) {
         EventDto eventDto = entityToDto(entity);
-        eventDto.setInviting(InvitingDto.builder().active(entity.isInviteActive()).key(entity.getInviteKey()).password(entity.getInvitePassword()).build());
+        eventDto.setPassword(entity.getPassword());
         return eventDto;
     }
 
@@ -71,8 +70,10 @@ public class EventMapper {
                 .locationId(dto.getLocationId())
                 .description(dto.getDescription().strip().toLowerCase())
                 .cover(dto.getCover())
+                .password(dto.getPassword())
                 .startDate(DatesMapper.dtoToEntity(dto.getStartDate()))
                 .duration(dto.getDuration())
+                .password(dto.getPassword())
                 .title(dto.getTitle().strip().toLowerCase())
                 .budget((dto.getBudget() != null) ? dto.getBudget().getAmount() : null)
                 .currency((dto.getBudget() != null) ? dto.getBudget().getCurrency().getCode() : null)
@@ -83,7 +84,6 @@ public class EventMapper {
         eventEntity.setLanguages(languageMapper.dtoSetToEntitySet(dto.getLanguages(), eventEntity));
         eventEntity.setTags(tagMapper.dtoSetToEntitySet(dto.getTags(), eventEntity));
         eventEntity.setParticipantsType(participantTypeMapper.dtosToEntities(dto.getParticipantsType(), eventEntity));
-        setInviting(eventEntity, dto);
         return eventEntity;
     }
 
@@ -93,12 +93,5 @@ public class EventMapper {
 
     public List<EventDto> entitiesToDtos(List<EventEntity> eventEntityList) {
         return eventEntityList.stream().map(this::entityToDto).collect(Collectors.toList());
-    }
-
-    private void setInviting(EventEntity eventEntity, EventDto eventDto) {
-        if (eventDto.getInviting() != null) {
-            eventEntity.setInviteActive(eventDto.getInviting().isActive());
-            eventEntity.setInvitePassword(eventDto.getInviting().getPassword());
-        }
     }
 }

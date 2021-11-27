@@ -2,7 +2,6 @@ package com.troojer.msevent.controller;
 
 import com.troojer.msevent.model.BudgetDto;
 import com.troojer.msevent.model.EventDto;
-import com.troojer.msevent.model.InvitingDto;
 import com.troojer.msevent.model.TagDto;
 import com.troojer.msevent.model.label.manageevent.*;
 import com.troojer.msevent.service.impl.ManageEventServiceImpl;
@@ -47,9 +46,9 @@ public class ManageEventController {
         return manageEventService.updateEventTags(key, eventDto);
     }
 
-    @PutMapping("inviting/{key}")
-    public InvitingDto updateEventInviting(@PathVariable String key, @Validated(InvitingUpdateValidation.class) @RequestBody EventDto eventDto) {
-        return manageEventService.updateEventInviting(key, eventDto);
+    @PutMapping("password/{key}")
+    public void updateEventInviting(@PathVariable String key, @Validated(InvitingUpdateValidation.class) @RequestBody EventDto eventDto) {
+        manageEventService.updateEventPassword(key, eventDto);
     }
 
     @PutMapping("date/{key}")

@@ -65,8 +65,8 @@ public class EventDto {
     private @Valid BudgetDto budget;
 
     @JsonInclude(NON_NULL)
-    @Builder.Default
-    private @Valid InvitingDto inviting = new InvitingDto();
+    @Size(min = 6, max = 10, message = "event.invitePassword.size::{min}::{max}", groups = {CreateValidation.class, InvitingUpdateValidation.class})
+    private String password;
 
     // ---NOT NEEDED NOW ---
 

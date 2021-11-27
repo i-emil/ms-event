@@ -29,7 +29,7 @@ public class StandardEventController {
     }
 
     @PostMapping("filter-author")
-    public Page<EventDto> getEvents(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
+    public Page<EventDto> getEventsAsAuthor(@RequestBody @Validated(FilterValidation.class) StartEndDatesDto startEndDatesDto, Pageable pageable) {
         return eventService.getEventsAsAuthor(startEndDatesDto, pageable);
     }
 

@@ -64,11 +64,6 @@ databaseChangeLog:
                   name: max_age
                   type: int
               - column:
-                  name: invite_active
-                  type: boolean
-                  constraints:
-                    nullable: false
-              - column:
                   name: is_join_in_app_enough
                   type: boolean
                   constraints:
@@ -77,12 +72,7 @@ databaseChangeLog:
                   name: source
                   type: varchar(255)
               - column:
-                  name: invite_key
-                  type: varchar(255)
-                  constraints:
-                    unique: true
-              - column:
-                  name: invite_password
+                  name: password
                   type: varchar(255)
               - column:
                   name: rating

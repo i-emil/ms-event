@@ -51,7 +51,7 @@ public class InnerEventServiceImpl implements InnerEventService {
                         && (e.getParticipantsType().isEmpty() || (e.getParticipantsType().containsKey(participantType) && e.getParticipantsType().get(participantType).isFree()) || (e.getParticipantsType().containsKey(ALL) && e.getParticipantsType().get(ALL).isFree()))
                         && (eventsKeyExceptList.isEmpty() || !eventsKeyExceptList.contains(e.getKey()))
                         && (usersExceptList.isEmpty() || !usersExceptList.contains(e.getAuthorId()))
-                        && (!isEventPublic || e.getInvitePassword() == null)
+                        && (!isEventPublic || e.getPassword() == null)
         ).collect(Collectors.toList());
         if (isShuffledOrder) Collections.shuffle(filteredEventList);
         logger.debug("getEventEntityByFilter(); eventEntityList: {}", filteredEventList);
@@ -68,11 +68,6 @@ public class InnerEventServiceImpl implements InnerEventService {
     public void setEndedStatusToAllExpired() {
         eventRepository.setStatusByEndDate(EventStatus.ENDED, ZonedDateTime.now().minusDays(1), ZonedDateTime.now());
         logger.info("setEndedStatusToAllExpired(): done");
-    }
-
-    @Override
-    public Optional<EventEntity> getEventByInviteKey(String inviteKey, boolean isInviteActive) {
-        return eventRepository.getFirstByInviteKeyAndInviteActive(inviteKey, isInviteActive);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         Optional<EventEntity> eventOpt = innerEventService.getEventEntity(eventKey);
         if (eventOpt.isPresent() && !eventOpt.get().isPrivate())
             return getParticipants(eventKey, List.of(OK));
-        logger.warn("getOkParticipants: It's not user's event; eventId: {};", eventKey);
+        logger.warn("getOkParticipants: event is not found or private; eventId: {};", eventKey);
         throw new ForbiddenException("event.event.forbidden");
     }
 

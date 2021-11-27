@@ -12,12 +12,11 @@ import java.util.List;
 
 public interface OuterEventService {
 
-    EventDto getEvent(String key);
+    EventDto getEvent(String eventKey);
 
     Page<EventDto> getEventsAsAuthor(StartEndDatesDto startEndDatesDto, Pageable pageable);
 
     EventDto createEvent(EventDto eventDto);
 
     Page<EventDto> getEventsAsParticipant(StartEndDatesDto dates, Pageable pageable);
-
 }

@@ -67,15 +67,8 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.ACTIVE;
 
-    @Column(name = "invite_active")
-    private boolean inviteActive;
-
-    @Column(name = "invite_key")
-    @Builder.Default
-    private String inviteKey = UUID.randomUUID().toString().replace("-", "");
-
-    @Column(name = "invite_password")
-    private String invitePassword;
+    @Column(name = "password")
+    private String password;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
     @MapKey(name = "type")
@@ -108,7 +101,7 @@ public class EventEntity {
     }
 
     public boolean isPrivate() {
-        return invitePassword != null;
+        return password != null;
     }
 
     public boolean isLimitlessParticipating() {

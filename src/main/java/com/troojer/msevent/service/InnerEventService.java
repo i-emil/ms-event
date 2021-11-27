@@ -23,6 +23,4 @@ public interface InnerEventService {
     List<EventEntity> getParticipantEvents(ZonedDateTime after, ZonedDateTime before, String userId, List<EventStatus> eventStatuses, List<ParticipantStatus> participantStatuses);
 
     void setEndedStatusToAllExpired();
-
-    Optional<EventEntity> getEventByInviteKey(String inviteKey, boolean isInviteActive);
 }

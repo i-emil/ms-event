@@ -10,15 +10,15 @@ import com.troojer.msevent.model.exception.ConflictException;
 import com.troojer.msevent.model.exception.ForbiddenException;
 import com.troojer.msevent.model.exception.NotFoundException;
 import com.troojer.msevent.service.InnerEventService;
-import com.troojer.msevent.service.InviteParticipatingService;
 import com.troojer.msevent.service.ParticipantService;
+import com.troojer.msevent.service.PrivateEventService;
 import com.troojer.msevent.util.AccessCheckerUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class InviteParticipatingServiceImpl implements InviteParticipatingService {
+public class PrivateEventServiceImpl implements PrivateEventService {
 
     private final EventMapper eventMapper;
     private final ParticipantService participantService;
@@ -26,7 +26,7 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
     private final ProfileClient profileClient;
     private final InnerEventService innerEventService;
 
-    public InviteParticipatingServiceImpl(EventMapper eventMapper, ParticipantService participantService, AccessCheckerUtil accessChecker, ProfileClient profileClient, InnerEventService innerEventService) {
+    public PrivateEventServiceImpl(EventMapper eventMapper, ParticipantService participantService, AccessCheckerUtil accessChecker, ProfileClient profileClient, InnerEventService innerEventService) {
         this.eventMapper = eventMapper;
         this.participantService = participantService;
         this.accessChecker = accessChecker;
@@ -35,27 +35,22 @@ public class InviteParticipatingServiceImpl implements InviteParticipatingServic
     }
 
     @Override
-    public boolean isInviteByPassword(String inviteKey) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
+    public EventDto getPrivateEvent(String eventKey, String password) {
+        EventEntity eventEntity = innerEventService.getEventEntity(eventKey).orElseThrow
                 (() -> new NotFoundException("event.event.notFound"));
-        return eventEntity.getInvitePassword() == null;
-    }
-
-    @Override
-    public EventDto getEvent(String inviteKey, String invitePass) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
-                (() -> new NotFoundException("event.event.notFound"));
-        String pass = eventEntity.getInvitePassword();
-        if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
+        String eventPassword = eventEntity.getPassword();
+        if (eventPassword != null && !eventPassword.equals(password))
+            throw new ForbiddenException("event.private.wrongPassword");
         return eventMapper.entityToDto(eventEntity);
     }
 
     @Override
-    public void acceptInvite(String inviteKey, String invitePass) {
-        EventEntity eventEntity = innerEventService.getEventByInviteKey(inviteKey, true).orElseThrow
+    public void acceptPrivateEvent(String eventKey, String password) {
+        EventEntity eventEntity = innerEventService.getEventEntity(eventKey).orElseThrow
                 (() -> new NotFoundException("event.event.notFound"));
-        String pass = eventEntity.getInvitePassword();
-        if (pass != null && !pass.equals(invitePass)) throw new ForbiddenException("event.invite.wrongPassword");
+        String eventPassword = eventEntity.getPassword();
+        if (eventPassword != null && !eventPassword.equals(password))
+            throw new ForbiddenException("event.private.wrongPassword");
 
         Integer currentAge = null;
         Gender gender = null;
