@@ -47,7 +47,7 @@ public class ManageEventController {
     }
 
     @PutMapping("password/{key}")
-    public void updateEventInviting(@PathVariable String key, @Validated(InvitingUpdateValidation.class) @RequestBody EventDto eventDto) {
+    public void updateEventPassword(@PathVariable String key, @Validated(PasswordUpdateValidation.class) @RequestBody EventDto eventDto) {
         manageEventService.updateEventPassword(key, eventDto);
     }
 

@@ -1,4 +1,4 @@
 package com.troojer.msevent.model.label.manageevent;
 
-public interface InvitingUpdateValidation {
+public interface PasswordUpdateValidation {
 }

@@ -14,6 +14,7 @@ public class RestTemplateConfiguration {
     public RestTemplate getRestTemplate() {
         return new RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(10))
                 .interceptors(new RestTemplateClientInterceptor()).build();
     }
 }

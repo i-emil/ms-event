@@ -12,7 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Component
@@ -21,6 +22,8 @@ public class TagClient {
     private final Logger logger = (Logger)LoggerFactory.getLogger(this.getClass());
 
     private final RestTemplate restTemplate;
+    private LocalDateTime tagLastUpdated;
+    private Set<TagDto> localTagSet;
 
     @Value("${client.tag.url}")
     private String url;
@@ -29,17 +32,26 @@ public class TagClient {
         this.restTemplate = restTemplate;
     }
 
-    @Cacheable("tagList")
     public Set<TagDto> getAllTags() {
         try {
+            if (tagLastUpdated != null && Duration.between(tagLastUpdated, LocalDateTime.now()).toMinutes() < 30)
+                return this.localTagSet;
             ParameterizedTypeReference<Set<TagDto>> responseType = new ParameterizedTypeReference<>() {
             };
             ResponseEntity<Set<TagDto>> responseEntity = restTemplate.exchange(url + "en", HttpMethod.GET, null, responseType);
             logger.info("getOrAddTags(); client response: {}", responseEntity);
+            updateLocalTags(responseEntity.getBody());
             return responseEntity.getBody();
         } catch (Exception e) {
             logger.warn("getOrAddTags(); exc: ", e);
             throw new ClientException(e.getMessage());
+        }
+    }
+
+    public void updateLocalTags(Set<TagDto> tagSet) {
+        if (tagSet != null && !tagSet.isEmpty()) {
+            this.localTagSet = tagSet;
+            this.tagLastUpdated = LocalDateTime.now();
         }
     }
 }
