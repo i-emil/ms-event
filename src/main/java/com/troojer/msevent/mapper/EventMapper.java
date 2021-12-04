@@ -27,7 +27,7 @@ public class EventMapper {
                 .key(simpleEvent.getKey())
                 .title(simpleEvent.getTitle())
                 .description(simpleEvent.getDescription())
-                .cover(imageClient.getImageUrl(simpleEvent.getCover()))
+                .cover(simpleEvent.getCover() != null ? imageClient.getImageUrl(simpleEvent.getCover()) : null)
                 .startDate(DatesMapper.entityToDto(simpleEvent.getStartDate()))
                 .duration(simpleEvent.getDuration())
                 .participantsType(participantTypeMapper.entitiesToDtos(simpleEvent.getParticipantsType()))
